@@ -4,6 +4,12 @@ use std::{
   io::{self, prelude::*},
 };
 
+pub fn file_reader(input_file: &String) -> (BufReader, String) {
+  let reader = BufReader::open(&input_file).unwrap();
+  let buffer = String::new();
+  return (reader, buffer)
+}
+
 pub struct BufReader {
   reader: io::BufReader<File>,
 }

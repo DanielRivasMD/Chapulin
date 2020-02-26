@@ -5,8 +5,7 @@ pub fn me_identificator(
   me_bam_file: &String
 ) -> std::io::Result<()> {
 
-  let mut reader = file_reader::BufReader::open(&me_bam_file)?;
-  let mut buffer = String::new();
+  let (mut reader, mut buffer) = file_reader::file_reader(&me_bam_file);
 
   while let Some(line) = reader.read_line(&mut buffer) {
 
