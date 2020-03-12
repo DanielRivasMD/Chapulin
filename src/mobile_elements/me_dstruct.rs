@@ -1,13 +1,4 @@
 
-// use crate::traits::*;
-
-			// read_id = $1;
-			// proviral_flag = $2;
-			// erv = $3;
-			// proviral_pos = $4;
-			// proviral_cigar = $6;
-			// to_reverse = seq;
-
 #[derive(Debug)]
 pub struct PrimaryME {
   pub read_id: String,
@@ -32,12 +23,3 @@ impl PrimaryME {
     self.read_sequence.chars().rev().collect()
   }
 }
-
-// impl ReadSequence for PrimaryME {}
-//
-//
-// // trait ReadSequence {
-// pub fn reverser(to_rev_seq: &String) -> String {
-//     to_rev_seq.chars().rev().collect()
-//   }
-// // }
