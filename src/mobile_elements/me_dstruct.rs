@@ -1,4 +1,12 @@
 
+// TODO: finish mobile element library struct
+// to load onto => hashmap for mobile elements library entries
+#[derive(Debug)]
+pub struct MELibrary {
+  pub me_id: String,
+}
+
+// to load onto => hashmap for reads primary aligned to mobile elements
 #[derive(Debug)]
 pub struct PrimaryME {
   pub read_id: String,
@@ -14,6 +22,7 @@ pub struct PrimaryME {
   pub r2read_sequence: String,
 }
 
+// to load onto => hashmap for reads secondary aligned to mobile elements
 #[derive(Debug)]
 pub struct SecondaryME {
   pub read_id: String,
@@ -42,7 +51,10 @@ impl PrimaryME {
     }
   }
 
+  // TODO: write trait
+  
   pub fn reverser(&self) -> String {
-    self.read_sequence.chars().rev().collect()
+
+    self.r1read_sequence.chars().rev().collect()
   }
 }
