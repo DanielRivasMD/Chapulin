@@ -2,14 +2,24 @@
 // TODO: finish mobile element library struct
 // to load onto => hashmap for mobile elements library entries
 #[derive(Debug)]
-pub struct MELibrary {
+pub struct MElibrary {
   pub me_id: String,
+  pub me_sequence: String,
+  pub annotations_erv: ERVannoations,
+  // potentially expandable to other types of mobile elements
+}
+
+// use to indicate which LTR sequence to use
+#[derive(Debug)]
+pub struct ERVannoations {
+  pub ltr5: bool,
+  pub ltr3: bool,
 }
 
 // to load onto => hashmap for reads primary aligned to mobile elements
 #[derive(Debug)]
 pub struct PrimaryME {
-  pub read_id: String,
+  // pub read_id: String,
   pub r1proviral_flag: i64,
   pub r1mobel: String,
   pub r1proviral_pos: i64,
@@ -37,7 +47,7 @@ impl PrimaryME {
   pub fn new() -> Self {
 
     PrimaryME {
-      read_id: "".to_string(),
+      // read_id: "".to_string(),
       r1proviral_flag: 0,
       r1mobel: "".to_string(),
       r1proviral_pos: 0,
@@ -51,10 +61,12 @@ impl PrimaryME {
     }
   }
 
-  // TODO: write trait
+  // TODO: write reverse trait
   
   pub fn reverser(&self) -> String {
 
     self.r1read_sequence.chars().rev().collect()
   }
+
+//  TODO: add breakpoint determination as trait
 }
