@@ -1,4 +1,11 @@
 
+use std::collections::HashMap;
+
+pub fn hashmap_init() -> HashMap < String, ReadRecord > {
+  let out_hashmap: HashMap < String, ReadRecord > = HashMap::new();
+  return out_hashmap
+}
+
 // TODO: finish mobile element library struct
 // to load onto => hashmap for mobile elements library entries
 #[derive(Debug)]

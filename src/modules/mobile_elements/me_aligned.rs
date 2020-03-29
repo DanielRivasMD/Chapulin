@@ -7,7 +7,8 @@ use crate::utils::file_reader;
 use crate::utils::record::{*};
 
 pub fn me_identificator(
-  me_bam_file: &String
+  me_bam_file: &String,
+  hm_collection: &mut HashMap<String, ReadRecord>,
 ) -> std::io::Result<()> {
 
   // TODO: temporary
@@ -48,11 +49,11 @@ pub fn me_identificator(
 
         if tmp_pos <= me_upstream_limit || tmp_pos >= me_downstream_limit {
 
-          if ! record_collection.contains_key(&tmp_id) {
+          if ! hm_collection.contains_key(&tmp_id) {
 
-            record_collection.insert((&tmp_id).to_string(), ReadRecord::new());
+            hm_collection.insert((&tmp_id).to_string(), ReadRecord::new());
 
-            if let Some(current_record) = record_collection.get_mut(&tmp_id) {
+            if let Some(current_record) = hm_collection.get_mut(&tmp_id) {
               // current_record.read_id = record_line[0].to_string();
               current_record.read1.pv_flag = record_line[1].parse().unwrap();
               current_record.read1.mobel = record_line[2].to_string();
@@ -63,8 +64,7 @@ pub fn me_identificator(
 
           } else {
 
-            if let Some(current_record) = record_collection.get_mut(&tmp_id) {
-              current_record.read2.pv_flag = record_line[1].parse().unwrap();
+            if let Some(current_record) = hm_collection.get_mut(&tmp_id) {
               current_record.read2.mobel = record_line[2].to_string();
               current_record.read2.pv_pos = record_line[3].parse().unwrap();
               current_record.read2.pv_cigar = record_line[5].to_string();
