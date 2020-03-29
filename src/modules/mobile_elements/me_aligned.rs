@@ -16,11 +16,7 @@ pub fn me_identificator(
   let me_downstream_limit = 5000;
 
   // define regex
-  let re = Regex::new(r"^\*").unwrap();
-
-  // initiate HashMap
-  let mut record_collection: HashMap<String, ReadRecord> = HashMap::new();
-  // let mut secondary_me_collection: HashMap<String, SecondaryME> = HashMap::new();
+  let _re = Regex::new(r"^\*").unwrap();
 
   // load file
   let (mut reader, mut buffer) = file_reader::file_reader(&me_bam_file);
@@ -55,8 +51,8 @@ pub fn me_identificator(
 
             if let Some(current_record) = hm_collection.get_mut(&tmp_id) {
               // current_record.read_id = record_line[0].to_string();
-              current_record.read1.pv_flag = record_line[1].parse().unwrap();
               current_record.read1.mobel = record_line[2].to_string();
+              current_record.read1.pv_flag = record_line[1].parse().unwrap();
               current_record.read1.pv_pos = record_line[3].parse().unwrap();
               current_record.read1.pv_cigar = record_line[5].to_string();
               current_record.read1.sequence = record_line[9].to_string();
@@ -66,6 +62,7 @@ pub fn me_identificator(
 
             if let Some(current_record) = hm_collection.get_mut(&tmp_id) {
               current_record.read2.mobel = record_line[2].to_string();
+              current_record.read2.pv_flag = record_line[1].parse().unwrap();
               current_record.read2.pv_pos = record_line[3].parse().unwrap();
               current_record.read2.pv_cigar = record_line[5].to_string();
               current_record.read2.sequence = record_line[9].to_string();
