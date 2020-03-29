@@ -1,10 +1,10 @@
 
 use std::collections::HashMap;
 
-// use crate::file_reader;
 use regex::Regex;
 
-use chapulin::{*};
+use crate::utils::file_reader;
+use crate::utils::record::{*};
 
 pub fn me_identificator(
   me_bam_file: &String

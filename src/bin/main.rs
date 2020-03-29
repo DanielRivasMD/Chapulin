@@ -1,6 +1,5 @@
-#![allow(dead_code)]
 
-use chapulin::*;
+use chapulin::{*};
 
 /*
 the general idea is to create a modulerize, fast & reliable tool for mobile element identification in re sequence projects
@@ -26,8 +25,8 @@ fn main() -> std::io::Result<()> {
 
   // TODO: think about a way to make module communicate
 
-  // // mobile elements module
-  // mobile_elements::me_controller()?;
+  // mobile elements module
+  modules::mobile_elements::me_controller()?;
 
   // TODO: combine output from mobile elements. probably passing reference to hashmap as argument
 
@@ -39,5 +38,6 @@ fn main() -> std::io::Result<()> {
 
   // TODO: build interphase to PostgreSQL
 
+  with_love();
   Ok(())
 }
