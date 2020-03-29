@@ -16,57 +16,71 @@ pub struct ERVannoations {
   pub ltr3: bool,
 }
 
+#[derive(Debug)]
+pub struct ReadSequence {
+  pub sequence: String,
+  pub mobel: String,
+  pub pv_flag: i64,
+  pub pv_pos: i64,
+  pub pv_cigar: String,
+  pub cl_flag: i64,
+  pub cl_pos: i64,
+  pub cl_cigar: String,
+  // TODO: expand Record to include chromosomal loci information
+}
+
+impl ReadSequence {
+  pub fn new() -> Self {
+    Self {
+      sequence: "".to_string(),
+      mobel: "".to_string(),
+      pv_flag: 0,
+      pv_pos: 0,
+      pv_cigar: "".to_string(),
+      cl_flag: 0,
+      cl_pos: 0,
+      cl_cigar: "".to_string(),
+    }
+
+  }
+}
+
 // to load onto => hashmap for reads primary aligned to mobile elements
 #[derive(Debug)]
-pub struct PrimaryME {
-  // pub read_id: String,
-  pub r1proviral_flag: i64,
-  pub r1mobel: String,
-  pub r1proviral_pos: i64,
-  pub r1proviral_cigar: String,
-  pub r1read_sequence: String,
-  pub r2proviral_flag: i64,
-  pub r2mobel: String,
-  pub r2proviral_pos: i64,
-  pub r2proviral_cigar: String,
-  pub r2read_sequence: String,
+pub struct ReadRecord {
+  pub read1: ReadSequence,
+  pub read2: ReadSequence,
+  // TODO: think about a convenient way to flag insert pairs
+  // pub anchor: bool,
 }
 
-// to load onto => hashmap for reads secondary aligned to mobile elements
-#[derive(Debug)]
-pub struct SecondaryME {
-  pub read_id: String,
-  pub proviral_flag: i64,
-  pub mobel: String,
-  pub proviral_pos: i64,
-  pub proviral_cigar: String,
-}
-
-impl PrimaryME {
-
+impl ReadRecord {
   pub fn new() -> Self {
-
-    PrimaryME {
-      // read_id: "".to_string(),
-      r1proviral_flag: 0,
-      r1mobel: "".to_string(),
-      r1proviral_pos: 0,
-      r1proviral_cigar: "".to_string(),
-      r1read_sequence: "".to_string(),
-      r2proviral_flag: 0,
-      r2mobel: "".to_string(),
-      r2proviral_pos: 0,
-      r2proviral_cigar: "".to_string(),
-      r2read_sequence: "".to_string(),
+    Self {
+      read1: ReadSequence::new(),
+      read2: ReadSequence::new(),
     }
   }
-
-  // TODO: write reverse trait
-  
-  pub fn reverser(&self) -> String {
-
-    self.r1read_sequence.chars().rev().collect()
-  }
-
-//  TODO: add breakpoint determination as trait
 }
+
+// // to load onto => hashmap for reads secondary aligned to mobile elements
+// #[derive(Debug)]
+// pub struct SecondaryME {
+//   pub read_id: String,
+//   pub proviral_flag: i64,
+//   pub mobel: String,
+//   pub proviral_pos: i64,
+//   pub proviral_cigar: String,
+// }
+
+// impl Record {
+//
+//   // TODO: write reverse trait
+//
+//   pub fn reverser(&self) -> String {
+//
+//     self.r1read_sequence.chars().rev().collect()
+//   }
+//
+// //  TODO: add breakpoint determination as trait
+// }
