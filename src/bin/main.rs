@@ -33,8 +33,8 @@ fn main() -> std::io::Result<()> {
 
   // TODO: combine output from mobile elements. probably passing reference to hashmap as argument
 
-  // // chromosomal loci module
-  // chromosomal_loci::cl_controller();
+  // chromosomal loci module
+  modules::chromosomal_loci::cl_controller(&mut record_collection)?;
 
   // // peak identification module
   // peak_identification::pi_controller();
