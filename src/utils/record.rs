@@ -57,6 +57,25 @@ impl ReadSequence {
   }
 }
 
+impl ReadSequence {
+  // TODO: write reverse trait
+  pub fn sequence_reverser(&self) -> String {
+
+    self.sequence.chars()
+    .map(|x| match x {
+        '!' => '?',
+        'A' => 'T',
+        'T' => 'A',
+        'C' => 'G',
+        'G' => 'C',
+        _ => x
+    }).rev().collect()
+  }
+
+  //  TODO: add breakpoint determination as trait
+}
+
+
 // to load onto => hashmap for reads primary aligned to mobile elements
 #[derive(Debug)]
 pub struct ReadRecord {
@@ -85,16 +104,4 @@ impl ReadRecord {
 //   pub mobel: String,
 //   pub proviral_pos: i64,
 //   pub proviral_cigar: String,
-// }
-
-// impl Record {
-//
-//   // TODO: write reverse trait
-//
-//   pub fn reverser(&self) -> String {
-//
-//     self.r1read_sequence.chars().rev().collect()
-//   }
-//
-// //  TODO: add breakpoint determination as trait
 // }
