@@ -35,10 +35,9 @@ pub struct ReadSequence {
   pub cl_flag: i64,
   pub cl_pos: i64,
   pub cl_cigar: String,
-  // TODO: expand Record to include chromosomal loci information
+  pub cl_mapq: String,
 }
 
-// TODO: write an automatic loader implementation to keep it clean
 impl ReadSequence {
   pub fn new() -> Self {
     Self {
@@ -52,13 +51,13 @@ impl ReadSequence {
       cl_flag: 0,
       cl_pos: 0,
       cl_cigar: "".to_string(),
+      cl_mapq: "".to_string(),
     }
 
   }
 }
 
 impl ReadSequence {
-  // TODO: write reverse trait
   pub fn sequence_reverser(&self) -> String {
 
     self.sequence.chars()
@@ -95,13 +94,3 @@ impl ReadRecord {
     }
   }
 }
-
-// // to load onto => hashmap for reads secondary aligned to mobile elements
-// #[derive(Debug)]
-// pub struct SecondaryME {
-//   pub read_id: String,
-//   pub proviral_flag: i64,
-//   pub mobel: String,
-//   pub proviral_pos: i64,
-//   pub proviral_cigar: String,
-// }
