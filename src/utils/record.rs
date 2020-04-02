@@ -10,8 +10,8 @@ pub fn hashmap_init() -> HashMap < String, ReadRecord > {
 // to load onto => hashmap for mobile elements library entries
 #[derive(Debug)]
 pub struct MElibrary {
-  pub me_id: String,
-  pub me_sequence: String,
+  pub me_seq: String,
+  pub me_size: i32,
   pub annotations_erv: ERVannoations,
   // potentially expandable to other types of mobile elements
 }
@@ -23,17 +23,30 @@ pub struct ERVannoations {
   pub ltr3: bool,
 }
 
+impl MElibrary {
+  pub fn new() -> Self {
+    Self {
+      me_seq: "".to_string(),
+      me_size: 0,
+      annotations_erv: ERVannoations {
+        ltr5: false,
+        ltr3: false
+      }
+    }
+  }
+}
+
 #[derive(Debug)]
 pub struct ReadSequence {
   pub sequence: String,
   pub test_seq: String,
   pub mobel: String,
-  pub pv_flag: i64,
-  pub pv_pos: i64,
+  pub pv_flag: i32,
+  pub pv_pos: i32,
   pub pv_cigar: String,
   pub chr: String,
-  pub cl_flag: i64,
-  pub cl_pos: i64,
+  pub cl_flag: i32,
+  pub cl_pos: i32,
   pub cl_cigar: String,
   pub cl_mapq: String,
 }

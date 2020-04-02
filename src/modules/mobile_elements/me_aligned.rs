@@ -23,9 +23,10 @@ pub fn me_identificator(
 
     let record_line: Vec<&str> = line?.trim().split("\t").collect();
 
-    let tmp_pf: i32 = record_line[1].parse().unwrap();
-    let tmp_id: String = record_line[0].to_string();
-    let tmp_pos: i32 = record_line[3].parse().unwrap();
+    let proviral_flag: i32 = record_line[1].parse().unwrap();
+    let read_id = record_line[0].to_string();
+    let read_position: i32 = record_line[3].parse().unwrap();
+    let proviral_id = record_line[2].to_string();
 
     // purgr incomplete reads
     // TODO: if length is not as expect & is not "*" abbreviated
@@ -42,12 +43,11 @@ pub fn me_identificator(
 
         if tmp_pos <= me_upstream_limit || tmp_pos >= me_downstream_limit {
 
-          if ! hm_collection.contains_key(&tmp_id) {
+          if ! hm_record_collection.contains_key(&read_id) {
 
-            hm_collection.insert((&tmp_id).to_string(), ReadRecord::new());
+            hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
 
-            if let Some(current_record) = hm_collection.get_mut(&tmp_id) {
-              // current_record.read_id = record_line[0].to_string();
+            if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
               current_record.read1.mobel = record_line[2].to_string();
               current_record.read1.pv_flag = record_line[1].parse().unwrap();
               current_record.read1.pv_pos = record_line[3].parse().unwrap();
@@ -57,7 +57,7 @@ pub fn me_identificator(
 
           } else {
 
-            if let Some(current_record) = hm_collection.get_mut(&tmp_id) {
+            if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
               current_record.read2.mobel = record_line[2].to_string();
               current_record.read2.pv_flag = record_line[1].parse().unwrap();
               current_record.read2.pv_pos = record_line[3].parse().unwrap();
