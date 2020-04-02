@@ -8,12 +8,9 @@ use crate::utils::record::{*};
 
 pub fn me_identificator(
   me_bam_file: &String,
-  hm_collection: &mut HashMap<String, ReadRecord>,
+  hm_record_collection: &mut HashMap<String, ReadRecord>,
+  hm_me_collection: &HashMap<String, MElibrary>,
 ) -> std::io::Result<()> {
-
-  // TODO: temporary
-  let me_upstream_limit = 200;
-  let me_downstream_limit = 5000;
 
   // define regex
   let _re = Regex::new(r"^\*").unwrap();
