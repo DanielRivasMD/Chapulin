@@ -11,7 +11,7 @@ pub fn me_lib_loader(
 
   // TODO: the original scripts include tagging about LTR type. a way to indicate in a more generic manner is required
   // load file
-  let (mut reader, mut buffer) = file_reader::file_reader(&me_bam_file);
+  let (mut reader, mut buffer) = file_reader::file_reader(&me_lib_file);
 
   // iterate through file
   while let Some(line) = reader.read_line(&mut buffer) {

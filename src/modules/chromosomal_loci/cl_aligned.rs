@@ -1,8 +1,6 @@
 
 use std::collections::HashMap;
 
-use regex::Regex;
-
 use crate::utils::file_reader;
 use crate::utils::record::{*};
 

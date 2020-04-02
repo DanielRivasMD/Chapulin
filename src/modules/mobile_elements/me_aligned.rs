@@ -31,60 +31,76 @@ pub fn me_identificator(
     // purgr incomplete reads
     // TODO: if length is not as expect & is not "*" abbreviated
 
-    match tmp_pf {
+    // retrieve mobile element library records
+    let me_option = hm_me_collection.get(&proviral_id);
 
-      pf if pf <= 255 => {
+    // let me_record = match me_val {
+    //   Some(y) => y,
+    //   None => (),
+    // };
 
-        // TODO: collect both reads on insert
-        // TODO: tag read pairs at break point site
-        // TODO: determine breakpoint at upstream & downstream junction
+    // let me_record = if let Some(y) = me_val { y };
 
-        // TODO: add more filter before loading mobile element aligned read to hashmap. alignment position
+    match me_option {
+      Some(me_record) => {
 
-        if tmp_pos <= me_upstream_limit || tmp_pos >= me_downstream_limit {
+        match proviral_flag {
+          pf if pf <= 255 => {
 
-          if ! hm_record_collection.contains_key(&read_id) {
+            // TODO: collect both reads on insert
+            // TODO: tag read pairs at break point site
+            // TODO: determine breakpoint at upstream & downstream junction
 
-            hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
+            // TODO: add more filter before loading mobile element aligned read to hashmap. alignment position
 
-            if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
-              current_record.read1.mobel = record_line[2].to_string();
-              current_record.read1.pv_flag = record_line[1].parse().unwrap();
-              current_record.read1.pv_pos = record_line[3].parse().unwrap();
-              current_record.read1.pv_cigar = record_line[5].to_string();
-              current_record.read1.sequence = record_line[9].to_string();
+            // TODO: define junctions
+            // downstream junction
+            if me_record.annotations_erv.ltr3 && me_record.me_size > read_position {
+
+            // upstream junction
+            } else if me_record.annotations_erv.ltr5 && me_record.me_size < read_position {
+
             }
 
-          } else {
+            // TODO: temporary
+            let me_upstream_limit = me_record.me_size;
+            let me_downstream_limit = 200;
 
-            if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
-              current_record.read2.mobel = record_line[2].to_string();
-              current_record.read2.pv_flag = record_line[1].parse().unwrap();
-              current_record.read2.pv_pos = record_line[3].parse().unwrap();
-              current_record.read2.pv_cigar = record_line[5].to_string();
-              current_record.read2.sequence = record_line[9].to_string();
+            if read_position <= me_upstream_limit || read_position >= me_downstream_limit {
+              // if read_position <= me_upstream_limit || read_position >= me_downstream_limit {
+
+              if !hm_record_collection.contains_key(&read_id) {
+                hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
+
+                if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
+                  current_record.read1.mobel = record_line[2].to_string();
+                  current_record.read1.pv_flag = record_line[1].parse().unwrap();
+                  current_record.read1.pv_pos = record_line[3].parse().unwrap();
+                  current_record.read1.pv_cigar = record_line[5].to_string();
+                  current_record.read1.sequence = record_line[9].to_string();
+                }
+              } else {
+                if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
+                  current_record.read2.mobel = record_line[2].to_string();
+                  current_record.read2.pv_flag = record_line[1].parse().unwrap();
+                  current_record.read2.pv_pos = record_line[3].parse().unwrap();
+                  current_record.read2.pv_cigar = record_line[5].to_string();
+                  current_record.read2.sequence = record_line[9].to_string();
+                }
+              }
             }
           }
+
+          pf if pf >= 256 => {
+
+            // TODO: if secondary hits are recorded, change the loading method as with primary
+          }
+
+          _ => (),
         }
-      }
-
-      pf if pf >= 256 => {
-
-        // TODO: if secondary hits are recorded, change the loading method as with primary
-        // secondary_me_collection.insert(record_line[0].to_string(), SecondaryME {
-        //   read_id: record_line[0].to_string(),
-        //   proviral_flag: record_line[1].parse().unwrap(),
-        //   mobel: record_line[2].to_string(),
-        //   proviral_pos: record_line[3].parse().unwrap(),
-        //   proviral_cigar: record_line[5].to_string(),
-        // });
-
-      }
-
-      _ => println!("extra")
-
+      },
+      None => (),
     }
-
   }
 
   Ok(println!("{} {}", "File read: ", &me_bam_file))
