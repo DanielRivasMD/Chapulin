@@ -1,8 +1,8 @@
 
 use std::collections::HashMap;
 
-pub fn hashmap_init() -> HashMap < String, ReadRecord > {
-  let out_hashmap: HashMap < String, ReadRecord > = HashMap::new();
+pub fn hashmap_init<T>() -> HashMap < String, T > {
+  let out_hashmap: HashMap < String, T > = HashMap::new();
   return out_hashmap
 }
 
