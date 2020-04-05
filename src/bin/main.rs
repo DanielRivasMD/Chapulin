@@ -40,15 +40,10 @@ fn main() -> std::io::Result<()> {
 
   // output message to log
   for (key, val) in record_collection.iter() {
-    // println!("key: {} => {}\nval: {} {}", key, val.r1proviral_flag, val.r1read_sequence, val.reverser());
-    // println!("key: {} => {}\nval: {}", key, val.r2proviral_flag, val.r2read_sequence);
     println!("key: {}\nval: {:#?}", key, val);
   }
 
-  // for (key, val) in secondary_me_collection.iter() {
-  //   println!("key: {}\nval: {:?}", key, val);
-  // }
-
+  println!("Length of Hashmap: {}", record_collection.len());
 
   with_love();
   Ok(())
