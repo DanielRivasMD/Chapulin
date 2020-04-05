@@ -1,54 +1,29 @@
 
-use std::collections::HashMap;
-
-pub fn hashmap_init<T>() -> HashMap < String, T > {
-  let out_hashmap: HashMap < String, T > = HashMap::new();
-  return out_hashmap
-}
-
-// TODO: finish mobile element library struct
-// to load onto => hashmap for mobile elements library entries
+// to load onto => hashmap for reads aligned to mobile elements
 #[derive(Debug)]
-pub struct MElibrary {
-  pub me_seq: String,
-  pub me_size: i32,
-  pub annotations_erv: ERVannoations,
-  // potentially expandable to other types of mobile elements
+pub struct ReadRecord {
+  pub read1: ReadSequence,
+  pub read2: ReadSequence,
+  pub debug_seq: String,
 }
 
-// use to indicate which LTR sequence to use
-#[derive(Debug)]
-pub struct ERVannoations {
-  pub ltr5: bool,
-  pub ltr3: bool,
-}
-
-impl MElibrary {
+impl ReadRecord {
   pub fn new() -> Self {
     Self {
-      me_seq: "".to_string(),
-      me_size: 0,
-      annotations_erv: ERVannoations {
-        ltr5: false,
-        ltr3: false
-      }
+      read1: ReadSequence::new(),
+      read2: ReadSequence::new(),
+      debug_seq: "".to_string(),
     }
   }
 }
 
+// annotate primary (index 0) & secondary aligned reads
 #[derive(Debug)]
 pub struct ReadSequence {
   pub sequence: String,
   pub test_seq: String,
-  pub mobel: String,
-  pub pv_flag: i32,
-  pub pv_pos: i32,
-  pub pv_cigar: String,
-  pub chr: String,
-  pub cl_flag: i32,
-  pub cl_pos: i32,
-  pub cl_cigar: String,
-  pub cl_mapq: String,
+  pub me_read: Vec < MERead >,
+  pub chr_read: Vec < AnchorRead >,
 }
 
 impl ReadSequence {
@@ -56,20 +31,15 @@ impl ReadSequence {
     Self {
       sequence: "".to_string(),
       test_seq: "".to_string(),
-      mobel: "".to_string(),
-      pv_flag: 0,
-      pv_pos: 0,
-      pv_cigar: "".to_string(),
-      chr: "".to_string(),
-      cl_flag: 0,
-      cl_pos: 0,
-      cl_cigar: "".to_string(),
-      cl_mapq: "".to_string(),
+      me_read: vec![MERead::new()],
+      chr_read: vec![AnchorRead::new()],
     }
   }
 }
 
 impl ReadSequence {
+
+  // reverse complement sequence
   pub fn sequence_reverser(&self) -> String {
 
     self.sequence.chars()
@@ -86,23 +56,42 @@ impl ReadSequence {
   //  TODO: add breakpoint determination as trait
 }
 
-
-// to load onto => hashmap for reads primary aligned to mobile elements
 #[derive(Debug)]
-pub struct ReadRecord {
-  pub read1: ReadSequence,
-  pub read2: ReadSequence,
-  pub debug_seq: String,
-  // TODO: think about a convenient way to flag insert pairs
-  // pub anchor: bool,
+pub struct MERead {
+  pub mobel: String,
+  pub flag: i32,
+  pub pos: i32,
+  pub cigar: String,
 }
 
-impl ReadRecord {
+impl MERead {
   pub fn new() -> Self {
     Self {
-      read1: ReadSequence::new(),
-      read2: ReadSequence::new(),
-      debug_seq: "".to_string(),
+      mobel: "".to_string(),
+      flag: 0,
+      pos: 0,
+      cigar: "".to_string(),
+    }
+  }
+}
+
+#[derive(Debug)]
+pub struct AnchorRead {
+  pub chr: String,
+  pub flag: i32,
+  pub pos: i32,
+  pub cigar: String,
+  pub mapq: String,
+}
+
+impl AnchorRead {
+  pub fn new() -> Self {
+    Self {
+      chr: "".to_string(),
+      flag: 0,
+      pos: 0,
+      cigar: "".to_string(),
+      mapq: "".to_string()
     }
   }
 }
