@@ -92,8 +92,25 @@ pub fn me_identificator(
           // secondary alignment
           pf if pf >= 256 => {
 
-            // TODO: if secondary hits are recorded, change the loading method as with primary
-          }
+            // TODO: probably do not record supplementary alignments
+            if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
+              if current_record.read2.sequence == "".to_string() {
+                current_record.read1.me_read.push(MERead {
+                  mobel: record_line[2].to_string(),
+                  flag: record_line[1].parse().unwrap(),
+                  pos: record_line[3].parse().unwrap(),
+                  cigar: record_line[5].to_string(),
+                })
+              } else {
+                current_record.read2.me_read.push(MERead {
+                  mobel: record_line[2].to_string(),
+                  flag: record_line[1].parse().unwrap(),
+                  pos: record_line[3].parse().unwrap(),
+                  cigar: record_line[5].to_string(),
+                })
+              }
+            }
+          },
 
           _ => (),
         }
