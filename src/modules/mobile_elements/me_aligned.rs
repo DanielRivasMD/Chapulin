@@ -71,19 +71,19 @@ pub fn me_identificator(
                 hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
 
                 if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
-                  current_record.read1.mobel = record_line[2].to_string();
-                  current_record.read1.pv_flag = record_line[1].parse().unwrap();
-                  current_record.read1.pv_pos = record_line[3].parse().unwrap();
-                  current_record.read1.pv_cigar = record_line[5].to_string();
                   current_record.read1.sequence = record_line[9].to_string();
+                  current_record.read1.me_read[0].mobel = record_line[2].to_string();
+                  current_record.read1.me_read[0].flag =  record_line[1].parse().unwrap();
+                  current_record.read1.me_read[0].pos =  record_line[3].parse().unwrap();
+                  current_record.read1.me_read[0].cigar =  record_line[5].to_string();
                 }
               } else {
                 if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
-                  current_record.read2.mobel = record_line[2].to_string();
-                  current_record.read2.pv_flag = record_line[1].parse().unwrap();
-                  current_record.read2.pv_pos = record_line[3].parse().unwrap();
-                  current_record.read2.pv_cigar = record_line[5].to_string();
                   current_record.read2.sequence = record_line[9].to_string();
+                  current_record.read2.me_read[0].mobel = record_line[2].to_string();
+                  current_record.read2.me_read[0].flag = record_line[1].parse().unwrap();
+                  current_record.read2.me_read[0].pos = record_line[3].parse().unwrap();
+                  current_record.read2.me_read[0].cigar = record_line[5].to_string();
                 }
               }
             }
