@@ -13,15 +13,13 @@ pub fn me_identificator(
   hm_me_collection: &HashMap<String, MElibrary>,
 ) -> std::io::Result<()> {
 
-  // define regex
-  let _re = Regex::new(r"^\*").unwrap();
-
   // load file
   let (mut reader, mut buffer) = file_reader::file_reader(&me_bam_file);
 
   // iterate through file
   while let Some(line) = reader.read_line(&mut buffer) {
 
+    // load line into vector
     let record_line: Vec<&str> = line?.trim().split("\t").collect();
 
     let proviral_flag: i32 = record_line[1].parse().unwrap();
@@ -29,23 +27,22 @@ pub fn me_identificator(
     let read_position: i32 = record_line[3].parse().unwrap();
     let proviral_id = record_line[2].to_string();
 
-    // purgr incomplete reads
-    // TODO: if length is not as expect & is not "*" abbreviated
-
     // retrieve mobile element library records
-    let me_option = hm_me_collection.get(&proviral_id);
 
     // let me_record = match me_val {
     //   Some(y) => y,
     //   None => (),
     // };
 
-    // let me_record = if let Some(y) = me_val { y };
+    let me_option = hm_me_collection.get(&proviral_id);
 
     match me_option {
+
       Some(me_record) => {
 
         match proviral_flag {
+
+          // primary alignment
           pf if pf <= 255 => {
 
             // TODO: collect both reads on insert
@@ -70,7 +67,7 @@ pub fn me_identificator(
             if read_position <= me_upstream_limit || read_position >= me_downstream_limit {
               // if read_position <= me_upstream_limit || read_position >= me_downstream_limit {
 
-              if !hm_record_collection.contains_key(&read_id) {
+              if ! hm_record_collection.contains_key(&read_id) {
                 hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
 
                 if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
@@ -90,8 +87,9 @@ pub fn me_identificator(
                 }
               }
             }
-          }
+          },
 
+          // secondary alignment
           pf if pf >= 256 => {
 
             // TODO: if secondary hits are recorded, change the loading method as with primary
@@ -100,6 +98,7 @@ pub fn me_identificator(
           _ => (),
         }
       },
+
       None => (),
     }
   }
