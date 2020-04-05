@@ -16,107 +16,107 @@ pub fn me_identificator(
   // load file
   let (mut reader, mut buffer) = file_reader::file_reader(&me_bam_file);
 
+  // evaluate read batch
+  let mut read_id = String::new();
+  let mut purge_switch = true;
+
   // iterate through file
   while let Some(line) = reader.read_line(&mut buffer) {
 
     // load line into vector
     let record_line: Vec<&str> = line?.trim().split("\t").collect();
 
-    let proviral_flag: i32 = record_line[1].parse().unwrap();
-    let read_id = record_line[0].to_string();
-    let read_position: i32 = record_line[3].parse().unwrap();
-    let proviral_id = record_line[2].to_string();
+    // purge read pairs
+    if ! ( read_id == record_line[0].to_string() || read_id == "".to_string() ) {
+
+      if purge_switch {
+        hm_record_collection.remove(&read_id);
+      }
+
+      // reset purge switch
+      purge_switch = true;
+    }
+
+    // update read id
+    read_id = record_line[0].to_string();
 
     // retrieve mobile element library records
+    let me_option = hm_me_collection.get(&record_line[2].to_string());
 
-    // let me_record = match me_val {
-    //   Some(y) => y,
-    //   None => (),
-    // };
-
-    let me_option = hm_me_collection.get(&proviral_id);
+    // TODO: define "me_limit" as a constant in configuration
+    let me_limit = 200;
 
     match me_option {
 
       Some(me_record) => {
 
-        match proviral_flag {
+        // TODO: describe break point signature
+        // TODO: define filters for keeping based on breakpoint estimation & read orientation
+        // read pair selection criteria
+        if
+          record_line[3].parse::<i32>().unwrap() <= me_limit || // downstream
+          record_line[3].parse::<i32>().unwrap() >= (me_record.me_size - me_limit) // upstream
+        {
 
-          // primary alignment
-          pf if pf <= 255 => {
-
-            // TODO: collect both reads on insert
-            // TODO: tag read pairs at break point site
-            // TODO: determine breakpoint at upstream & downstream junction
-
-            // TODO: add more filter before loading mobile element aligned read to hashmap. alignment position
-
-            // TODO: define junctions
-            // downstream junction
-            if me_record.annotations_erv.ltr3 && me_record.me_size > read_position {
-
-            // upstream junction
-            } else if me_record.annotations_erv.ltr5 && me_record.me_size < read_position {
-
-            }
-
-            // TODO: temporary
-            let me_upstream_limit = me_record.me_size;
-            let me_downstream_limit = 200;
-
-            if read_position <= me_upstream_limit || read_position >= me_downstream_limit {
-              // if read_position <= me_upstream_limit || read_position >= me_downstream_limit {
-
-              if ! hm_record_collection.contains_key(&read_id) {
-                hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
-
-                if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
-                  current_record.read1.sequence = record_line[9].to_string();
-                  current_record.read1.me_read[0].mobel = record_line[2].to_string();
-                  current_record.read1.me_read[0].flag =  record_line[1].parse().unwrap();
-                  current_record.read1.me_read[0].pos =  record_line[3].parse().unwrap();
-                  current_record.read1.me_read[0].cigar =  record_line[5].to_string();
-                }
-              } else {
-                if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
-                  current_record.read2.sequence = record_line[9].to_string();
-                  current_record.read2.me_read[0].mobel = record_line[2].to_string();
-                  current_record.read2.me_read[0].flag = record_line[1].parse().unwrap();
-                  current_record.read2.me_read[0].pos = record_line[3].parse().unwrap();
-                  current_record.read2.me_read[0].cigar = record_line[5].to_string();
-                }
-              }
-            }
-          },
-
-          // secondary alignment
-          pf if pf >= 256 => {
-
-            // TODO: probably do not record supplementary alignments
-            if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
-              if current_record.read2.sequence == "".to_string() {
-                current_record.read1.me_read.push(MERead {
-                  mobel: record_line[2].to_string(),
-                  flag: record_line[1].parse().unwrap(),
-                  pos: record_line[3].parse().unwrap(),
-                  cigar: record_line[5].to_string(),
-                })
-              } else {
-                current_record.read2.me_read.push(MERead {
-                  mobel: record_line[2].to_string(),
-                  flag: record_line[1].parse().unwrap(),
-                  pos: record_line[3].parse().unwrap(),
-                  cigar: record_line[5].to_string(),
-                })
-              }
-            }
-          },
-
-          _ => (),
+          // tag for keeping
+          purge_switch = false;
         }
       },
 
       None => (),
+    }
+
+    // match on proviral flag
+    match record_line[1].parse::<i32>().unwrap() {
+
+      // primary alignment
+      pf if pf <= 255 => {
+
+        if ! hm_record_collection.contains_key(&read_id) {
+          hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
+
+          if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
+            current_record.read1.sequence = record_line[9].to_string();
+            current_record.read1.me_read[0].mobel = record_line[2].to_string();
+            current_record.read1.me_read[0].flag =  record_line[1].parse().unwrap();
+            current_record.read1.me_read[0].pos =  record_line[3].parse().unwrap();
+            current_record.read1.me_read[0].cigar =  record_line[5].to_string();
+          }
+        } else {
+          if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
+            current_record.read2.sequence = record_line[9].to_string();
+            current_record.read2.me_read[0].mobel = record_line[2].to_string();
+            current_record.read2.me_read[0].flag = record_line[1].parse().unwrap();
+            current_record.read2.me_read[0].pos = record_line[3].parse().unwrap();
+            current_record.read2.me_read[0].cigar = record_line[5].to_string();
+          }
+        }
+      },
+
+      // secondary alignment
+      pf if pf >= 256 => {
+
+        // TODO: probably do not record supplementary alignments
+        if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
+          if current_record.read2.sequence == "".to_string() {
+            current_record.read1.me_read.push(MERead {
+              mobel: record_line[2].to_string(),
+              flag: record_line[1].parse().unwrap(),
+              pos: record_line[3].parse().unwrap(),
+              cigar: record_line[5].to_string(),
+            })
+          } else {
+            current_record.read2.me_read.push(MERead {
+              mobel: record_line[2].to_string(),
+              flag: record_line[1].parse().unwrap(),
+              pos: record_line[3].parse().unwrap(),
+              cigar: record_line[5].to_string(),
+            })
+          }
+        }
+      },
+
+      _ => (),
     }
   }
 
