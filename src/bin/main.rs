@@ -22,16 +22,12 @@ create unit tests
 fn main() -> std::io::Result<()> {
 
   // initiate HashMap
-  let mut record_collection = utils::record::hashmap_init();
+  let mut record_collection = utils::hashmap_init::hashmap_init();
 
   // TODO: write pre processing recomendations => fastq filtering, alignment
 
-  // TODO: think about a way to make module communicate
-
   // mobile elements module
   modules::mobile_elements::me_controller(&mut record_collection)?;
-
-  // TODO: combine output from mobile elements. probably passing reference to hashmap as argument
 
   // chromosomal loci module
   modules::chromosomal_loci::cl_controller(&mut record_collection)?;

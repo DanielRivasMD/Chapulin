@@ -1,6 +1,7 @@
 
 use std::collections::HashMap;
-use crate::utils::record::*;
+use crate::utils::hashmap_init::*;
+use crate::utils::read_record::*;
 
 mod me_aligned;
 mod me_registry;

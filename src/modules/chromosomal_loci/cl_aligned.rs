@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 
 use crate::utils::file_reader;
-use crate::utils::record::{*};
+use crate::utils::read_record::{*};
 
 pub fn cl_mapper(
   cl_bam_file: &String,

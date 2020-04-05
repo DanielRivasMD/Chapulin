@@ -1,6 +1,6 @@
 
 use std::collections::HashMap;
-use crate::utils::record::ReadRecord;
+use crate::utils::read_record::ReadRecord;
 
 mod cl_aligned;
 
