@@ -1,8 +1,15 @@
 
+// standard libraries
 use std::collections::HashMap;
 
-use crate::utils::file_reader;
-use crate::utils::read_record::{*};
+// crate utilities
+use crate::utils::{
+  file_reader,
+  read_record::{
+    ReadRecord,
+    AnchorRead,
+  }
+};
 
 pub fn cl_mapper(
   cl_bam_file: &String,

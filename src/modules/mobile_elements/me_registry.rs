@@ -1,8 +1,14 @@
 
+// standard libraries
 use std::collections::HashMap;
 
-use crate::utils::file_reader;
-use crate::utils::me_library::{*};
+// crate utilities
+use crate::utils::{
+  file_reader,
+  me_library::{
+    MElibrary,
+  }
+};
 
 pub fn me_lib_loader(
   me_lib_file: &String,
@@ -17,8 +23,6 @@ pub fn me_lib_loader(
   while let Some(line) = reader.read_line(&mut buffer) {
 
     let record_line: Vec<&str> = line?.trim().split("\t").collect();
-
-    // TODO: load reacords onto 'mobile_element_collection'
 
     let mobile_element_tag: String = record_line[0].parse().unwrap();
     let mobile_element_id: String = record_line[1].to_string();

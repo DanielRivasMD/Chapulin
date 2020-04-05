@@ -1,16 +1,14 @@
 
-// lib & wrapper for binary
+// standard libraries
+#[macro_use]
+extern crate lazy_static;
+use regex::Regex;
 
-// load libraries
+// modules
 pub mod utils;
 pub mod modules;
 
 // define regex static
-#[macro_use]
-extern crate lazy_static;
-
-use regex::Regex;
-
 lazy_static! {
 
   pub static ref REX_VEC: Vec<Regex> = vec![

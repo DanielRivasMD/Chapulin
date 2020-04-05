@@ -1,11 +1,15 @@
 
+// standard libraries
 use std::collections::HashMap;
+
+// crate utilities
 use crate::utils::read_record::ReadRecord;
 
+// modules
 mod cl_aligned;
 
 pub fn cl_controller(
-    mut hash_map_collection: &mut HashMap < String, ReadRecord >,
+    mut hash_map_collection: &mut HashMap<String, ReadRecord>,
 ) -> std::io::Result<()> {
 
   // load reference chromosome aligned reads

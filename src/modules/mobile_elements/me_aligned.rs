@@ -1,11 +1,18 @@
 
+// standard libraries
 use std::collections::HashMap;
 
-// use regex::Regex;
-
-use crate::utils::file_reader;
-use crate::utils::read_record::{*};
-use crate::utils::me_library::{*};
+// crate utilities
+use crate::utils::{
+    file_reader,
+    read_record::{
+      ReadRecord,
+      MERead,
+    },
+    me_library::{
+      MElibrary,
+    }
+  };
 
 pub fn me_identificator(
   me_bam_file: &String,

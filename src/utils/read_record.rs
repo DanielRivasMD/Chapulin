@@ -22,8 +22,8 @@ impl ReadRecord {
 pub struct ReadSequence {
   pub sequence: String,
   pub test_seq: String,
-  pub me_read: Vec < MERead >,
-  pub chr_read: Vec < AnchorRead >,
+  pub me_read: Vec<MERead>,
+  pub chr_read: Vec<AnchorRead>,
 }
 
 impl ReadSequence {

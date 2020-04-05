@@ -1,13 +1,19 @@
 
+// standard libraries
 use std::collections::HashMap;
-use crate::utils::hashmap_init::*;
-use crate::utils::read_record::*;
 
+// crate utilities
+use crate::utils::{
+  hashmap_init::hashmap_init,
+  read_record::ReadRecord
+};
+
+// modules
 mod me_aligned;
 mod me_registry;
 
 pub fn me_controller(
-  mut hash_map_collection: &mut HashMap < String, ReadRecord >,
+  mut hash_map_collection: &mut HashMap<String, ReadRecord>,
 ) -> std::io::Result<()> {
 
   // define files directory
