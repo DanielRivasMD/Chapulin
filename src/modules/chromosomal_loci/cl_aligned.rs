@@ -7,13 +7,14 @@ use crate::utils::{
   file_reader,
   read_record::{
     ReadRecord,
-    AnchorRead,
+    // AnchorRead,
   }
 };
 
 pub fn cl_mapper(
   cl_bam_file: &String,
   hm_collection: &mut HashMap<String, ReadRecord>,
+  an_registry: &mut HashMap<String, Vec<String>>,
 ) -> std::io::Result<()> {
 
   // load file
@@ -27,7 +28,15 @@ pub fn cl_mapper(
     let tmp_id: String = record_line[0].to_string();
     let tmp_seq: String = record_line[9].to_string();
 
-      if hm_collection.contains_key(&tmp_id) {
+        // TODO: define which read in the pair is the anchor to register
+        // register chromosome anchors
+        if ! an_registry.contains_key(record_line[2]) {
+          an_registry.insert(record_line[2].to_string(), Vec::new());
+        }
+
+        if let Some(current_chr) = an_registry.get_mut(record_line[2]) {
+          current_chr.push(record_line[0].to_string())
+        }
 
         if let Some(current_record) = hm_collection.get_mut(&tmp_id) {
 

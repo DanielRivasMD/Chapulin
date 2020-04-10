@@ -9,7 +9,8 @@ use crate::utils::read_record::ReadRecord;
 mod cl_aligned;
 
 pub fn cl_controller(
-    mut hash_map_collection: &mut HashMap<String, ReadRecord>,
+  mut hash_map_collection: &mut HashMap<String, ReadRecord>,
+  mut hash_map_anchor: &mut HashMap<String, Vec<String>>,
 ) -> std::io::Result<()> {
 
   // load reference chromosome aligned reads
@@ -23,6 +24,7 @@ pub fn cl_controller(
     cl_aligned::cl_mapper(
       &cl_aligned_file,
       &mut hash_map_collection,
+      &mut hash_map_anchor,
     ).expect(&cl_aligned_file);
   }
 

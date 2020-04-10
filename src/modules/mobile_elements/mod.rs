@@ -4,7 +4,6 @@ use std::collections::HashMap;
 
 // crate utilities
 use crate::utils::{
-  hashmap_init::hashmap_init,
   read_record::ReadRecord
 };
 
@@ -20,7 +19,7 @@ pub fn me_controller(
   let directory = "/Users/drivas/chapulinTest/".to_string();
 
   // init mobile element library hashmap
-  let mut me_collection = hashmap_init();
+  let mut me_collection = HashMap::new();
 
   // load mobile element library
   let me_library = "chlSab_ltr_size.txt".to_string();

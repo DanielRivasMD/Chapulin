@@ -1,6 +1,7 @@
 
 // wrapper
 use chapulin::{*};
+use std::collections::HashMap;
 
 /*
 the general idea is to create a modulerize, fast & reliable tool for mobile element identification in re sequence projects
@@ -23,18 +24,27 @@ create unit tests
 fn main() -> std::io::Result<()> {
 
   // initiate HashMap
-  let mut record_collection = utils::hashmap_init::hashmap_init();
+  let mut record_collection = HashMap::new();
+  let mut anchor_registry = HashMap::new();
 
   // TODO: write pre processing recomendations => fastq filtering, alignment
 
   // mobile elements module
-  modules::mobile_elements::me_controller(&mut record_collection)?;
+  modules::mobile_elements::me_controller(
+    &mut record_collection,
+  )?;
 
   // chromosomal loci module
-  modules::chromosomal_loci::cl_controller(&mut record_collection)?;
+  modules::chromosomal_loci::cl_controller(
+    &mut record_collection,
+    &mut anchor_registry,
+  )?;
 
-  // // peak identification module
-  // peak_identification::pi_controller();
+  // peak identification module
+  modules::peak_identification::pi_controller(
+    &record_collection,
+    &anchor_registry,
+  )?;
 
   // TODO: build interphase to PostgreSQL
 
