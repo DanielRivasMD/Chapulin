@@ -1,6 +1,7 @@
 
 // standard libraries
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 // crate utilities
 use crate::utils::{
@@ -8,12 +9,16 @@ use crate::utils::{
 };
 
 // modules
-mod me_aligned;
 mod me_registry;
+mod me_aligned;
 
 pub fn me_controller(
-  mut hash_map_collection: &mut HashMap<String, ReadRecord>,
+  hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
 ) -> std::io::Result<()> {
+
+// pub fn me_controller(
+//   mut hash_map_collection: &mut HashMap<String, ReadRecord>,
+// ) -> std::io::Result<()> {
 
   // define files directory
   let directory = "/Users/drivas/chapulinTest/".to_string();
@@ -31,14 +36,18 @@ pub fn me_controller(
 
   // load mobile element aligned reads
   let prefix = "SAMN01162223_".to_string();
+  // let prefix = "SAMN02692344_".to_string();
   let sufix = "ERV_chlSab_XV.sam".to_string();
   let me_aligned_file = format!("{}{}{}", directory, prefix, sufix);
 
   me_aligned::me_identificator(
     &me_aligned_file,
-    &mut hash_map_collection,
+    hash_map_collection,
     &me_collection,
   ).expect(&me_aligned_file);
+
+  // println!("{:#?}", me_collection);
+  // println!("{}", me_collection.len());
 
   Ok(())
 }

@@ -1,6 +1,8 @@
 
 // standard libraries
 use std::collections::HashMap;
+use std::sync::{Mutex, Arc};
+// use std::thread;
 
 // crate utilities
 use crate::utils::read_record::ReadRecord;
@@ -8,25 +10,50 @@ use crate::utils::read_record::ReadRecord;
 // modules
 mod cl_aligned;
 
-pub fn cl_controller(
-  mut hash_map_collection: &mut HashMap<String, ReadRecord>,
-  mut hash_map_anchor: &mut HashMap<String, Vec<String>>,
+// type Records = Mutex<HashMap<String, ReadRecord>>;
+
+pub fn cl_controller (
+   hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
+   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
 
+// pub fn cl_controller (
+//   mut hash_map_collection: &mut HashMap<String, ReadRecord>,
+//   mut hash_map_anchor: &mut HashMap<String, Vec<String>>,
+// ) -> std::io::Result<()> {
+  
   // load reference chromosome aligned reads
   for i in 1..3 {
 
+    let c_hash_map_collection = hash_map_collection.clone();
+    let c_hash_map_anchor = hash_map_anchor.clone();
+
+  // let i = 1;
+  // {
+    // let mutex_counter = Arc::clone(&mutex_hm_collection);
+    // let c_mutex_counter = mutex_counter.clone();
+
     let directory = "/Users/drivas/chapulinTest/".to_string();
     let prefix = "SAMN01162223_R".to_string();
+    // let prefix = "SAMN02692344_R".to_string();
     let sufix = ".sorted.sam".to_string();
     let cl_aligned_file = format!("{}{}{}{}", directory, prefix, i, sufix);
 
-    cl_aligned::cl_mapper(
-      &cl_aligned_file,
-      &mut hash_map_collection,
-      &mut hash_map_anchor,
-    ).expect(&cl_aligned_file);
-  }
+    // // let thread_handle = thread::spawn(move || {
+    // thread::spawn(move || -> std::io::Result<()> {
 
+      cl_aligned::cl_mapper(
+        &cl_aligned_file,
+        c_hash_map_collection,
+        c_hash_map_anchor,
+      ).expect(&cl_aligned_file);
+
+      // cl_aligned::cl_mapper(
+      //   &cl_aligned_file,
+      //   &mut hash_map_collection,
+      //   &mut hash_map_anchor,
+      // ).expect(&cl_aligned_file);
+
+  }
   Ok(())
 }

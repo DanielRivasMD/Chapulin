@@ -2,6 +2,7 @@
 // wrapper
 use chapulin::{*};
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 /*
 the general idea is to create a modulerize, fast & reliable tool for mobile element identification in re sequence projects
@@ -24,36 +25,53 @@ create unit tests
 fn main() -> std::io::Result<()> {
 
   // initiate HashMap
-  let mut record_collection = HashMap::new();
-  let mut anchor_registry = HashMap::new();
+  let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
+  let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
+
+  // let mut record_collection = HashMap::new();
+  // let mut anchor_registry = HashMap::new();
 
   // TODO: write pre processing recomendations => fastq filtering, alignment
 
+  let c_me_record_collection = mutex_record_collection.clone();
+
   // mobile elements module
   modules::mobile_elements::me_controller(
-    &mut record_collection,
+    c_me_record_collection,
   )?;
+
+  // modules::mobile_elements::me_controller(
+  //   &mut record_collection,
+  // )?;
+
+  let c_cl_record_collection = mutex_record_collection.clone();
+  let c_cl_anchor_registry = mutex_anchor_registry.clone();
 
   // chromosomal loci module
   modules::chromosomal_loci::cl_controller(
-    &mut record_collection,
-    &mut anchor_registry,
+    c_cl_record_collection,
+    c_cl_anchor_registry,
   )?;
 
-  // peak identification module
-  modules::peak_identification::pi_controller(
-    &record_collection,
-    &anchor_registry,
-  )?;
+  // modules::chromosomal_loci::cl_controller(
+  //   &mut record_collection,
+  //   &mut anchor_registry,
+  // )?;
+
+  // // peak identification module
+  // modules::peak_identification::pi_controller(
+  //   &record_collection,
+  //   &anchor_registry,
+  // )?;
 
   // TODO: build interphase to PostgreSQL
 
-  // output message to log
-  for (key, val) in record_collection.iter() {
-    println!("key: {}\nval: {:#?}", key, val);
-  }
+  // // output message to log
+  // for (key, val) in record_collection.iter() {
+  //   println!("key: {}\nval: {:#?}", key, val);
+  // }
 
-  println!("Length of Hashmap: {}", record_collection.len());
+  // println!("Length of Hashmap: {}", record_collection.len());
 
   with_love();
   Ok(())

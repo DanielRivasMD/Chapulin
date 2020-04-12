@@ -1,24 +1,31 @@
 
 // standard libraries
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 // crate utilities
 use crate::utils::{
-    file_reader,
-    read_record::{
-      ReadRecord,
-      MERead,
-    },
-    me_library::{
-      MElibrary,
-    }
-  };
+  file_reader,
+  read_record::{
+    ReadRecord,
+    MERead,
+  },
+  me_library::{
+    MElibrary,
+  }
+};
 
 pub fn me_identificator(
   me_bam_file: &String,
-  hm_record_collection: &mut HashMap<String, ReadRecord>,
+  hm_record_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
   hm_me_collection: &HashMap<String, MElibrary>,
 ) -> std::io::Result<()> {
+
+// pub fn me_identificator(
+//   me_bam_file: &String,
+//   hm_record_collection: &mut HashMap<String, ReadRecord>,
+//   hm_me_collection: &HashMap<String, MElibrary>,
+// ) -> std::io::Result<()> {
 
   // load file
   let (mut reader, mut buffer) = file_reader::file_reader(&me_bam_file);
@@ -37,7 +44,8 @@ pub fn me_identificator(
     if ! ( read_id == record_line[0].to_string() || read_id == "".to_string() ) {
 
       if purge_switch {
-        hm_record_collection.remove(&read_id);
+        hm_record_collection.lock().unwrap().remove(&read_id);
+        // hm_record_collection.remove(&read_id);
       }
 
       // reset purge switch
@@ -79,10 +87,13 @@ pub fn me_identificator(
       // primary alignment
       pf if pf <= 255 => {
 
-        if ! hm_record_collection.contains_key(&read_id) {
-          hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
+        if ! hm_record_collection.lock().unwrap().contains_key(&read_id) {
+        // if ! hm_record_collection.contains_key(&read_id) {
+          hm_record_collection.lock().unwrap().insert((&read_id).to_string(), ReadRecord::new());
+          // hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
 
-          if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
+          if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
+          // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read1.sequence = record_line[9].to_string();
             current_record.read1.me_read[0].mobel = record_line[2].to_string();
             current_record.read1.me_read[0].flag =  record_line[1].parse().unwrap();
@@ -90,7 +101,8 @@ pub fn me_identificator(
             current_record.read1.me_read[0].cigar =  record_line[5].to_string();
           }
         } else {
-          if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
+          if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
+          // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read2.sequence = record_line[9].to_string();
             current_record.read2.me_read[0].mobel = record_line[2].to_string();
             current_record.read2.me_read[0].flag = record_line[1].parse().unwrap();
@@ -104,7 +116,8 @@ pub fn me_identificator(
       pf if pf >= 256 => {
 
         // TODO: probably do not record supplementary alignments
-        if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
+        if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
+        // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
           if current_record.read2.sequence == "".to_string() {
             current_record.read1.me_read.push(MERead {
               mobel: record_line[2].to_string(),
