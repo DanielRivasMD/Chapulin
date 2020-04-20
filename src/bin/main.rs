@@ -3,6 +3,7 @@
 use chapulin::{*};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
+use std::time::{SystemTime};
 
 /*
 the general idea is to create a modulerize, fast & reliable tool for mobile element identification in re sequence projects
@@ -23,6 +24,8 @@ create unit tests
 */
 
 fn main() -> std::io::Result<()> {
+
+   let now = SystemTime::now();
 
   // initiate HashMap
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
@@ -67,12 +70,23 @@ fn main() -> std::io::Result<()> {
   // TODO: build interphase to PostgreSQL
 
   // // output message to log
-  // for (key, val) in record_collection.iter() {
+  // for (key, val) in mutex_record_collection.lock().unwrap().iter() {
   //   println!("key: {}\nval: {:#?}", key, val);
   // }
+  //
+  // println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+  //
+  // with_love();
 
-  // println!("Length of Hashmap: {}", record_collection.len());
+  match now.elapsed() {
+    Ok(elapsed) => {
+      println!("{} secs", elapsed.as_secs_f64());
+    }
 
-  with_love();
+    Err(e) => {
+      // an error occurred!
+      println!("Error: {:?}", e);
+    }
+  }
   Ok(())
 }
