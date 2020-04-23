@@ -19,3 +19,4 @@ path = "src/chapulin.rs"
 [dependencies]
 regex = "1"
 lazy_static = "1.4.0"
+rayon = "1.3.0"

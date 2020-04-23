@@ -1,6 +1,8 @@
 
 // standard libraries
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+// use rayon::prelude::*;
 
 // crate utilities
 use crate::utils::{
@@ -12,13 +14,87 @@ mod pi_mapping;
 // mod pi_;
 
 pub fn pi_controller(
-  hash_map_collection: &HashMap<String, ReadRecord>,
-  hash_map_anchor: &HashMap<String, Vec<String>>,
+  key: &String,
+  hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
+  hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
 
-  for (k_str, v_vec) in hash_map_anchor.iter() {
-    println!("{} => {:#?}", k_str, v_vec);
-  }
+// pub fn pi_controller(
+//   hash_map_collection: &HashMap<String, ReadRecord>,
+//   hash_map_anchor: &HashMap<String, Vec<String>>,
+// ) -> std::io::Result<()> {
+
+  // TODO: divide by chromosomes to create concurrency
+
+  // TODO: also divide by orientation & position
+
+  // TODO: bin choromosomal positions to accumulate peaks
+
+  // let concurrent_fn = |input: &HashMap<String, Vec<String>>| -> &str {
+  //   let _: i32 = input.par_iter()
+  //     .map(|i| {
+  //       println!("{:?}", i);
+  //       for j in i.1.iter() {
+  //         let tmp_entry = hash_map_collection.get(j);
+  //         println!("{:#?}", tmp_entry);
+  //       }
+  //       1 as i32 * 1 as i32
+  //       // i.1.iter()
+  //       //   .map(|j| {
+  //       //     println!("{:#?}", hash_map_collection.get(j));
+  //       // });
+  //     })
+  //     .sum();
+  //   return "Done\n"
+  // };
+  //
+  // let con_out = concurrent_fn(hash_map_anchor);
+  // println!("{}", con_out);
+
+  // let concurrent_out = hash_map_anchor.par_iter()
+  //   .map(|i| -> () {
+  //     println!("Concurrent: {:?}", i.0);
+  //   });
+  //
+  // println!("{:#?}", concurrent_out);
+
+// let mut keys_vec = Vec::new();
+
+  // let mut count = 0;
+  // for (ak, _av) in hash_map_anchor.lock().unwrap().iter() {
+  //
+  //   let c_hm_anchor = hash_map_anchor.clone();
+  //   if let Some(c_reads) = c_hm_anchor.lock().unwrap().get(ak) {
+  //
+  //     println!("This is a chromosome set: {}\n{:#?}", ak, c_reads);
+  //   }
+
+    // for i in c_reads {
+    //   println!("{:#?}", hash_map_collection.lock().unwrap().get(i));
+    // }
+
+    // for (ck, cv) in hash_map_collection.lock().unwrap().iter() {
+    //   if cv.read1.chr_read == c_hm_anchor.lock().unwrap().
+    // }
+
+    // keys_vec[count] = *i.clone();
+    // count = count + 1;
+    // keys_vec.push(i.clone());
+  // }
+
+  // println!("{:#?}", keys_vec);
+
+  // let mut glob_count = 0;
+  // for (i, j) in hash_map_anchor.lock().unwrap().iter() {
+  //   println!("Sequential: {:?} => {}", i, j.len());
+  //   glob_count = glob_count + j.len();
+  // }
+  // println!("Size of anchors: {}", glob_count);
+  // println!("Size of collection: {}", hash_map_collection.lock().unwrap().len());
+
+  // for (k_str, v_vec) in hash_map_anchor.iter().par_bridge() {
+  //   println!("{} => {:#?}", k_str, v_vec);
+  // }
   // let mut counter = 0;
   // for (_key, val) in hash_map_collection.iter() {
   //   // println!("key: {}\nval: {:#?}", key, val);
@@ -29,12 +105,6 @@ pub fn pi_controller(
   //   }
   // }
   // println!("{}", counter);
-
-  // TODO: divide by chromosomes to create concurrency
-
-  // TODO: also divide by orientation & position
-
-  // TODO: bin choromosomal positions to accumulate peaks
   // TODO: set up a threshold based on the poisson estimation of false discovery rate
 
   // TODO: gather all positions & output a comprenhensive list
