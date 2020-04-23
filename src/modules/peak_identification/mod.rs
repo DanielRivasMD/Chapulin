@@ -14,7 +14,7 @@ mod pi_mapping;
 // mod pi_;
 
 pub fn pi_controller(
-  key: &String,
+  // key: &String,
   hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
@@ -23,6 +23,42 @@ pub fn pi_controller(
 //   hash_map_collection: &HashMap<String, ReadRecord>,
 //   hash_map_anchor: &HashMap<String, Vec<String>>,
 // ) -> std::io::Result<()> {
+
+  let mut tmp_vec = Vec::new();
+  for okey in hash_map_anchor.lock().unwrap().keys() {
+    let ckey = okey.clone();
+    tmp_vec.push(ckey);
+  }
+
+  for okey in tmp_vec {
+
+    let c_hash_map_collection = hash_map_collection.clone();
+    let c_hash_map_anchor = hash_map_anchor.clone();
+    println!("{}", okey);
+
+    println!("{:#?}", c_hash_map_anchor.lock().unwrap().contains_key(&okey));
+
+    pi_mapping::pi_identifier(
+      &okey,
+      c_hash_map_collection,
+      c_hash_map_anchor, 
+    ).expect(&okey);
+
+    // if let Some(current_chr) = c_pi_anchor_registry.lock().unwrap().get(i) {
+    //   println!("This is a chromosome set: {}\n{:#?}", i, current_chr);
+    // }
+
+  }
+
+  // if let Some(read_vec) = hash_map_anchor.lock().unwrap().get(key) {
+  //   for chr_read in read_vec {
+  //     if let Some(read_record) = hash_map_collection.lock().unwrap().get(chr_read) {
+  //       println!("{:#?}", read_record);
+  //     }
+  //
+  //   }
+  //
+  // }
 
   // TODO: divide by chromosomes to create concurrency
 
