@@ -21,7 +21,7 @@ pub fn cl_controller (
 //   mut hash_map_collection: &mut HashMap<String, ReadRecord>,
 //   mut hash_map_anchor: &mut HashMap<String, Vec<String>>,
 // ) -> std::io::Result<()> {
-  
+
   // load reference chromosome aligned reads
   for i in 1..3 {
 
