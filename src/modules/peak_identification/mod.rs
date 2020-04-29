@@ -2,6 +2,7 @@
 // standard libraries
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
+use std::thread;
 // use rayon::prelude::*;
 
 // crate utilities
@@ -36,7 +37,7 @@ pub fn pi_controller(
     let c_hash_map_anchor = hash_map_anchor.clone();
     println!("{}", okey);
 
-    println!("{:#?}", c_hash_map_anchor.lock().unwrap().contains_key(&okey));
+    let pi_handle = thread::spawn(move || {
 
     pi_mapping::pi_identifier(
       &okey,
@@ -47,6 +48,10 @@ pub fn pi_controller(
     // if let Some(current_chr) = c_pi_anchor_registry.lock().unwrap().get(i) {
     //   println!("This is a chromosome set: {}\n{:#?}", i, current_chr);
     // }
+
+    });
+
+    pi_handle.join().unwrap();
 
   }
 

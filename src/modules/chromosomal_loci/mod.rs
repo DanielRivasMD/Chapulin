@@ -2,7 +2,7 @@
 // standard libraries
 use std::collections::HashMap;
 use std::sync::{Mutex, Arc};
-// use std::thread;
+use std::thread;
 
 // crate utilities
 use crate::utils::read_record::ReadRecord;
@@ -28,25 +28,31 @@ pub fn cl_controller (
     let c_hash_map_collection = hash_map_collection.clone();
     let c_hash_map_anchor = hash_map_anchor.clone();
 
+    let cl_handle = thread::spawn(move || {
+
   // let i = 1;
   // {
     // let mutex_counter = Arc::clone(&mutex_hm_collection);
     // let c_mutex_counter = mutex_counter.clone();
 
-    let directory = "/Users/drivas/chapulinTest/".to_string();
-    let prefix = "SAMN01162223_R".to_string();
-    // let prefix = "SAMN02692344_R".to_string();
-    let sufix = ".sorted.sam".to_string();
-    let cl_aligned_file = format!("{}{}{}{}", directory, prefix, i, sufix);
+      let directory = "/Users/drivas/chapulinTest/".to_string();
+      let prefix = "SAMN01162223_R".to_string();
+      // let prefix = "SAMN02692344_R".to_string();
+      let sufix = ".sorted.sam".to_string();
+      let cl_aligned_file = format!("{}{}{}{}", directory, prefix, i, sufix);
 
-    // // let thread_handle = thread::spawn(move || {
-    // thread::spawn(move || -> std::io::Result<()> {
+      // // let thread_handle = thread::spawn(move || {
+      // thread::spawn(move || -> std::io::Result<()> {
 
-      cl_aligned::cl_mapper(
-        &cl_aligned_file,
-        c_hash_map_collection,
-        c_hash_map_anchor,
-      ).expect(&cl_aligned_file);
+        cl_aligned::cl_mapper(
+          &cl_aligned_file,
+          c_hash_map_collection,
+          c_hash_map_anchor,
+        ).expect(&cl_aligned_file);
+
+    });
+
+    cl_handle.join().unwrap();
 
       // cl_aligned::cl_mapper(
       //   &cl_aligned_file,
