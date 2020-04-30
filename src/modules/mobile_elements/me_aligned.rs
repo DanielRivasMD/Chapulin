@@ -1,18 +1,17 @@
 
 // standard libraries
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::sync::{
+  Arc,
+  Mutex
+};
 
 // crate utilities
 use crate::utils::{
   file_reader,
-  read_record::{
-    ReadRecord,
-    MERead,
-  },
-  me_library::{
-    MElibrary,
-  }
+  read_record::ReadRecord,
+  me_library::MElibrary,
+  me_read::MERead,
 };
 
 pub fn me_identificator(

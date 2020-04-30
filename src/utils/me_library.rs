@@ -1,4 +1,9 @@
 
+// crate utilities
+use crate::utils::{
+  erv_annotations::ERVannoations,
+};
+
 // to load onto => hashmap for mobile elements library entries
 #[derive(Debug)]
 pub struct MElibrary {
@@ -6,13 +11,6 @@ pub struct MElibrary {
   pub me_size: i32,
   pub annotations_erv: ERVannoations,
   // potentially expandable to other types of mobile elements
-}
-
-// use to indicate which LTR sequence to use
-#[derive(Debug)]
-pub struct ERVannoations {
-  pub ltr5: bool,
-  pub ltr3: bool,
 }
 
 impl MElibrary {

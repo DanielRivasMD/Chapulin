@@ -5,9 +5,7 @@ use std::collections::HashMap;
 // crate utilities
 use crate::utils::{
   file_reader,
-  me_library::{
-    MElibrary,
-  }
+  me_library::MElibrary,
 };
 
 pub fn me_lib_loader(

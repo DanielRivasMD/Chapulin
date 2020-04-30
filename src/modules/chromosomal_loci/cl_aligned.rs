@@ -6,10 +6,7 @@ use std::sync::{Arc, Mutex};
 // crate utilities
 use crate::utils::{
   file_reader,
-  read_record::{
-    ReadRecord,
-    // AnchorRead,
-  }
+  read_record::ReadRecord,
 };
 
 pub fn cl_mapper(

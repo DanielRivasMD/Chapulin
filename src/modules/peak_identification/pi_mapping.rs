@@ -1,10 +1,15 @@
 
 // standard libraries
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::sync::{
+  Arc,
+  Mutex,
+};
 
 // crate utilities
-use crate::utils::read_record::ReadRecord;
+use crate::utils::{
+  read_record::ReadRecord
+};
 
 pub fn pi_identifier (
   ikey: &String,
