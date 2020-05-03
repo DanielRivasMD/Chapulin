@@ -61,4 +61,12 @@ impl CIGAR {
     return this_cigar
   }
 
+  pub fn adjuster(self, position: i32) -> (i32, i32) {
+    let align_sum: i32 = self.align.iter().sum();
+    let ins_sum: i32 = self.ins.iter().sum();
+    let del_sum: i32 = self.del.iter().sum();
+
+    (self.lclip + position, align_sum + ins_sum + del_sum)
+  }
+
 }
