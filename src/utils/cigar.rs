@@ -61,7 +61,7 @@ impl CIGAR {
     return this_cigar
   }
 
-  pub fn adjuster(self, position: i32) -> (i32, i32) {
+  pub fn adjuster(&self, position: i32) -> (i32, i32) {
     let align_sum: i32 = self.align.iter().sum();
     let ins_sum: i32 = self.ins.iter().sum();
     let del_sum: i32 = self.del.iter().sum();
@@ -69,4 +69,13 @@ impl CIGAR {
     (self.lclip + position, align_sum + ins_sum + del_sum)
   }
 
+  pub fn left_boundry(&self, position: i32) -> i32 {
+    position - self.lclip
+  }
+
+  pub fn right_boundry(&self, position: i32) -> i32 {
+    let lpos = self.left_boundry(position);
+    // println!("{} {} {} {}", lpos, self.lclip, self.adjuster(position).1, self.rclip);
+    lpos + ( self.lclip + self.adjuster(position).1 + self.rclip )
+  }
 }
