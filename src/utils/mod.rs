@@ -12,3 +12,5 @@ pub mod me_library;
   pub mod erv_annotations;
 
 pub mod cigar;
+
+pub mod flag_interpretor;

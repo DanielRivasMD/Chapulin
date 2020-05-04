@@ -7,11 +7,18 @@ use std::sync::{
 };
 
 // crate utilities
-use crate::utils::{
-  file_reader,
-  read_record::ReadRecord,
-  me_library::MElibrary,
-  me_read::MERead,
+use crate::{
+  utils::{
+    file_reader,
+    read_record::ReadRecord,
+    me_library::MElibrary,
+    me_read::MERead,
+    cigar::CIGAR,
+    flag_interpretor::*,
+  },
+  settings::{
+    constants::*,
+  },
 };
 
 pub fn me_identificator(
