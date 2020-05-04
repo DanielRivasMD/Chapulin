@@ -5,6 +5,7 @@ extern crate lazy_static;
 use regex::Regex;
 
 // modules
+pub mod settings;
 pub mod utils;
 pub mod modules;
 

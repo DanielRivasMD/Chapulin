@@ -57,8 +57,6 @@ pub fn me_identificator(
     // retrieve mobile element library records
     let me_option = hm_me_collection.get(&record_line[2].to_string());
 
-    // TODO: define "me_limit" as a constant in configuration
-    let me_limit = 200;
 
     match me_option {
 
