@@ -20,7 +20,7 @@ pub fn interpretor(n: i32, p: usize) -> bool {
   for i in bin_n.char_indices() {
     stat_array[i.0] = i.1;
   }
-  println!("{:#?}", stat_array);
+  // println!("{:#?}", stat_array);
   stat_array[p] == '1'
 }
   // // let tmp_flag = flag_int(record_line[1].parse().unwrap());
