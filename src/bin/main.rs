@@ -4,6 +4,7 @@ use chapulin::{*};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
+use std::env;
 
 /*
 the general idea is to create a modulerize, fast & reliable tool for mobile element identification in re sequence projects
@@ -25,7 +26,9 @@ create unit tests
 
 fn main() -> std::io::Result<()> {
 
-   let now = SystemTime::now();
+  let args: Vec<String> = env::args().collect();
+
+  let now = SystemTime::now();
 
   // initiate HashMap
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
@@ -36,10 +39,12 @@ fn main() -> std::io::Result<()> {
 
   // TODO: write pre processing recomendations => fastq filtering, alignment
 
+  // mobile elements module
   let c_me_record_collection = mutex_record_collection.clone();
 
-  // mobile elements module
   modules::mobile_elements::me_controller(
+    &args[1],
+    &args[2],
     c_me_record_collection,
   )?;
 
@@ -47,11 +52,12 @@ fn main() -> std::io::Result<()> {
   //   &mut record_collection,
   // )?;
 
+  // chromosomal loci module
   let c_cl_record_collection = mutex_record_collection.clone();
   let c_cl_anchor_registry = mutex_anchor_registry.clone();
 
-  // chromosomal loci module
   modules::chromosomal_loci::cl_controller(
+    &args[3],
     c_cl_record_collection,
     c_cl_anchor_registry,
   )?;

@@ -13,8 +13,9 @@ mod cl_aligned;
 // type Records = Mutex<HashMap<String, ReadRecord>>;
 
 pub fn cl_controller (
-   hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
-   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
+  cl_aligned_prefix: &String,
+  hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
+  hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
 
 // pub fn cl_controller (
@@ -24,6 +25,8 @@ pub fn cl_controller (
 
   // load reference chromosome aligned reads
   for i in 1..3 {
+
+    let prefix = cl_aligned_prefix.clone();
 
     let c_hash_map_collection = hash_map_collection.clone();
     let c_hash_map_anchor = hash_map_anchor.clone();
@@ -35,9 +38,10 @@ pub fn cl_controller (
     // let mutex_counter = Arc::clone(&mutex_hm_collection);
     // let c_mutex_counter = mutex_counter.clone();
 
-      let directory = "/Users/drivas/chapulinTest/".to_string();
-      let prefix = "SAMN01162223_R".to_string();
+      // let prefix = "SAMN01162223_R".to_string();
       // let prefix = "SAMN02692344_R".to_string();
+
+      let directory = "/Users/drivas/chapulinTest/".to_string();
       let sufix = ".sorted.sam".to_string();
       let cl_aligned_file = format!("{}{}{}{}", directory, prefix, i, sufix);
 
