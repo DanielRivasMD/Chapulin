@@ -14,7 +14,6 @@ pub struct ReadRecord {
   pub read1: ReadSequence,
   pub read2: ReadSequence,
   pub anchor: Anchor,
-  pub debug_seq: String,
 }
 
 impl ReadRecord {
@@ -23,7 +22,6 @@ impl ReadRecord {
       read1: ReadSequence::new(),
       read2: ReadSequence::new(),
       anchor: Anchor::ReadDefault,
-      debug_seq: "".to_string(),
     }
   }
 }
