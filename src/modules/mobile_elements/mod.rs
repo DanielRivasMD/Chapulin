@@ -51,8 +51,5 @@ pub fn me_controller(
     &me_collection,
   ).expect(&me_aligned_file);
 
-  // println!("{:#?}", me_collection);
-  // println!("{}", me_collection.len());
-
   Ok(())
 }

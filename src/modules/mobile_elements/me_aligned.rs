@@ -74,26 +74,6 @@ pub fn me_identificator(
         // TODO: define filters for keeping based on breakpoint estimation & read orientation
         // read pair selection criteria
 
-        // println!("flag: {} => {}", record_line[1], interpretor(record_line[1].parse().unwrap(), 5));
-        //
-        // let cgr = CIGAR::loader(&record_line[5].to_string());
-        // println!("position: {} => adjusted: {} => by function: {}", record_line[3], record_line[3].parse::<i32>().unwrap() - cgr.lclip, cgr.left_boundry(record_line[3].parse::<i32>().unwrap()));
-        // println!("position: {} => adjusted: {} => by function: {}", record_line[3], record_line[3].parse::<i32>().unwrap() - cgr.lclip + 100, cgr.right_boundry(record_line[3].parse::<i32>().unwrap()));
-        // println!("cigar: {} => {:#?}", record_line[5].to_string(), cgr);
-
-        // // let tmp_flag = flag_int(record_line[1].parse().unwrap());
-        // let tmp_flag = format!("{:b}", record_line[1].parse::<i32>().unwrap());
-        // let mut stat_string = ['0'; 12];
-        // println!("{:#?}", stat_string);
-        //
-        // for i in tmp_flag.char_indices() {
-        //   stat_string[i.0] = i.1;
-        //   // println!("{:?}", i);
-        // }
-        //
-        // println!("{:#?}", stat_string);
-        // println!("{:#?}", tmp_flag);
-
         let tmp_pos = record_line[3].parse::<i32>().unwrap();
         let tmp_cigar = CIGAR::loader(&record_line[5].to_string());
 
@@ -104,10 +84,6 @@ pub fn me_identificator(
             tmp_cigar.right_boundry(tmp_pos) <= me_record.me_size - ME_LIMIT &&
             ! interpretor(tmp_flag, 5) // downstream
           )
-
-        // ( record_line[3].parse::<i32>().unwrap() <= ME_LIMIT ) ||
-            // downstream && record_line[1].parse::<i32>().unwrap() == 0
-          // record_line[3].parse::<i32>().unwrap() >= (me_record.me_size - ME_LIMIT) // upstream
         {
 
           // tag for keeping
@@ -123,9 +99,6 @@ pub fn me_identificator(
 
       // primary alignment
       pf if pf <= 255 => {
-
-        // let tmpx = format!("{:b}", record_line[1].parse::<i32>().unwrap()).parse::<i32>().unwrap();
-        // println!("{}", tmpx);
 
         if ! hm_record_collection.lock().unwrap().contains_key(&read_id) {
         // if ! hm_record_collection.contains_key(&read_id) {

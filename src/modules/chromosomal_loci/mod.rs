@@ -33,20 +33,12 @@ pub fn cl_controller (
 
     let cl_handle = thread::spawn(move || {
 
-  // let i = 1;
-  // {
-    // let mutex_counter = Arc::clone(&mutex_hm_collection);
-    // let c_mutex_counter = mutex_counter.clone();
-
       // let prefix = "SAMN01162223_R".to_string();
       // let prefix = "SAMN02692344_R".to_string();
 
       let directory = "/Users/drivas/chapulinTest/".to_string();
       let sufix = ".sorted.sam".to_string();
       let cl_aligned_file = format!("{}{}{}{}", directory, prefix, i, sufix);
-
-      // // let thread_handle = thread::spawn(move || {
-      // thread::spawn(move || -> std::io::Result<()> {
 
         cl_aligned::cl_mapper(
           &cl_aligned_file,
@@ -55,7 +47,6 @@ pub fn cl_controller (
         ).expect(&cl_aligned_file);
 
     });
-
     cl_handle.join().unwrap();
 
       // cl_aligned::cl_mapper(

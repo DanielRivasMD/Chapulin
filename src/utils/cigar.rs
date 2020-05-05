@@ -75,7 +75,6 @@ impl CIGAR {
 
   pub fn right_boundry(&self, position: i32) -> i32 {
     let lpos = self.left_boundry(position);
-    // println!("{} {} {} {}", lpos, self.lclip, self.adjuster(position).1, self.rclip);
     lpos + ( self.lclip + self.adjuster(position).1 + self.rclip )
   }
 }
