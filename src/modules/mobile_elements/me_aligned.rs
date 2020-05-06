@@ -14,6 +14,7 @@ use crate::{
     me_library::MElibrary,
     me_read::MERead,
     cigar::CIGAR,
+    anchor_enum::Anchor,
     flag_interpretor::*,
   },
   settings::{
@@ -36,9 +37,12 @@ pub fn me_identificator(
   // load file
   let (mut reader, mut buffer) = file_reader::file_reader(&me_bam_file);
 
-  // evaluate read batch
+  // declare initial values
   let mut read_id = String::new();
   let mut purge_switch = true;
+  let mut mobel_anchor = false;
+  let mut me_size = 0;
+  let mut bk_count = 0;
 
   // iterate through file
   while let Some(line) = reader.read_line(&mut buffer) {
@@ -49,6 +53,7 @@ pub fn me_identificator(
     // purge read pairs
     if ! ( read_id == record_line[0].to_string() || read_id == "".to_string() ) {
 
+      // evaluate read batch
       if purge_switch {
         hm_record_collection.lock().unwrap().remove(&read_id);
         // hm_record_collection.remove(&read_id);
@@ -61,41 +66,48 @@ pub fn me_identificator(
     // update read id
     read_id = record_line[0].to_string();
 
+    // calculate current values
+    let mobel = record_line[2].to_string();
+    let read_seq = record_line[9].to_string();
+
+    // flag & read orientation
+    let pv_flag = record_line[1].parse::<i32>().unwrap();
+    let read_orientation = interpretor(pv_flag, 5);
+
+    // alignment interpretation
+    let pv_position = record_line[3].parse::<i32>().unwrap();
+    let pv_cigar = record_line[5].to_string();
+    let dc_cigar = CIGAR::loader(&pv_cigar);
+    let adj_left_pos = dc_cigar.left_boundry(pv_position);
+    let adj_right_pos = dc_cigar.right_boundry(pv_position);
+
+    // TODO: describe break point signature
+    // TODO: define filters for keeping based on breakpoint estimation & read orientation
+
     // retrieve mobile element library records
-    let me_option = hm_me_collection.get(&record_line[2].to_string());
-
-    let tmp_flag = record_line[1].parse::<i32>().unwrap();
-
+    let me_option = hm_me_collection.get(&mobel);
     match me_option {
-
       Some(me_record) => {
-
-        // TODO: describe break point signature
-        // TODO: define filters for keeping based on breakpoint estimation & read orientation
-        // read pair selection criteria
-
-        let tmp_pos = record_line[3].parse::<i32>().unwrap();
-        let tmp_cigar = CIGAR::loader(&record_line[5].to_string());
-
-        if (
-            tmp_cigar.left_boundry(tmp_pos) <= ME_LIMIT &&
-            interpretor(tmp_flag, 5) // upstream
-          ) || (
-            tmp_cigar.right_boundry(tmp_pos) <= me_record.me_size - ME_LIMIT &&
-            ! interpretor(tmp_flag, 5) // downstream
-          )
-        {
-
-          // tag for keeping
-          purge_switch = false;
-        }
+        me_size = me_record.me_size;
       },
-
       None => (),
     }
 
+    // read pair selection criteria
+    if
+      ( adj_left_pos <= ME_LIMIT &&
+        read_orientation )
+      ||
+      ( adj_right_pos >= me_size - ME_LIMIT &&
+        ! read_orientation )
+    {
+      // tagging
+      purge_switch = false;
+      mobel_anchor = true;
+    }
+
     // match on proviral flag
-    match tmp_flag {
+    match pv_flag { // this check is much faster than using binary interpretor
 
       // primary alignment
       pf if pf <= 255 => {
@@ -107,20 +119,41 @@ pub fn me_identificator(
 
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
-            current_record.read1.sequence = record_line[9].to_string();
-            current_record.read1.me_read[0].mobel = record_line[2].to_string();
-            current_record.read1.me_read[0].flag =  record_line[1].parse().unwrap();
-            current_record.read1.me_read[0].pos =  record_line[3].parse().unwrap();
-            current_record.read1.me_read[0].cigar =  record_line[5].to_string();
+            current_record.read1.sequence = read_seq.clone();
+            current_record.read1.me_read[0].mobel = mobel;
+            current_record.read1.me_read[0].flag =  pv_flag;
+            current_record.read1.me_read[0].pos =  pv_position;
+            current_record.read1.me_read[0].cigar =  pv_cigar;
+            if mobel_anchor { current_record.anchor = Anchor::Read1; }
+
+            // record break point signature
+            if
+              ( adj_left_pos < 1 ) ||
+              ( adj_right_pos > me_size )
+            {
+              bk_count = 1 + bk_count;
+              current_record.read1.breakpoint.sequence = (&read_seq.clone()[0..20]).to_string();
+              // current_record.read1.breakpoint.coordinate = adj_right_pos;
+            }
           }
         } else {
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
-            current_record.read2.sequence = record_line[9].to_string();
-            current_record.read2.me_read[0].mobel = record_line[2].to_string();
-            current_record.read2.me_read[0].flag = record_line[1].parse().unwrap();
-            current_record.read2.me_read[0].pos = record_line[3].parse().unwrap();
-            current_record.read2.me_read[0].cigar = record_line[5].to_string();
+            current_record.read2.sequence = read_seq.clone();
+            current_record.read2.me_read[0].mobel = mobel;
+            current_record.read2.me_read[0].flag = pv_flag;
+            current_record.read2.me_read[0].pos = pv_position;
+            current_record.read2.me_read[0].cigar = pv_cigar;
+            if mobel_anchor { current_record.anchor = Anchor::Read2; }
+
+            // record break point signature
+            if
+              ( adj_left_pos < 1 ) ||
+              ( adj_right_pos > me_size )
+            {
+              bk_count = 1 + bk_count;
+              current_record.read2.breakpoint.sequence = (&read_seq.clone()[0..20]).to_string();
+            }
           }
         }
       },
@@ -133,25 +166,31 @@ pub fn me_identificator(
         // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
           if current_record.read2.sequence == "".to_string() {
             current_record.read1.me_read.push(MERead {
-              mobel: record_line[2].to_string(),
-              flag: record_line[1].parse().unwrap(),
-              pos: record_line[3].parse().unwrap(),
-              cigar: record_line[5].to_string(),
-            })
+              mobel: mobel,
+              flag: pv_flag,
+              pos: pv_position,
+              cigar: pv_cigar,
+            });
+            if mobel_anchor { current_record.anchor = Anchor::Read1; }
           } else {
             current_record.read2.me_read.push(MERead {
-              mobel: record_line[2].to_string(),
-              flag: record_line[1].parse().unwrap(),
-              pos: record_line[3].parse().unwrap(),
-              cigar: record_line[5].to_string(),
-            })
+              mobel: mobel,
+              flag: pv_flag,
+              pos: pv_position,
+              cigar: pv_cigar,
+            });
+            if mobel_anchor { current_record.anchor = Anchor::Read2; }
           }
         }
       },
 
       _ => (),
     }
+
+    // reset anchor switch
+    mobel_anchor = false;
   }
 
+  println!("Break point count: {}", bk_count);
   Ok(println!("{} {}", "File read: ", &me_bam_file))
 }
