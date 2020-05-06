@@ -3,6 +3,7 @@
 use crate::utils::{
   me_read::MERead,
   anchor_read::AnchorRead,
+  break_point::BreakPoint,
 };
 
 // annotate primary (index 0) & secondary aligned reads
@@ -11,6 +12,7 @@ pub struct ReadSequence {
   pub sequence: String,
   pub me_read: Vec<MERead>,
   pub chr_read: Vec<AnchorRead>,
+  pub breakpoint: BreakPoint,
 }
 
 impl ReadSequence {
@@ -19,6 +21,10 @@ impl ReadSequence {
       sequence: "".to_string(),
       me_read: vec![MERead::new()],
       chr_read: vec![AnchorRead::new()],
+      breakpoint: BreakPoint {
+        sequence: "".to_string(),
+        coordinate: 0,
+      },
     }
   }
 }
