@@ -21,7 +21,7 @@ impl ReadRecord {
     Self {
       read1: ReadSequence::new(),
       read2: ReadSequence::new(),
-      anchor: Anchor::ReadDefault,
+      anchor: Anchor::None,
     }
   }
 }
@@ -29,7 +29,8 @@ impl ReadRecord {
 impl ReadRecord {
   pub fn chr_anchor_retriever<'a>(&'a self) -> &'a ReadSequence {
     match self.anchor {
-      Anchor::ReadDefault => {
+      Anchor::None => {
+        // TODO: think about an alternative here
         println!("This is a default value");
         &self.read1
       },
@@ -38,4 +39,3 @@ impl ReadRecord {
     }.borrow()
   }
 }
-

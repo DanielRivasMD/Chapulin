@@ -21,8 +21,9 @@ impl CIGAR {
   }
 
   pub fn loader(to_interpret: &String) -> Self {
-    let mut char_vec = vec![];
 
+    // iterate to find annotations
+    let mut char_vec = vec![];
     for i in to_interpret.char_indices() {
 
       match i.1 {
@@ -33,6 +34,7 @@ impl CIGAR {
       }
     }
 
+    // create new CIGAR with empty values
     let mut this_cigar = CIGAR::new();
     let mut j = 0;
     for i in char_vec.iter() {
@@ -61,11 +63,11 @@ impl CIGAR {
     return this_cigar
   }
 
+  // tupple: first => adjusted position; second => total aligned length
   pub fn adjuster(&self, position: i32) -> (i32, i32) {
     let align_sum: i32 = self.align.iter().sum();
     let ins_sum: i32 = self.ins.iter().sum();
     let del_sum: i32 = self.del.iter().sum();
-
     (self.lclip + position, align_sum + ins_sum + del_sum)
   }
 
