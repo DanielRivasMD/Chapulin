@@ -96,8 +96,7 @@ pub fn me_identificator(
     // read pair selection criteria
     if
       ( adj_left_pos <= ME_LIMIT &&
-        read_orientation )
-      ||
+        read_orientation ) ||
       ( adj_right_pos >= me_size - ME_LIMIT &&
         ! read_orientation )
     {
