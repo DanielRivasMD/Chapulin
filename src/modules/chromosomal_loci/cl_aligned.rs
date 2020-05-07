@@ -4,9 +4,12 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 // crate utilities
-use crate::utils::{
-  file_reader,
-  read_record::ReadRecord,
+use crate::{
+  utils::{
+    file_reader,
+    read_record::ReadRecord,
+    anchor_read::AnchorRead,
+  },
 };
 
 pub fn cl_mapper(
@@ -49,23 +52,15 @@ pub fn cl_mapper(
       // if let Some(current_record) = hm_collection.get_mut(record_line[0]) {
 
         if
-          current_record.read1.sequence == record_line[9].to_string() ||
-          current_record.read1.sequence_reverser() == record_line[9].to_string()
+          ( current_record.read1.sequence == record_line[9].to_string() ) ||
+          ( current_record.read1.sequence_reverser() == record_line[9].to_string() )
         {
-          current_record.read1.chr_read[0].chr = record_line[2].to_string();
-          current_record.read1.chr_read[0].flag = record_line[1].parse().unwrap();
-          current_record.read1.chr_read[0].pos = record_line[3].parse().unwrap();
-          current_record.read1.chr_read[0].cigar = record_line[5].to_string();
-          current_record.read1.chr_read[0].mapq = record_line[4].to_string();
+          current_record.read1.chr_read[0] = AnchorRead::loader(&record_line);
         } else if
-          current_record.read2.sequence == record_line[9].to_string() ||
-          current_record.read2.sequence_reverser() == record_line[9].to_string()
+          ( current_record.read2.sequence == record_line[9].to_string() ) ||
+          ( current_record.read2.sequence_reverser() == record_line[9].to_string() )
         {
-          current_record.read2.chr_read[0].chr = record_line[2].to_string();
-          current_record.read2.chr_read[0].flag = record_line[1].parse().unwrap();
-          current_record.read2.chr_read[0].pos = record_line[3].parse().unwrap();
-          current_record.read2.chr_read[0].cigar = record_line[5].to_string();
-          current_record.read2.chr_read[0].mapq = record_line[4].to_string();
+          current_record.read2.chr_read[0] = AnchorRead::loader(&record_line);
         }
       }
     }

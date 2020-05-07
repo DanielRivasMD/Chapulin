@@ -18,4 +18,15 @@ impl MERead {
       cigar: "".to_string(),
     }
   }
+
+  pub fn loader(file_line: &Vec<&str>, mobile_size: i32) -> Self {
+    Self {
+      mobel: file_line[2].to_string(),
+      size: mobile_size,
+      flag: file_line[1].parse::<i32>().unwrap(),
+      pos: file_line[3].parse::<i32>().unwrap(),
+      cigar: file_line[5].to_string(),
+    }
+  }
+
 }

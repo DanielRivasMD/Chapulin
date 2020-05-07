@@ -119,11 +119,10 @@ pub fn me_identificator(
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read1.sequence = read_seq.clone();
-            current_record.read1.me_read[0].mobel = mobel;
-            current_record.read1.me_read[0].flag =  pv_flag;
-            current_record.read1.me_read[0].pos =  pv_position;
-            current_record.read1.me_read[0].cigar =  pv_cigar;
-            if mobel_anchor { current_record.anchor = Anchor::Read1; }
+            current_record.read1.me_read[0] = MERead::loader(&record_line, me_size);
+            if mobel_anchor {
+              current_record.anchor = Anchor::Read2;
+            }
 
             // record break point signature
             if
@@ -139,11 +138,10 @@ pub fn me_identificator(
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read2.sequence = read_seq.clone();
-            current_record.read2.me_read[0].mobel = mobel;
-            current_record.read2.me_read[0].flag = pv_flag;
-            current_record.read2.me_read[0].pos = pv_position;
-            current_record.read2.me_read[0].cigar = pv_cigar;
-            if mobel_anchor { current_record.anchor = Anchor::Read2; }
+            current_record.read2.me_read[0] = MERead::loader(&record_line, me_size);
+            if mobel_anchor {
+              current_record.anchor = Anchor::Read1;
+            }
 
             // record break point signature
             if
@@ -164,21 +162,15 @@ pub fn me_identificator(
         if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
         // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
           if current_record.read2.sequence == "".to_string() {
-            current_record.read1.me_read.push(MERead {
-              mobel: mobel,
-              flag: pv_flag,
-              pos: pv_position,
-              cigar: pv_cigar,
-            });
-            if mobel_anchor { current_record.anchor = Anchor::Read1; }
+            current_record.read1.me_read.push(MERead::loader(&record_line, me_size));
+            if mobel_anchor {
+              current_record.anchor = Anchor::Read1;
+            }
           } else {
-            current_record.read2.me_read.push(MERead {
-              mobel: mobel,
-              flag: pv_flag,
-              pos: pv_position,
-              cigar: pv_cigar,
-            });
-            if mobel_anchor { current_record.anchor = Anchor::Read2; }
+            current_record.read2.me_read.push(MERead::loader(&record_line, me_size));
+            if mobel_anchor {
+              current_record.anchor = Anchor::Read2;
+            }
           }
         }
       },
