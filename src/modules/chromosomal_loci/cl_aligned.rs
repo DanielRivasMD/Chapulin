@@ -9,7 +9,11 @@ use crate::{
     file_reader,
     read_record::ReadRecord,
     anchor_read::AnchorRead,
+    anchor_enum::Anchor,
   },
+  settings::{
+    constants::MAPQ,
+  }
 };
 
 pub fn cl_mapper(
@@ -35,32 +39,55 @@ pub fn cl_mapper(
     if hm_collection.lock().unwrap().contains_key(record_line[0]) {
     // if hm_collection.contains_key(record_line[0]) {
 
-      // TODO: define which read in the pair is the anchor to register
-      // register chromosome anchors
-      if ! an_registry.lock().unwrap().contains_key(record_line[2]) {
-      // if ! an_registry.contains_key(record_line[2]) {
-        an_registry.lock().unwrap().insert(record_line[2].to_string(), Vec::new());
-        // an_registry.insert(record_line[2].to_string(), Vec::new());
-      }
-
-      if let Some(current_chr) = an_registry.lock().unwrap().get_mut(record_line[2]) {
-      // if let Some(current_chr) = an_registry.get_mut(record_line[2]) {
-        current_chr.push(record_line[0].to_string())
-      }
+      let mut mapq_switch = false;
 
       if let Some(current_record) = hm_collection.lock().unwrap().get_mut(record_line[0]) {
-      // if let Some(current_record) = hm_collection.get_mut(record_line[0]) {
+        // if let Some(current_record) = hm_collection.get_mut(record_line[0]) {
 
+        // println!("{:#?}\n{:#?}", current_record, record_line);
         if
-          ( current_record.read1.sequence == record_line[9].to_string() ) ||
-          ( current_record.read1.sequence_reverser() == record_line[9].to_string() )
+        (current_record.read1.sequence == record_line[9].to_string()) ||
+          (current_record.read1.sequence_reverser() == record_line[9].to_string())
         {
           current_record.read1.chr_read[0] = AnchorRead::loader(&record_line);
+
         } else if
-          ( current_record.read2.sequence == record_line[9].to_string() ) ||
-          ( current_record.read2.sequence_reverser() == record_line[9].to_string() )
+        (current_record.read2.sequence == record_line[9].to_string()) ||
+          (current_record.read2.sequence_reverser() == record_line[9].to_string())
         {
           current_record.read2.chr_read[0] = AnchorRead::loader(&record_line);
+        }
+          match current_record.anchor {
+            Anchor::Read1 => {
+              if current_record.read1.chr_read[0].mapq >= MAPQ {
+              } else {
+                mapq_switch = true;
+              }
+            },
+          Anchor::Read2 => {
+              if current_record.read2.chr_read[0].mapq >= MAPQ {
+              } else {
+                mapq_switch = true;
+              }
+            },
+            _ => (),
+          };
+      }
+
+
+      if mapq_switch {
+        hm_collection.lock().unwrap().remove(record_line[0]);
+      } else {
+        // register chromosome anchors
+        if ! an_registry.lock().unwrap().contains_key(record_line[2]) {
+        // if ! an_registry.contains_key(record_line[2]) {
+          an_registry.lock().unwrap().insert(record_line[2].to_string(), Vec::new());
+          // an_registry.insert(record_line[2].to_string(), Vec::new());
+        }
+
+        if let Some(current_chr) = an_registry.lock().unwrap().get_mut(record_line[2]) {
+        // if let Some(current_chr) = an_registry.get_mut(record_line[2]) {
+          current_chr.push(record_line[0].to_string())
         }
       }
     }
