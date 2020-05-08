@@ -5,7 +5,7 @@ use std::borrow::Borrow;
 // crate utilities
 use crate::utils::{
   read_sequence::ReadSequence,
-  anchor_enum::Anchor,
+  chranchor_enum::ChrAnchor,
 };
 
 // to load onto => hashmap for reads aligned to mobile elements
@@ -13,29 +13,30 @@ use crate::utils::{
 pub struct ReadRecord {
   pub read1: ReadSequence,
   pub read2: ReadSequence,
-  pub anchor: Anchor,
+  pub chranchor: ChrAnchor,
 }
+// TODO: add non-cigar anchor identification
 
 impl ReadRecord {
   pub fn new() -> Self {
     Self {
       read1: ReadSequence::new(),
       read2: ReadSequence::new(),
-      anchor: Anchor::None,
+      chranchor: ChrAnchor::None,
     }
   }
 }
 
 impl ReadRecord {
   pub fn chr_anchor_retriever<'a>(&'a self) -> &'a ReadSequence {
-    match self.anchor {
-      Anchor::None => {
+    match self.chranchor {
+      ChrAnchor::None => {
         // TODO: think about an alternative here
         println!("This is a default value");
         &self.read1
       },
-      Anchor::Read1 => &self.read1,
-      Anchor::Read2 => &self.read2,
+      ChrAnchor::Read1 => &self.read1,
+      ChrAnchor::Read2 => &self.read2,
     }.borrow()
   }
 }

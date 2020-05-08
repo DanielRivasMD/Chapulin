@@ -14,7 +14,7 @@ use crate::{
     me_library::MElibrary,
     me_read::MERead,
     cigar::CIGAR,
-    anchor_enum::Anchor,
+    anchor_enum::ChrAnchor,
     flag_interpretor::*,
   },
   settings::{
@@ -121,7 +121,7 @@ pub fn me_identificator(
             current_record.read1.sequence = read_seq.clone();
             current_record.read1.me_read[0] = MERead::loader(&record_line, me_size);
             if mobel_anchor {
-              current_record.anchor = Anchor::Read2;
+              current_record.chranchor = ChrAnchor::Read2;
             }
 
             // record break point signature
@@ -140,7 +140,7 @@ pub fn me_identificator(
             current_record.read2.sequence = read_seq.clone();
             current_record.read2.me_read[0] = MERead::loader(&record_line, me_size);
             if mobel_anchor {
-              current_record.anchor = Anchor::Read1;
+              current_record.chranchor = ChrAnchor::Read1;
             }
 
             // record break point signature
@@ -164,12 +164,12 @@ pub fn me_identificator(
           if current_record.read2.sequence == "".to_string() {
             current_record.read1.me_read.push(MERead::loader(&record_line, me_size));
             if mobel_anchor {
-              current_record.anchor = Anchor::Read1;
+              current_record.chranchor = ChrAnchor::Read2;
             }
           } else {
             current_record.read2.me_read.push(MERead::loader(&record_line, me_size));
             if mobel_anchor {
-              current_record.anchor = Anchor::Read2;
+              current_record.chranchor = ChrAnchor::Read1;
             }
           }
         }

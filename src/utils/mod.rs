@@ -6,7 +6,7 @@ pub mod read_record;
   pub mod read_sequence;
     pub mod me_read;
     pub mod anchor_read;
-  pub mod anchor_enum;
+  pub mod chranchor_enum;
   pub mod break_point;
 
 pub mod me_library;

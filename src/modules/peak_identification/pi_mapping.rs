@@ -10,6 +10,7 @@ use std::sync::{
 use crate::utils::{
   read_record::ReadRecord
 };
+use crate::utils::chranchor_enum::ChrAnchor;
 
 pub fn pi_identifier (
   ikey: &String,

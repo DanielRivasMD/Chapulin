@@ -9,7 +9,7 @@ use crate::{
     file_reader,
     read_record::ReadRecord,
     anchor_read::AnchorRead,
-    anchor_enum::Anchor,
+    chranchor_enum::ChrAnchor,
   },
   settings::{
     constants::MAPQ,
@@ -57,14 +57,14 @@ pub fn cl_mapper(
         {
           current_record.read2.chr_read[0] = AnchorRead::loader(&record_line);
         }
-          match current_record.anchor {
-            Anchor::Read1 => {
+          match current_record.chranchor {
+            ChrAnchor::Read1 => {
               if current_record.read1.chr_read[0].mapq >= MAPQ {
               } else {
                 mapq_switch = true;
               }
             },
-          Anchor::Read2 => {
+          ChrAnchor::Read2 => {
               if current_record.read2.chr_read[0].mapq >= MAPQ {
               } else {
                 mapq_switch = true;

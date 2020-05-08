@@ -1,6 +1,6 @@
 
 #[derive(Debug)]
-pub enum Anchor {
+pub enum ChrAnchor {
   Read1,
   Read2,
   None,
