@@ -9,7 +9,7 @@ use std::sync::{
 // crate utilities
 use crate::{
   utils::{
-    file_reader,
+    file_reader::file_reader,
     read_record::ReadRecord,
     me_library::MElibrary,
     me_read::MERead,
@@ -35,7 +35,7 @@ pub fn me_identificator(
 // ) -> std::io::Result<()> {
 
   // load file
-  let (mut reader, mut buffer) = file_reader::file_reader(&me_bam_file);
+  let (mut reader, mut buffer) = file_reader(&me_bam_file);
 
   // declare initial values
   let mut prev_read_id = String::new();

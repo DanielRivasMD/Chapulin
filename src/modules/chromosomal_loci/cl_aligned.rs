@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 // crate utilities
 use crate::{
   utils::{
-    file_reader,
+    file_reader::file_reader,
     read_record::ReadRecord,
     anchor_read::AnchorRead,
     chranchor_enum::ChrAnchor,
@@ -29,7 +29,7 @@ pub fn cl_mapper(
 // ) -> std::io::Result<()> {
 
   // load file
-  let (mut reader, mut buffer) = file_reader::file_reader(&cl_bam_file);
+  let (mut reader, mut buffer) = file_reader(&cl_bam_file);
 
   // iterate through file
   while let Some(line) = reader.read_line(&mut buffer) {
