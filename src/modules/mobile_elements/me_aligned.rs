@@ -14,11 +14,11 @@ use crate::{
     me_library::MElibrary,
     me_read::MERead,
     cigar::CIGAR,
-    anchor_enum::ChrAnchor,
-    flag_interpretor::*,
+    chranchor_enum::ChrAnchor,
+    flag_interpretor::interpretor,
   },
   settings::{
-    constants::*,
+    constants::ME_LIMIT,
   },
 };
 
@@ -38,7 +38,7 @@ pub fn me_identificator(
   let (mut reader, mut buffer) = file_reader::file_reader(&me_bam_file);
 
   // declare initial values
-  let mut read_id = String::new();
+  let mut prev_read_id = String::new();
   let mut purge_switch = true;
   let mut mobel_anchor = false;
   let mut me_size = 0;
@@ -50,21 +50,8 @@ pub fn me_identificator(
     // load line into vector
     let record_line: Vec<&str> = line?.trim().split("\t").collect();
 
-    // purge read pairs
-    if ! ( read_id == record_line[0].to_string() || read_id == "".to_string() ) {
-
-      // evaluate read batch
-      if purge_switch {
-        hm_record_collection.lock().unwrap().remove(&read_id);
-        // hm_record_collection.remove(&read_id);
-      }
-
-      // reset purge switch
-      purge_switch = true;
-    }
-
     // update read id
-    read_id = record_line[0].to_string();
+    let read_id = record_line[0].to_string();
 
     // calculate current values
     let mobel = record_line[2].to_string();
@@ -93,11 +80,10 @@ pub fn me_identificator(
       None => (),
     }
 
-    // read pair selection criteria
     if
       ( adj_left_pos <= ME_LIMIT &&
         read_orientation ) ||
-      ( adj_right_pos >= me_size - ME_LIMIT &&
+      ( me_size - adj_right_pos <= ME_LIMIT &&
         ! read_orientation )
     {
       // tagging
@@ -120,9 +106,7 @@ pub fn me_identificator(
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read1.sequence = read_seq.clone();
             current_record.read1.me_read[0] = MERead::loader(&record_line, me_size);
-            if mobel_anchor {
-              current_record.chranchor = ChrAnchor::Read2;
-            }
+            if mobel_anchor { current_record.chranchor = ChrAnchor::Read2; }
 
             // record break point signature
             if
@@ -139,9 +123,7 @@ pub fn me_identificator(
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read2.sequence = read_seq.clone();
             current_record.read2.me_read[0] = MERead::loader(&record_line, me_size);
-            if mobel_anchor {
-              current_record.chranchor = ChrAnchor::Read1;
-            }
+            if mobel_anchor { current_record.chranchor = ChrAnchor::Read1; }
 
             // record break point signature
             if
@@ -163,14 +145,10 @@ pub fn me_identificator(
         // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
           if current_record.read2.sequence == "".to_string() {
             current_record.read1.me_read.push(MERead::loader(&record_line, me_size));
-            if mobel_anchor {
-              current_record.chranchor = ChrAnchor::Read2;
-            }
+            if mobel_anchor { current_record.chranchor = ChrAnchor::Read2; }
           } else {
             current_record.read2.me_read.push(MERead::loader(&record_line, me_size));
-            if mobel_anchor {
-              current_record.chranchor = ChrAnchor::Read1;
-            }
+            if mobel_anchor { current_record.chranchor = ChrAnchor::Read1; }
           }
         }
       },
@@ -180,6 +158,27 @@ pub fn me_identificator(
 
     // reset anchor switch
     mobel_anchor = false;
+
+    // TODO: theoretically, this solution would not work for the last record
+    // purge read pairs
+    if ! ( prev_read_id == read_id || prev_read_id == "".to_string() ) {
+
+      // evaluate read batch
+      if purge_switch {
+        hm_record_collection.lock().unwrap().remove(&read_id);
+        // hm_record_collection.remove(&read_id);
+      }
+
+      // reset purge switch
+      purge_switch = true;
+    }
+    prev_read_id = read_id;
+  }
+
+  // evaluate at end of file
+  if purge_switch {
+    hm_record_collection.lock().unwrap().remove(&prev_read_id);
+    // hm_record_collection.remove(&read_id);
   }
 
   println!("Break point count: {}", bk_count);
