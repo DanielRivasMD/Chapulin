@@ -42,7 +42,7 @@ pub fn me_identificator(
   let mut purge_switch = true;
   let mut mobel_anchor = false;
   let mut me_size = 0;
-  let mut bk_count = 0;
+  // let mut bk_count = 0;
 
   // iterate through file
   while let Some(line) = reader.read_line(&mut buffer) {
@@ -80,6 +80,27 @@ pub fn me_identificator(
       None => (),
     }
 
+    // TODO: theoretically, this solution would not work for the last record
+    // purge read pairs
+    // println!("Post load: {} {} {} {} => {} {}", prev_read_id, read_id, purge_switch, mobel_anchor, record_line[9], pv_flag);
+    if ! ( prev_read_id == read_id || prev_read_id == "".to_string() ) {
+      // evaluate read batch
+      if purge_switch {
+        // println!("Deleting: {}", prev_read_id);
+        hm_record_collection.lock().unwrap().remove(&prev_read_id);
+        // hm_record_collection.remove(&read_id);
+      } else {
+        // if let Some(tmp_record) = hm_record_collection.lock().unwrap().get(&prev_read_id) {
+        //   // println!("{}\t{:?}", prev_read_id, tmp_record.chranchor);
+        // }
+      }
+      // println!();
+
+      // reset purge switch
+      purge_switch = true;
+    }
+
+    // println!("{:?}", record_line);
     if
       ( adj_left_pos <= ME_LIMIT &&
         read_orientation ) ||
@@ -89,52 +110,66 @@ pub fn me_identificator(
       // tagging
       purge_switch = false;
       mobel_anchor = true;
+      // println!("Read: {} anchor: {} batch: {}", read_id, mobel_anchor, purge_switch);
     }
+
+      // println!("Delta check: {:?}", hm_record_collection.lock().unwrap().get(&prev_read_id));
+      // println!();
 
     // match on proviral flag
     match pv_flag { // this check is much faster than using binary interpretor
 
       // primary alignment
       pf if pf <= 255 => {
+      // println!();
+
+              // println!("Flag testing: {:?} {}", hm_record_collection.lock().unwrap().contains_key(&read_id), read_id);
 
         if ! hm_record_collection.lock().unwrap().contains_key(&read_id) {
         // if ! hm_record_collection.contains_key(&read_id) {
           hm_record_collection.lock().unwrap().insert((&read_id).to_string(), ReadRecord::new());
           // hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
 
+          // println!("Loading 1... {} {} {}", read_id, mobel_anchor, purge_switch);
+      // println!();
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read1.sequence = read_seq.clone();
             current_record.read1.me_read[0] = MERead::loader(&record_line, me_size);
             if mobel_anchor { current_record.chranchor = ChrAnchor::Read2; }
 
-            // record break point signature
-            if
-              ( adj_left_pos < 1 ) ||
-              ( adj_right_pos > me_size )
-            {
-              bk_count = 1 + bk_count;
-              current_record.read1.breakpoint.sequence = (&read_seq.clone()[0..20]).to_string();
-              // current_record.read1.breakpoint.coordinate = adj_right_pos;
-            }
+            // // record break point signature
+            // if
+            //   ( adj_left_pos < 1 ) ||
+            //   ( adj_right_pos > me_size )
+            // {
+            //   // TODO: breakpoint
+            //   bk_count = 1 + bk_count;
+            //   current_record.read1.breakpoint.sequence = (&read_seq.clone()[0..20]).to_string();
+            //   // current_record.read1.breakpoint.coordinate = adj_right_pos;
+            // }
           }
         } else {
+          // println!("Loading 2... {} {} {}", read_id, mobel_anchor, purge_switch);
+      // println!();
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read2.sequence = read_seq.clone();
             current_record.read2.me_read[0] = MERead::loader(&record_line, me_size);
             if mobel_anchor { current_record.chranchor = ChrAnchor::Read1; }
 
-            // record break point signature
-            if
-              ( adj_left_pos < 1 ) ||
-              ( adj_right_pos > me_size )
-            {
-              bk_count = 1 + bk_count;
-              current_record.read2.breakpoint.sequence = (&read_seq.clone()[0..20]).to_string();
-            }
+            // // record break point signature
+            // if
+            //   ( adj_left_pos < 1 ) ||
+            //   ( adj_right_pos > me_size )
+            // {
+            //   bk_count = 1 + bk_count;
+            //   current_record.read2.breakpoint.sequence = (&read_seq.clone()[0..20]).to_string();
+            // }
           }
         }
+              // println!("Load check: {:?}", hm_record_collection.lock().unwrap().get(&read_id));
+      // println!();
       },
 
       // secondary alignment
@@ -144,9 +179,11 @@ pub fn me_identificator(
         if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
         // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
           if current_record.read2.sequence == "".to_string() {
+                    // println!("Supplem 1... {} {} {}", read_id, mobel_anchor, purge_switch);
             current_record.read1.me_read.push(MERead::loader(&record_line, me_size));
             if mobel_anchor { current_record.chranchor = ChrAnchor::Read2; }
           } else {
+                    // println!("Supplem 2... {} {} {}", read_id, mobel_anchor, purge_switch);
             current_record.read2.me_read.push(MERead::loader(&record_line, me_size));
             if mobel_anchor { current_record.chranchor = ChrAnchor::Read1; }
           }
@@ -156,31 +193,28 @@ pub fn me_identificator(
       _ => (),
     }
 
+
+
     // reset anchor switch
     mobel_anchor = false;
 
-    // TODO: theoretically, this solution would not work for the last record
-    // purge read pairs
-    if ! ( prev_read_id == read_id || prev_read_id == "".to_string() ) {
-
-      // evaluate read batch
-      if purge_switch {
-        hm_record_collection.lock().unwrap().remove(&read_id);
-        // hm_record_collection.remove(&read_id);
-      }
-
-      // reset purge switch
-      purge_switch = true;
-    }
     prev_read_id = read_id;
+
+      // if let Some(tmp_record) = hm_record_collection.lock().unwrap().get(&prev_read_id) {
+      //   // println!("{}\t{:?}", prev_read_id, tmp_record.chranchor);
+      //   println!("{:#?}", tmp_record.chranchor);
+      // }
+
   }
 
   // evaluate at end of file
   if purge_switch {
+          // println!("Last check: {:?}", hm_record_collection.lock().unwrap().get(&prev_read_id));
+
     hm_record_collection.lock().unwrap().remove(&prev_read_id);
     // hm_record_collection.remove(&read_id);
   }
 
-  println!("Break point count: {}", bk_count);
+  // println!("Break point count: {}", bk_count);
   Ok(println!("{} {}", "File read: ", &me_bam_file))
 }
