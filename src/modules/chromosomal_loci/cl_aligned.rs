@@ -46,32 +46,34 @@ pub fn cl_mapper(
 
         // println!("{:#?}\n{:#?}", current_record, record_line);
         if
-        (current_record.read1.sequence == record_line[9].to_string()) ||
+          (current_record.read1.sequence == record_line[9].to_string()) ||
           (current_record.read1.sequence_reverser() == record_line[9].to_string())
         {
           current_record.read1.chr_read[0] = AnchorRead::loader(&record_line);
 
         } else if
-        (current_record.read2.sequence == record_line[9].to_string()) ||
+          (current_record.read2.sequence == record_line[9].to_string()) ||
           (current_record.read2.sequence_reverser() == record_line[9].to_string())
         {
           current_record.read2.chr_read[0] = AnchorRead::loader(&record_line);
         }
-          match current_record.chranchor {
-            ChrAnchor::Read1 => {
-              if current_record.read1.chr_read[0].mapq >= MAPQ {
-              } else {
-                mapq_switch = true;
-              }
-            },
+
+        // println!("{:?}", current_record);
+        match current_record.chranchor {
+          ChrAnchor::Read1 => {
+            if current_record.read1.chr_read[0].mapq < MAPQ && current_record.read1.chr_read[0].chr != "".to_string()
+            {
+              mapq_switch = true;
+            }
+          },
           ChrAnchor::Read2 => {
-              if current_record.read2.chr_read[0].mapq >= MAPQ {
-              } else {
-                mapq_switch = true;
-              }
-            },
-            _ => (),
-          };
+            if current_record.read2.chr_read[0].mapq < MAPQ && current_record.read2.chr_read[0].chr != "".to_string()
+            {
+              mapq_switch = true;
+            }
+          },
+          _ => (),
+        };
       }
 
 
@@ -93,5 +95,6 @@ pub fn cl_mapper(
     }
   }
 
+  // println!("{} {}\n", "File read: ", &cl_bam_file);
   Ok(println!("{} {}", "File read: ", &cl_bam_file))
 }
