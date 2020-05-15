@@ -33,6 +33,7 @@ fn main() -> std::io::Result<()> {
   // initiate HashMap
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
   let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
+  let mutex_chr_max = Arc::new(Mutex::new(HashMap::new()));
 
   // let mut record_collection = HashMap::new();
   // let mut anchor_registry = HashMap::new();
@@ -41,12 +42,24 @@ fn main() -> std::io::Result<()> {
 
   // mobile elements module
   let c_me_record_collection = mutex_record_collection.clone();
+  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   modules::mobile_elements::me_controller(
     &args[1],
     &args[2],
     c_me_record_collection,
   )?;
+
+  match now.elapsed() {
+    Ok(elapsed) => {
+      println!("{} secs", elapsed.as_secs_f64());
+    }
+
+    Err(e) => {
+      // an error occurred!
+      println!("Error: {:?}", e);
+    }
+  }
 
   // modules::mobile_elements::me_controller(
   //   &mut record_collection,
@@ -55,19 +68,78 @@ fn main() -> std::io::Result<()> {
   // chromosomal loci module
   let c_cl_record_collection = mutex_record_collection.clone();
   let c_cl_anchor_registry = mutex_anchor_registry.clone();
+  let c_cl_chr_max = mutex_chr_max.clone();
+  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   modules::chromosomal_loci::cl_controller(
     &args[3],
     c_cl_record_collection,
     c_cl_anchor_registry,
+    c_cl_chr_max,
   )?;
+
+  match now.elapsed() {
+    Ok(elapsed) => {
+      println!("{} secs", elapsed.as_secs_f64());
+    }
+
+    Err(e) => {
+      // an error occurred!
+      println!("Error: {:?}", e);
+    }
+  }
+
+  // output message to log
+  for (key, val) in mutex_chr_max.lock().unwrap().iter() {
+    println!("key: {}\nval: {:#?}", key, val);
+  }
+
 
   // modules::chromosomal_loci::cl_controller(
   //   &mut record_collection,
   //   &mut anchor_registry,
   // )?;
 
-  // // peak identification module
+  // peak identification module
+  let c_pi_record_collection = mutex_record_collection.clone();
+  let c_pi_anchor_registry = mutex_anchor_registry.clone();
+  let c_pi_chr_max = mutex_chr_max.clone();
+  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+
+  modules::peak_identification::pi_controller(
+    c_pi_record_collection,
+    c_pi_anchor_registry,
+    c_pi_chr_max,
+  )?;
+
+  match now.elapsed() {
+    Ok(elapsed) => {
+      println!("{} secs", elapsed.as_secs_f64());
+    }
+
+    Err(e) => {
+      // an error occurred!
+      println!("Error: {:?}", e);
+    }
+  }
+
+  // for ckey in mutex_anchor_registry.lock().unwrap().keys() {
+  //
+  //   let c_pi_record_collection = mutex_record_collection.clone();
+  //   let c_pi_anchor_registry = mutex_anchor_registry.clone();
+  //   println!("{}", ckey);
+  //
+  //   // if let Some(current_chr) = c_pi_anchor_registry.lock().unwrap().get(i) {
+  //   //   println!("This is a chromosome set: {}\n{:#?}", i, current_chr);
+  //   // }
+  //
+  //   modules::peak_identification::pi_controller(
+  //     ckey,
+  //     c_pi_record_collection,
+  //     c_pi_anchor_registry,
+  //   )?;
+  // }
+
   // modules::peak_identification::pi_controller(
   //   &record_collection,
   //   &anchor_registry,
@@ -75,14 +147,17 @@ fn main() -> std::io::Result<()> {
 
   // TODO: build interphase to PostgreSQL
 
+
   // // output message to log
   // for (key, val) in mutex_record_collection.lock().unwrap().iter() {
-  //   println!("key: {}\nval: {:#?}", key, val);
+  //   println!("key: {}\nval: {:#?}", key, val.chranchor);
   // }
-  //
-  // println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
-  //
-  // with_love();
+
+  // println!("{:#?}", mutex_record_collection.lock().unwrap().get("SRR556146.78"));
+
+  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+
+  with_love();
 
   match now.elapsed() {
     Ok(elapsed) => {

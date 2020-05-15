@@ -29,6 +29,7 @@ pub fn pi_identifier (
 
   // println!("{:#?}", ikey);
 
+  // println!("Chromosome: {} => {:?}", ikey, chr_max.lock().unwrap().get(ikey));
   let mut binned_hashmap = HashMap::new();
   if let Some(chr_max_num) = chr_max.lock().unwrap().get(ikey) {
     let mut n = 0;
@@ -58,6 +59,8 @@ pub fn pi_identifier (
     // // }
 
   }
+
+  println!("Binned vector constructed\n");
 
   if let Some(ids_read) = an_registry.lock().unwrap().get(ikey) {
   // let ids_read = an_registry.lock().unwrap().get(ikey).unwrap();
