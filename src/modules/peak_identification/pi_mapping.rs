@@ -24,7 +24,7 @@ pub fn pi_identifier (
   ikey: &String,
   hm_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
-  chr_max: Arc<Mutex<HashMap<String, i32>>>,
+  // chr_max: Arc<Mutex<HashMap<String, i32>>>,
 ) -> std::io::Result<()> {
 
   // println!("{:#?}", ikey);

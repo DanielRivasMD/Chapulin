@@ -33,7 +33,7 @@ fn main() -> std::io::Result<()> {
   // initiate HashMap
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
   let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
-  let mutex_chr_max = Arc::new(Mutex::new(HashMap::new()));
+  // let mutex_chr_max = Arc::new(Mutex::new(HashMap::new()));
 
   // let mut record_collection = HashMap::new();
   // let mut anchor_registry = HashMap::new();
@@ -68,14 +68,14 @@ fn main() -> std::io::Result<()> {
   // chromosomal loci module
   let c_cl_record_collection = mutex_record_collection.clone();
   let c_cl_anchor_registry = mutex_anchor_registry.clone();
-  let c_cl_chr_max = mutex_chr_max.clone();
+  // let c_cl_chr_max = mutex_chr_max.clone();
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   modules::chromosomal_loci::cl_controller(
     &args[3],
     c_cl_record_collection,
     c_cl_anchor_registry,
-    c_cl_chr_max,
+    // c_cl_chr_max,
   )?;
 
   match now.elapsed() {
@@ -89,10 +89,10 @@ fn main() -> std::io::Result<()> {
     }
   }
 
-  // output message to log
-  for (key, val) in mutex_chr_max.lock().unwrap().iter() {
-    println!("key: {}\nval: {:#?}", key, val);
-  }
+  // // output message to log
+  // for (key, val) in mutex_chr_max.lock().unwrap().iter() {
+  //   println!("key: {}\nval: {:#?}", key, val);
+  // }
 
 
   // modules::chromosomal_loci::cl_controller(
@@ -103,13 +103,13 @@ fn main() -> std::io::Result<()> {
   // peak identification module
   let c_pi_record_collection = mutex_record_collection.clone();
   let c_pi_anchor_registry = mutex_anchor_registry.clone();
-  let c_pi_chr_max = mutex_chr_max.clone();
+  // let c_pi_chr_max = mutex_chr_max.clone();
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   modules::peak_identification::pi_controller(
     c_pi_record_collection,
     c_pi_anchor_registry,
-    c_pi_chr_max,
+    // c_pi_chr_max,
   )?;
 
   match now.elapsed() {

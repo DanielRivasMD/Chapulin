@@ -17,7 +17,7 @@ pub fn pi_controller(
   // key: &String,
   hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
-  hash_map_chr_max: Arc<Mutex<HashMap<String, i32>>>,
+  // hash_map_chr_max: Arc<Mutex<HashMap<String, i32>>>,
 ) -> std::io::Result<()> {
 
 // pub fn pi_controller(
@@ -42,7 +42,7 @@ pub fn pi_controller(
 
     let c_hash_map_collection = hash_map_collection.clone();
     let c_hash_map_anchor = hash_map_anchor.clone();
-    let c_hash_chr_max = hash_map_chr_max.clone();
+    // let c_hash_chr_max = hash_map_chr_max.clone();
     // println!("{}", okey);
     //
     // println!("{:#?}", c_hash_map_anchor.lock().unwrap().contains_key(&okey));
@@ -53,7 +53,7 @@ pub fn pi_controller(
       &okey,
       c_hash_map_collection,
       c_hash_map_anchor,
-      c_hash_chr_max,
+      // c_hash_chr_max,
     ).expect(&okey);
 
     // if let Some(current_chr) = c_pi_anchor_registry.lock().unwrap().get(i) {
