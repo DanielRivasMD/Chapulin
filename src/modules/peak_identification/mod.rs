@@ -25,10 +25,10 @@ pub fn pi_controller(
 //   hash_map_anchor: &HashMap<String, Vec<String>>,
 // ) -> std::io::Result<()> {
 
-  let mut tmp_vec = Vec::new();
+  let mut chromosome_vec = Vec::new();
   for okey in hash_map_anchor.lock().unwrap().keys() {
     let ckey = okey.clone();
-    tmp_vec.push(ckey);
+    chromosome_vec.push(ckey);
   }
 
   // for i in hash_map_collection.lock().unwrap().iter() {
@@ -36,9 +36,10 @@ pub fn pi_controller(
   //   println!("{:#?}", i.1.read1.breakpoint);
   //   println!("{:#?}", i.1.read2.breakpoint);
   // }
+
   println!("{}", hash_map_collection.lock().unwrap().len());
 
-  for okey in tmp_vec {
+  for okey in chromosome_vec {
 
     let c_hash_map_collection = hash_map_collection.clone();
     let c_hash_map_anchor = hash_map_anchor.clone();

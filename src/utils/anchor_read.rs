@@ -1,4 +1,10 @@
 
+use crate::{
+  settings::{
+    constants::BIN_SIZE
+  },
+};
+
 #[derive(Debug)]
 pub struct AnchorRead {
   pub chr: String,
@@ -27,6 +33,11 @@ impl AnchorRead {
       cigar: file_line[5].to_string(),
       mapq: file_line[4].parse().unwrap(),
     }
+  }
+
+  pub fn binner(&self) -> i32 {
+    let binned = self.pos % BIN_SIZE;
+    self.pos - binned
   }
 
 }
