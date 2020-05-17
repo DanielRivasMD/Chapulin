@@ -16,7 +16,6 @@ pub fn cl_controller (
   cl_aligned_prefix: &String,
   hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
-  // hash_map_chr_max: Arc<Mutex<HashMap<String, i32>>>,
 ) -> std::io::Result<()> {
 
 // pub fn cl_controller (
@@ -31,7 +30,6 @@ pub fn cl_controller (
 
     let c_hash_map_collection = hash_map_collection.clone();
     let c_hash_map_anchor = hash_map_anchor.clone();
-    // let c_hash_chr_max = hash_map_chr_max.clone();
 
     let cl_handle = thread::spawn(move || {
 
@@ -46,7 +44,6 @@ pub fn cl_controller (
           &cl_aligned_file,
           c_hash_map_collection,
           c_hash_map_anchor,
-          // c_hash_chr_max,
         ).expect(&cl_aligned_file);
 
     });
