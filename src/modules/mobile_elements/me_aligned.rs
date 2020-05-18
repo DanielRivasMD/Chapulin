@@ -42,6 +42,7 @@ pub fn me_identificator(
   let mut purge_switch = true;
   let mut mobel_anchor = false;
   let mut me_size = 0;
+  let mut mobel_orientation = String::new();
   // let mut bk_count = 0;
 
   // iterate through file
@@ -101,16 +102,15 @@ pub fn me_identificator(
     }
 
     // println!("{:?}", record_line);
-    if
-      ( adj_left_pos <= ME_LIMIT &&
-        read_orientation ) ||
-      ( me_size - adj_right_pos <= ME_LIMIT &&
-        ! read_orientation )
-    {
-      // tagging
+    // tagging
+    if adj_left_pos <= ME_LIMIT && read_orientation {
       purge_switch = false;
       mobel_anchor = true;
-      // println!("Read: {} anchor: {} batch: {}", read_id, mobel_anchor, purge_switch);
+      mobel_orientation = "upstream".to_string();
+    } else if me_size - adj_right_pos <= ME_LIMIT && ! read_orientation {
+      purge_switch = false;
+      mobel_anchor = true;
+      mobel_orientation = "downstream".to_string();
     }
 
       // println!("Delta check: {:?}", hm_record_collection.lock().unwrap().get(&prev_read_id));
@@ -135,7 +135,7 @@ pub fn me_identificator(
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read1.sequence = read_seq.clone();
-            current_record.read1.me_read[0] = MERead::loader(&record_line, me_size);
+            current_record.read1.me_read[0] = MERead::loader(&record_line, me_size, &mobel_orientation);
             if mobel_anchor { current_record.chranchor = ChrAnchor::Read2; }
 
             // // record break point signature
@@ -155,7 +155,7 @@ pub fn me_identificator(
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read2.sequence = read_seq.clone();
-            current_record.read2.me_read[0] = MERead::loader(&record_line, me_size);
+            current_record.read2.me_read[0] = MERead::loader(&record_line, me_size, &mobel_orientation);
             if mobel_anchor { current_record.chranchor = ChrAnchor::Read1; }
 
             // // record break point signature
@@ -180,11 +180,11 @@ pub fn me_identificator(
         // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
           if current_record.read2.sequence == "".to_string() {
                     // println!("Supplem 1... {} {} {}", read_id, mobel_anchor, purge_switch);
-            current_record.read1.me_read.push(MERead::loader(&record_line, me_size));
+            current_record.read1.me_read.push(MERead::loader(&record_line, me_size, &mobel_orientation));
             if mobel_anchor { current_record.chranchor = ChrAnchor::Read2; }
           } else {
                     // println!("Supplem 2... {} {} {}", read_id, mobel_anchor, purge_switch);
-            current_record.read2.me_read.push(MERead::loader(&record_line, me_size));
+            current_record.read2.me_read.push(MERead::loader(&record_line, me_size, &mobel_orientation));
             if mobel_anchor { current_record.chranchor = ChrAnchor::Read1; }
           }
         }
