@@ -15,3 +15,5 @@ pub mod me_library;
 pub mod cigar;
 
 pub mod flag_interpretor;
+
+pub mod mobel_counter;
