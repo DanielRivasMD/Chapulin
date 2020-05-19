@@ -17,3 +17,5 @@ pub mod cigar;
 pub mod flag_interpretor;
 
 pub mod mobel_counter;
+
+pub mod strander;
