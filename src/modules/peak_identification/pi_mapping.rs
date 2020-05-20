@@ -37,32 +37,35 @@ pub fn pi_identifier (
     // TODO: implement a threshold selector
     // TODO: write Poisson as an independent module
 
+    let read_lenght = hm_collection.lock().unwrap().len() as i32;
+
     let ids_read = an_registry.lock().unwrap().get(ikey).unwrap().clone();
     // if let Some(ids_read) = an_registry.lock().unwrap().get(ikey) {
-      for id_read in ids_read {
 
-        if let Some(me_read) = hm_collection.lock().unwrap().get(&id_read) {
-          match &me_read.chranchor {
-            ChrAnchor::Read1 => {
-              strander(id_read, strand, &me_read.read1.chr_read[0], &me_read.read2.me_read, tmp_position_hm);
-            },
+    for id_read in ids_read {
 
-            ChrAnchor::Read2 => {
-              strander(id_read, strand, &me_read.read2.chr_read[0], &me_read.read1.me_read, tmp_position_hm);
-            },
+      if let Some(me_read) = hm_collection.lock().unwrap().get(&id_read) {
+        match &me_read.chranchor {
+          ChrAnchor::Read1 => {
+            strander(id_read, strand, &me_read.read1.chr_read[0], &me_read.read2.me_read, tmp_position_hm);
+          },
 
-            ChrAnchor::None => (),
-          }
+          ChrAnchor::Read2 => {
+            strander(id_read, strand, &me_read.read2.chr_read[0], &me_read.read1.me_read, tmp_position_hm);
+          },
+
+          ChrAnchor::None => (),
         }
       }
+    }
 
-      println!();
-      for (chr_pos, id_vec) in tmp_position_hm.iter() {
-        if id_vec.len() > 5 {
-          println!("Position: {} => {}", chr_pos, id_vec.len());
-          println!("IDs: {:?}", id_vec);
-        }
+    println!();
+    for (chr_pos, id_vec) in tmp_position_hm.iter() {
+      if id_vec.len() > 5 {
+        println!("Position: {} => {}", chr_pos, id_vec.len());
+        println!("IDs: {:?}", id_vec);
       }
+    }
 
   }
   Ok(println!("{} {}", "Chromosome: ", &ikey))

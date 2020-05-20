@@ -17,3 +17,4 @@ path = "src/chapulin.rs"
 
 
 [dependencies]
+rand_distr = "0.2.2"
