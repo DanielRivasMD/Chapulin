@@ -57,11 +57,10 @@ fn tabler(
   psize: usize,
 ) -> Vec<i32> {
   let mut out_vec = vec![0; psize];
-
   for (_, i) in bined_hm.iter() {
     let length_count = i.len();
     if length_count < psize {
-      out_vec[length_count] = out_vec[length_count] + 1;
+      out_vec[length_count - 1] = out_vec[length_count - 1] + 1;
     }
   }
   return out_vec
@@ -71,7 +70,7 @@ fn cumsum(
   mut cum_vec: Vec<i32>,
 ) -> Vec<i32> {
   let mut cumulus = 0;
-  for i in 0..=cum_vec.len() {
+  for i in 0..cum_vec.len() {
     cumulus = cumulus + cum_vec[i];
     cum_vec[i] = cumulus;
   }
@@ -97,8 +96,8 @@ pub fn thresholder(
   let bin_tb = tabler(read_hm, psize);
   let cum_bin_tb = cumsum(bin_tb);
   let mut false_disc_values = vec![0.; psize];
-  for jx in 0..=psize {
-    false_disc_values[jx] = peak_prob[jx] / cum_bin_tb[jx] as f64;
+  for ix in 0..psize {
+    false_disc_values[ix] = peak_prob[ix] / cum_bin_tb[ix] as f64;
   }
 
   let mut threshold = 0;
@@ -110,14 +109,14 @@ pub fn thresholder(
   return threshold as i32;
 }
 
-// // // R
-// // eff_genome_length <- length_post_contig * bin_size / bin_overlaps
-// //
-// // pop_reads <- sum(peak_strand[, "seq_sum"])
-// // lamm <- pop_reads * bin_size / eff_genome_length
-// // lambda_ls[[which_strand]] <- lamm
-// // p_values <- 1-ppois(1:(no_fdr), lambda = lamm)
-// //
-// // peak_prob <- p_values * length_post_contig
-// // false_disc_values <- peak_prob / cumsum(table(peak_strand[, "seq_max"]))[1:no_fdr]
-// // pop_thres_ls[[which_strand]] <- min(which(false_disc_values < false_discovery_tolerance))
+// // R
+// eff_genome_length <- length_post_contig * bin_size / bin_overlaps
+//
+// pop_reads <- sum(peak_strand[, "seq_sum"])
+// lamm <- pop_reads * bin_size / eff_genome_length
+// lambda_ls[[which_strand]] <- lamm
+// p_values <- 1-ppois(1:(no_fdr), lambda = lamm)
+//
+// peak_prob <- p_values * length_post_contig
+// false_disc_values <- peak_prob / cumsum(table(peak_strand[, "seq_max"]))[1:no_fdr]
+// pop_thres_ls[[which_strand]] <- min(which(false_disc_values < false_discovery_tolerance))

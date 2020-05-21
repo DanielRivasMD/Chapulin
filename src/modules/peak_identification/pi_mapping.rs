@@ -1,10 +1,7 @@
 
 // standard libraries
 use std::collections::HashMap;
-use std::sync::{
-  Arc,
-  Mutex,
-};
+use std::sync::{Arc, Mutex};
 
 // crate utilities
 use crate::{
@@ -12,13 +9,15 @@ use crate::{
     read_record::ReadRecord,
     chranchor_enum::ChrAnchor,
     strander::strander,
+    thresholder::thresholder,
   },
   settings::{
-    constants::STRAND_VEC
+    constants::{
+      STRAND_VEC,
+      NO_FDR,
+    },
   },
 };
-use crate::utils::thresholder::thresholder;
-use crate::settings::constants::NO_FDR;
 
 
 pub fn pi_identifier (
@@ -61,11 +60,9 @@ pub fn pi_identifier (
       }
     }
 
-    // let strand_position_hm = chr_position_hm.get(strand).unwrap();
-
     println!();
+    let pois_threshold = thresholder(read_length, 1_000_000, 0.001, tmp_position_hm, NO_FDR);
     for (chr_pos, id_vec) in tmp_position_hm.iter() {
-      let pois_threshold = thresholder(read_length, 1_000_000, 0.001, tmp_position_hm, NO_FDR);
       if id_vec.len() > pois_threshold as usize {
         println!("Position: {} => {}", chr_pos, id_vec.len());
         println!("IDs: {:?}", id_vec);
