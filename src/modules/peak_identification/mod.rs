@@ -45,13 +45,6 @@ pub fn pi_controller(
     pi_handle.join().unwrap();
 
   }
-
-  // TODO: divide by chromosomes to create concurrency
-
-  // TODO: also divide by orientation & position
-
-  // TODO: set up a threshold based on the poisson estimation of false discovery rate
-
   // TODO: gather all positions & output a comprenhensive list
 
   Ok(())

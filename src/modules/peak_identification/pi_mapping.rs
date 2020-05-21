@@ -36,7 +36,6 @@ pub fn pi_identifier (
     // TODO: tag orientation to reduce elements to iterate on
     // TODO: check for non-oriented mobels
     // TODO: implement a threshold selector
-    // TODO: write Poisson as an independent module
 
     let mut read_count = 0;
 

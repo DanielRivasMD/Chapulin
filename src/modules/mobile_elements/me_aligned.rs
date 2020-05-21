@@ -70,7 +70,6 @@ pub fn me_identificator(
     let adj_right_pos = dc_cigar.right_boundry(pv_position);
 
     // TODO: describe break point signature
-    // TODO: define filters for keeping based on breakpoint estimation & read orientation
 
     // retrieve mobile element library records
     let me_option = hm_me_collection.get(&mobel);
@@ -81,7 +80,6 @@ pub fn me_identificator(
       None => (),
     }
 
-    // TODO: theoretically, this solution would not work for the last record
     // purge read pairs
     // println!("Post load: {} {} {} {} => {} {}", prev_read_id, read_id, purge_switch, mobel_anchor, record_line[9], pv_flag);
     if ! ( prev_read_id == read_id || prev_read_id == "".to_string() ) {
@@ -175,7 +173,6 @@ pub fn me_identificator(
       // secondary alignment
       pf if pf >= 256 => {
 
-        // TODO: probably do not record supplementary alignments
         if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
         // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
           if current_record.read2.sequence == "".to_string() {
