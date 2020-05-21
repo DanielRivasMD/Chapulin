@@ -15,19 +15,20 @@ use crate::{
 pub fn strander(
   read_id: String,
   str: &str,
+  mut read_count: i32,
   chr_pair: &AnchorRead,
   me_pair: &Vec<MERead>,
   position_hm: &mut HashMap<i32, Vec<String>>
-) {
+) -> i32 {
 
   let mut mobel_counter = MobelCounter::new();
 
   for i in me_pair.iter() { mobel_counter.counter(&i.orientation); }
 
-  // TODO: review carefully these conditions
   match str {
     "F5" => {
       if chr_pair.flag == 0 && mobel_counter.upstream >= mobel_counter.downstream {
+        read_count = read_count + 1;
         let binned_position = chr_pair.binner();
         if ! position_hm.contains_key( &binned_position) { position_hm.insert(binned_position, Vec::new()); }
         if let Some(id_vector) = position_hm.get_mut( &binned_position) { id_vector.push(read_id); }
@@ -35,6 +36,7 @@ pub fn strander(
     },
     "F3" => {
       if chr_pair.flag == 16 && mobel_counter.upstream <= mobel_counter.downstream {
+        read_count = read_count + 1;
         let binned_position = chr_pair.binner();
         if ! position_hm.contains_key( &binned_position) { position_hm.insert(binned_position, Vec::new()); }
         if let Some(id_vector) = position_hm.get_mut( &binned_position) { id_vector.push(read_id); }
@@ -42,6 +44,7 @@ pub fn strander(
     },
     "R5" => {
       if chr_pair.flag == 16 && mobel_counter.upstream >= mobel_counter.downstream {
+        read_count = read_count + 1;
         let binned_position = chr_pair.binner();
         if ! position_hm.contains_key( &binned_position) { position_hm.insert(binned_position, Vec::new()); }
         if let Some(id_vector) = position_hm.get_mut( &binned_position) { id_vector.push(read_id); }
@@ -49,6 +52,7 @@ pub fn strander(
     },
     "R3" => {
       if chr_pair.flag == 0 && mobel_counter.upstream <= mobel_counter.downstream {
+        read_count = read_count + 1;
         let binned_position = chr_pair.binner();
         if ! position_hm.contains_key( &binned_position) { position_hm.insert(binned_position, Vec::new()); }
         if let Some(id_vector) = position_hm.get_mut( &binned_position) { id_vector.push(read_id); }
@@ -56,4 +60,5 @@ pub fn strander(
     },
     _ => {},
   }
+  return read_count
 }

@@ -38,7 +38,7 @@ pub fn pi_identifier (
     // TODO: implement a threshold selector
     // TODO: write Poisson as an independent module
 
-    let read_length = hm_collection.lock().unwrap().len() as i32;
+    let mut read_count = 0;
 
     let ids_read = an_registry.lock().unwrap().get(ikey).unwrap().clone();
     // if let Some(ids_read) = an_registry.lock().unwrap().get(ikey) {
@@ -48,11 +48,11 @@ pub fn pi_identifier (
       if let Some(me_read) = hm_collection.lock().unwrap().get(&id_read) {
         match &me_read.chranchor {
           ChrAnchor::Read1 => {
-            strander(id_read, strand, &me_read.read1.chr_read[0], &me_read.read2.me_read, tmp_position_hm);
+            read_count = strander(id_read, strand, read_count, &me_read.read1.chr_read[0], &me_read.read2.me_read, tmp_position_hm);
           },
 
           ChrAnchor::Read2 => {
-            strander(id_read, strand, &me_read.read2.chr_read[0], &me_read.read1.me_read, tmp_position_hm);
+            read_count = strander(id_read, strand, read_count, &me_read.read2.chr_read[0], &me_read.read1.me_read, tmp_position_hm);
           },
 
           ChrAnchor::None => (),
@@ -61,7 +61,7 @@ pub fn pi_identifier (
     }
 
     println!();
-    let pois_threshold = thresholder(read_length, 1_000_000, 0.001, tmp_position_hm, NO_FDR);
+    let pois_threshold = thresholder(read_count, 1_000_000, 0.001, tmp_position_hm, NO_FDR);
     for (chr_pos, id_vec) in tmp_position_hm.iter() {
       if id_vec.len() > pois_threshold as usize {
         println!("Position: {} => {}", chr_pos, id_vec.len());
