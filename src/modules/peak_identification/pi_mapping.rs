@@ -17,6 +17,8 @@ use crate::{
     constants::STRAND_VEC
   },
 };
+use crate::utils::thresholder::thresholder;
+use crate::settings::constants::NO_FDR;
 
 
 pub fn pi_identifier (
@@ -37,7 +39,7 @@ pub fn pi_identifier (
     // TODO: implement a threshold selector
     // TODO: write Poisson as an independent module
 
-    let read_lenght = hm_collection.lock().unwrap().len() as i32;
+    let read_length = hm_collection.lock().unwrap().len() as i32;
 
     let ids_read = an_registry.lock().unwrap().get(ikey).unwrap().clone();
     // if let Some(ids_read) = an_registry.lock().unwrap().get(ikey) {
@@ -59,9 +61,12 @@ pub fn pi_identifier (
       }
     }
 
+    // let strand_position_hm = chr_position_hm.get(strand).unwrap();
+
     println!();
     for (chr_pos, id_vec) in tmp_position_hm.iter() {
-      if id_vec.len() > 5 {
+      let pois_threshold = thresholder(read_length, 1_000_000, 0.001, tmp_position_hm, NO_FDR);
+      if id_vec.len() > pois_threshold as usize {
         println!("Position: {} => {}", chr_pos, id_vec.len());
         println!("IDs: {:?}", id_vec);
       }
