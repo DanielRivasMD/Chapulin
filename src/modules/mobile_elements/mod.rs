@@ -12,7 +12,7 @@ use crate::utils::{
 mod me_registry;
 mod me_aligned;
 
-pub fn me_controller(
+pub fn me_controller (
   directory: &String,
   me_library: &String,
   me_aligned_file: &String,

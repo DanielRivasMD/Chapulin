@@ -26,7 +26,7 @@ create a safe escape in case of memory failures
 create unit tests
 */
 
-fn main() -> std::io::Result<()> {
+fn main () -> std::io::Result<()> {
 
   // read configuration from file
   let matches = clap_app!(Chapilin =>

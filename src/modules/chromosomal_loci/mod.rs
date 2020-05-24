@@ -28,6 +28,7 @@ pub fn cl_controller (
   for i in 1..3 {
 
     let prefix = cl_aligned_prefix.clone();
+    let c_directory = directory.clone();
 
     let c_hash_map_collection = hash_map_collection.clone();
     let c_hash_map_anchor = hash_map_anchor.clone();
@@ -39,7 +40,7 @@ pub fn cl_controller (
 
       // let directory = "/Users/drivas/chapulinTest/".to_string();
       let sufix = ".sorted.sam".to_string();
-      let cl_aligned_file = format!("{}{}{}{}", directory, prefix, i, sufix);
+      let cl_aligned_file = format!("{}{}{}{}", c_directory, prefix, i, sufix);
 
         cl_aligned::cl_mapper(
           &cl_aligned_file,
