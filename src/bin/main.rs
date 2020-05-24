@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
 use std::env;
-use clap::{App, Arg};
+use clap::{crate_authors, clap_app};
 use config::{Config, File};
 
 /*
@@ -28,63 +28,39 @@ create unit tests
 
 fn main() -> std::io::Result<()> {
 
-  // read configuration
-  let matches = App::new("Chapiln")
-  .arg(
-  Arg::new("config")
-      .about("sets the config file to use")
-      .takes_value(true)
-      .short('c')
-      .long("config"),
+  // read configuration from file
+  let matches = clap_app!(Chapilin =>
+    (version: "1.0")
+    (author: crate_authors!())
+    (about: "Mobile Element Identification")
+    (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
+    // (@arg INPUT: +required "Sets the input file to use")
+    // (@arg debug: -d ... "Sets the level of debugging information")
+    // (@subcommand test =>
+    //   (about: "controls testing features")
+    //   (version: "1.3")
+    //   (author: "Someone E. <someone_else@other.com>")
+    //   (@arg verbose: -v --verbose "Print test information verbosely")
+    // )
   )
   .get_matches();
 
-  if let Some(config) = matches.value_of("config") {
-    println!("A config file was passed in: {}", config);
+  println!("running {:?}", matches.value_of("CONFIG"));
 
-    let mut settings = Config::default();
-      settings
-        // File::with_name(..) is shorthand for File::from(Path::new(..))
-        .merge(File::with_name(config)).unwrap();
-        // .merge(File::with_name("conf/00-default.toml")).unwrap()
-        // .merge(File::from(Path::new("conf/05-some.yml"))).unwrap()
-        // .merge(File::from(Path::new("conf/99-extra.json"))).unwrap();
+  let config = matches.value_of("CONFIG").unwrap();
+  println!("A config file was passed in: {}", config);
 
-      // Print out our settings (as a HashMap)
+  let mut settings = Config::default();
+    settings
+      .merge(File::with_name(config)).unwrap();
 
-        // println!("\n{:?} \n\n-----------",
-        //        settings.try_into::<HashMap<String, String>>().unwrap());
+  // interpret settings into variables
+  let settings_hm = settings.try_into::<HashMap<String, String>>().unwrap();
 
-    let hm = settings.try_into::<HashMap<String, String>>().unwrap();
-
-    if hm.contains_key("x") {
-
-      let xv = hm.get("x").unwrap();
-      println!("values of xv is {:?}", xv);
-      // println!("values of x is {:?}", hm.get("x").unwrap());
-    }
-
-  }
-
-  let args: Vec<String> = env::args().collect();
-
-  // let mut settings = config::Config::default();
-  // settings
-  //   // Add in `./Settings.toml`
-  //   .merge(config::File::with_name(&*args[1].to_string())).unwrap()
-  //   // Add in settings from the environment (with a prefix of APP)
-  //   // Eg.. `APP_DEBUG=1 ./target/app` would set the `debug` key
-  //   .merge(config::Environment::with_prefix("APP")).unwrap();
-  //
-  // // Print out our settings (as a HashMap)
-  // println!("{:?}",
-  //   settings.try_into::<HashMap<String, String>>().unwrap());
-  //
-
-  // config::read_settings::read_config(
-  //   &args[1],
-  // );
-
+  let directory = settings_hm.get("directory").unwrap();
+  let me_library_file = settings_hm.get("mobile_element_library").unwrap();
+  let me_align = settings_hm.get("mobile_element_alignment").unwrap();
+  let cl_align = settings_hm.get("reference_genome_alignment").unwrap();
 
   let now = SystemTime::now();
 
@@ -102,8 +78,9 @@ fn main() -> std::io::Result<()> {
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   modules::mobile_elements::me_controller(
-    &args[1],
-    &args[2],
+    directory,
+    me_library_file,
+    me_align,
     c_me_record_collection,
   )?;
 
@@ -128,7 +105,8 @@ fn main() -> std::io::Result<()> {
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   modules::chromosomal_loci::cl_controller(
-    &args[3],
+    directory,
+    cl_align,
     c_cl_record_collection,
     c_cl_anchor_registry,
   )?;

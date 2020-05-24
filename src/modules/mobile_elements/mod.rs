@@ -13,6 +13,7 @@ mod me_registry;
 mod me_aligned;
 
 pub fn me_controller(
+  directory: &String,
   me_library: &String,
   me_aligned_file: &String,
   hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
@@ -23,7 +24,7 @@ pub fn me_controller(
 // ) -> std::io::Result<()> {
 
   // define files directory
-  let directory = "/Users/drivas/chapulinTest/".to_string();
+  // let directory = "/Users/drivas/chapulinTest/".to_string();
 
   // init mobile element library hashmap
   let mut me_collection = HashMap::new();

@@ -13,6 +13,7 @@ mod cl_aligned;
 // type Records = Mutex<HashMap<String, ReadRecord>>;
 
 pub fn cl_controller (
+  directory: &String,
   cl_aligned_prefix: &String,
   hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
@@ -36,7 +37,7 @@ pub fn cl_controller (
       // let prefix = "SAMN01162223_R".to_string();
       // let prefix = "SAMN02692344_R".to_string();
 
-      let directory = "/Users/drivas/chapulinTest/".to_string();
+      // let directory = "/Users/drivas/chapulinTest/".to_string();
       let sufix = ".sorted.sam".to_string();
       let cl_aligned_file = format!("{}{}{}{}", directory, prefix, i, sufix);
 
