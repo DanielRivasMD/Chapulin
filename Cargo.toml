@@ -18,3 +18,4 @@ path = "src/chapulin.rs"
 
 [dependencies]
 libc = "0.2.70"
+clap = "2.33.1"

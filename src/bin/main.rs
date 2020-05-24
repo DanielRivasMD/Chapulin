@@ -1,10 +1,12 @@
 
-// wrapper
+// Chapulin wrapper
 use chapulin::{*};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
 use std::env;
+use clap::{App, Arg};
+use config::{Config, File};
 
 /*
 the general idea is to create a modulerize, fast & reliable tool for mobile element identification in re sequence projects
@@ -26,7 +28,63 @@ create unit tests
 
 fn main() -> std::io::Result<()> {
 
+  // read configuration
+  let matches = App::new("Chapiln")
+  .arg(
+  Arg::new("config")
+      .about("sets the config file to use")
+      .takes_value(true)
+      .short('c')
+      .long("config"),
+  )
+  .get_matches();
+
+  if let Some(config) = matches.value_of("config") {
+    println!("A config file was passed in: {}", config);
+
+    let mut settings = Config::default();
+      settings
+        // File::with_name(..) is shorthand for File::from(Path::new(..))
+        .merge(File::with_name(config)).unwrap();
+        // .merge(File::with_name("conf/00-default.toml")).unwrap()
+        // .merge(File::from(Path::new("conf/05-some.yml"))).unwrap()
+        // .merge(File::from(Path::new("conf/99-extra.json"))).unwrap();
+
+      // Print out our settings (as a HashMap)
+
+        // println!("\n{:?} \n\n-----------",
+        //        settings.try_into::<HashMap<String, String>>().unwrap());
+
+    let hm = settings.try_into::<HashMap<String, String>>().unwrap();
+
+    if hm.contains_key("x") {
+
+      let xv = hm.get("x").unwrap();
+      println!("values of xv is {:?}", xv);
+      // println!("values of x is {:?}", hm.get("x").unwrap());
+    }
+
+  }
+
   let args: Vec<String> = env::args().collect();
+
+  // let mut settings = config::Config::default();
+  // settings
+  //   // Add in `./Settings.toml`
+  //   .merge(config::File::with_name(&*args[1].to_string())).unwrap()
+  //   // Add in settings from the environment (with a prefix of APP)
+  //   // Eg.. `APP_DEBUG=1 ./target/app` would set the `debug` key
+  //   .merge(config::Environment::with_prefix("APP")).unwrap();
+  //
+  // // Print out our settings (as a HashMap)
+  // println!("{:?}",
+  //   settings.try_into::<HashMap<String, String>>().unwrap());
+  //
+
+  // config::read_settings::read_config(
+  //   &args[1],
+  // );
+
 
   let now = SystemTime::now();
 
@@ -127,8 +185,6 @@ fn main() -> std::io::Result<()> {
   // println!("{:#?}", mutex_record_collection.lock().unwrap().get("SRR556146.78"));
 
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
-
-  with_love();
 
   match now.elapsed() {
     Ok(elapsed) => {
