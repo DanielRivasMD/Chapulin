@@ -19,3 +19,5 @@ path = "src/chapulin.rs"
 [dependencies]
 libc = "0.2.70"
 clap = "2.33.1"
+config = "0.10.1"
+# lazy_static = "1.4.0"

@@ -34,6 +34,16 @@ fn main () -> std::io::Result<()> {
     (author: crate_authors!())
     (about: "Mobile Element Identification")
     (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
+    (@subcommand ME =>
+      (about: "ME subcommand")
+      (@arg verbose: -v --verbose "Print test verbosely")
+    )
+    (@subcommand SV =>
+      (about: "SV subcommand")
+      (@arg verbose: -v --verbose "Print test verbosely")
+    )
+
+
     // (@arg INPUT: +required "Sets the input file to use")
     // (@arg debug: -d ... "Sets the level of debugging information")
     // (@subcommand test =>
@@ -63,6 +73,24 @@ fn main () -> std::io::Result<()> {
   let cl_align = settings_hm.get("reference_genome_alignment").unwrap();
 
   let now = SystemTime::now();
+
+ // You can information about subcommands by requesting their matches by name
+    // (as below), requesting just the name used, or both at the same time
+    if let Some(matches) = matches.subcommand_matches("ME") {
+        if matches.is_present("verbose") {
+            println!("Printing ME verbosely...");
+        } else {
+            println!("Printing ME normally...");
+        }
+    }
+
+    if let Some(matches) = matches.subcommand_matches("SV") {
+        if matches.is_present("verbose") {
+            println!("Printing SV verbosely...");
+        } else {
+            println!("Printing SV normally...");
+        }
+    }
 
   // initiate HashMap
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
@@ -174,5 +202,6 @@ fn main () -> std::io::Result<()> {
       println!("Error: {:?}", e);
     }
   }
+
   Ok(())
 }
