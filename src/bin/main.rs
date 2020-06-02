@@ -1,12 +1,11 @@
 
 // Chapulin wrapper
 use chapulin::{*};
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
-use std::time::{SystemTime};
-use std::env;
-use clap::{crate_authors, clap_app};
-use config::{Config, File};
+use clap::{
+  clap_app,
+  crate_authors,
+  crate_version,
+};
 
 /*
 the general idea is to create a modulerize, fast & reliable tool for mobile element identification in re sequence projects
@@ -26,181 +25,42 @@ create a safe escape in case of memory failures
 create unit tests
 */
 
+
 fn main () -> std::io::Result<()> {
 
   // read configuration from file
   let matches = clap_app!(Chapilin =>
-    (version: "1.0")
+    (version: crate_version!())
     (author: crate_authors!())
     (about: "Mobile Element Identification")
-    (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
+
     (@subcommand ME =>
+      (version: crate_version!())
+      (author: crate_authors!())
       (about: "ME subcommand")
       (@arg verbose: -v --verbose "Print test verbosely")
+      (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
     )
+
     (@subcommand SV =>
+      (version: crate_version!())
+      (author: crate_authors!())
       (about: "SV subcommand")
       (@arg verbose: -v --verbose "Print test verbosely")
+      (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
     )
 
-
-    // (@arg INPUT: +required "Sets the input file to use")
-    // (@arg debug: -d ... "Sets the level of debugging information")
-    // (@subcommand test =>
-    //   (about: "controls testing features")
-    //   (version: "1.3")
-    //   (author: "Someone E. <someone_else@other.com>")
-    //   (@arg verbose: -v --verbose "Print test information verbosely")
-    // )
   )
   .get_matches();
 
-  println!("running {:?}", matches.value_of("CONFIG"));
-
-  let config = matches.value_of("CONFIG").unwrap();
-  println!("A config file was passed in: {}", config);
-
-  let mut settings = Config::default();
-    settings
-      .merge(File::with_name(config)).unwrap();
-
-  // interpret settings into variables
-  let settings_hm = settings.try_into::<HashMap<String, String>>().unwrap();
-
-  let directory = settings_hm.get("directory").unwrap();
-  let me_library_file = settings_hm.get("mobile_element_library").unwrap();
-  let me_align = settings_hm.get("mobile_element_alignment").unwrap();
-  let cl_align = settings_hm.get("reference_genome_alignment").unwrap();
-
-  let now = SystemTime::now();
-
- // You can information about subcommands by requesting their matches by name
-    // (as below), requesting just the name used, or both at the same time
-    if let Some(matches) = matches.subcommand_matches("ME") {
-        if matches.is_present("verbose") {
-            println!("Printing ME verbosely...");
-        } else {
-            println!("Printing ME normally...");
-        }
-    }
-
-    if let Some(matches) = matches.subcommand_matches("SV") {
-        if matches.is_present("verbose") {
-            println!("Printing SV verbosely...");
-        } else {
-            println!("Printing SV normally...");
-        }
-    }
-
-  // initiate HashMap
-  let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
-  let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
-
-  // let mut record_collection = HashMap::new();
-  // let mut anchor_registry = HashMap::new();
-
-  // TODO: write pre processing recomendations => fastq filtering, alignment
-
-  // mobile elements module
-  let c_me_record_collection = mutex_record_collection.clone();
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
-
-  modules::mobile_elements::me_controller(
-    directory,
-    me_library_file,
-    me_align,
-    c_me_record_collection,
-  )?;
-
-  match now.elapsed() {
-    Ok(elapsed) => {
-      println!("{} secs", elapsed.as_secs_f64());
-    }
-
-    Err(e) => {
-      // an error occurred!
-      println!("Error: {:?}", e);
-    }
+  // ME controller
+  if let Some(matches) = matches.subcommand_matches("ME") {
+    controllers::me_subcmd::me_subcmd(matches)?;
   }
 
-  // modules::mobile_elements::me_controller(
-  //   &mut record_collection,
-  // )?;
-
-  // chromosomal loci module
-  let c_cl_record_collection = mutex_record_collection.clone();
-  let c_cl_anchor_registry = mutex_anchor_registry.clone();
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
-
-  modules::chromosomal_loci::cl_controller(
-    directory,
-    cl_align,
-    c_cl_record_collection,
-    c_cl_anchor_registry,
-  )?;
-
-  match now.elapsed() {
-    Ok(elapsed) => {
-      println!("{} secs", elapsed.as_secs_f64());
-    }
-
-    Err(e) => {
-      // an error occurred!
-      println!("Error: {:?}", e);
-    }
-  }
-
-  // modules::chromosomal_loci::cl_controller(
-  //   &mut record_collection,
-  //   &mut anchor_registry,
-  // )?;
-
-  // peak identification module
-  let c_pi_record_collection = mutex_record_collection.clone();
-  let c_pi_anchor_registry = mutex_anchor_registry.clone();
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
-
-  modules::peak_identification::pi_controller(
-    c_pi_record_collection,
-    c_pi_anchor_registry,
-  )?;
-
-  match now.elapsed() {
-    Ok(elapsed) => {
-      println!("{} secs", elapsed.as_secs_f64());
-    }
-
-    Err(e) => {
-      // an error occurred!
-      println!("Error: {:?}", e);
-    }
-  }
-
-  // modules::peak_identification::pi_controller(
-  //   &record_collection,
-  //   &anchor_registry,
-  // )?;
-
-  // TODO: build interphase to PostgreSQL
-
-  // // output message to log
-  // for (key, val) in mutex_record_collection.lock().unwrap().iter() {
-  //   println!("key: {}\nval: {:#?}", key, val.chranchor);
-  // }
-
-  // println!("{:#?}", mutex_record_collection.lock().unwrap().get("SRR556146.78"));
-
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
-
-  match now.elapsed() {
-    Ok(elapsed) => {
-      println!("{} secs", elapsed.as_secs_f64());
-    }
-
-    Err(e) => {
-      // an error occurred!
-      println!("Error: {:?}", e);
-    }
+  // SV controller
+  if let Some(matches) = matches.subcommand_matches("SV") {
+    controllers::sv_subcmd::sv_subcmd(matches)?;
   }
 
   Ok(())

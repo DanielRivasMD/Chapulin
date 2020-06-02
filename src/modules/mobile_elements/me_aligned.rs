@@ -1,10 +1,7 @@
 
 // standard libraries
 use std::collections::HashMap;
-use std::sync::{
-  Arc,
-  Mutex
-};
+use std::sync::{Arc, Mutex};
 
 // crate utilities
 use crate::{
@@ -21,6 +18,7 @@ use crate::{
     constants::ME_LIMIT,
   },
 };
+
 
 pub fn me_identificator(
   me_bam_file: &String,

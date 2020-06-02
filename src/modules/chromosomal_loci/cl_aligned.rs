@@ -16,6 +16,7 @@ use crate::{
   }
 };
 
+
 pub fn cl_mapper(
   cl_bam_file: &String,
   hm_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,

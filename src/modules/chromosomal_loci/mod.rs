@@ -5,12 +5,17 @@ use std::sync::{Mutex, Arc};
 use std::thread;
 
 // crate utilities
-use crate::utils::read_record::ReadRecord;
+use crate::{
+  utils::{
+    read_record::ReadRecord,
+  }
+};
 
 // modules
 mod cl_aligned;
 
 // type Records = Mutex<HashMap<String, ReadRecord>>;
+
 
 pub fn cl_controller (
   directory: &String,

@@ -4,13 +4,16 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 // crate utilities
-use crate::utils::{
-  read_record::ReadRecord
+use crate::{
+  utils::{
+    read_record::ReadRecord
+  }
 };
 
 // modules
 mod me_registry;
 mod me_aligned;
+
 
 pub fn me_controller (
   directory: &String,

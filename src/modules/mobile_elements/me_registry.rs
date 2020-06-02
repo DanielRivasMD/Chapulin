@@ -3,10 +3,13 @@
 use std::collections::HashMap;
 
 // crate utilities
-use crate::utils::{
-  file_reader::file_reader,
-  me_library::MElibrary,
+use crate::{
+  utils::{
+    file_reader::file_reader,
+    me_library::MElibrary,
+  }
 };
+
 
 pub fn me_lib_loader(
   me_lib_file: &String,

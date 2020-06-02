@@ -5,12 +5,15 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 
 // crate utilities
-use crate::utils::{
-  read_record::ReadRecord
+use crate::{
+  utils::{
+    read_record::ReadRecord
+  }
 };
 
 // modules
 mod pi_mapping;
+
 
 pub fn pi_controller(
   hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
