@@ -1,6 +1,6 @@
 
 #[derive(Debug)]
-pub struct MERead {
+pub struct MEAnchor {
   pub mobel: String,
   pub size: i32, 
   pub flag: i32,
@@ -9,7 +9,8 @@ pub struct MERead {
   pub orientation: String,
 }
 
-impl MERead {
+impl MEAnchor {
+
   pub fn new() -> Self {
     Self {
       mobel: "".to_string(),

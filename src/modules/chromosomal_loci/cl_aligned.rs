@@ -7,9 +7,9 @@ use std::sync::{Arc, Mutex};
 use crate::{
   utils::{
     file_reader::file_reader,
-    read_record::ReadRecord,
-    anchor_read::AnchorRead,
-    chranchor_enum::ChrAnchor,
+    me_chimeric_pair::MEChimericPair,
+    chr_anchor::ChrAnchor,
+    chr_anchor_enum::ChrAnchorEnum,
   },
   settings::{
     constants::MAPQ,
@@ -19,7 +19,7 @@ use crate::{
 
 pub fn cl_mapper(
   cl_bam_file: &String,
-  hm_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
+  hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
 
@@ -49,23 +49,23 @@ pub fn cl_mapper(
           (current_record.read1.sequence == record_line[9].to_string()) ||
           (current_record.read1.sequence_reverser() == record_line[9].to_string())
         {
-          current_record.read1.chr_read[0] = AnchorRead::loader(&record_line);
+          current_record.read1.chr_read[0] = ChrAnchor::loader(&record_line);
 
         } else if
           (current_record.read2.sequence == record_line[9].to_string()) ||
           (current_record.read2.sequence_reverser() == record_line[9].to_string())
         {
-          current_record.read2.chr_read[0] = AnchorRead::loader(&record_line);
+          current_record.read2.chr_read[0] = ChrAnchor::loader(&record_line);
         }
 
-        match current_record.chranchor {
-          ChrAnchor::Read1 => {
+        match current_record.chranch {
+          ChrAnchorEnum::Read1 => {
             if current_record.read1.chr_read[0].mapq < MAPQ && current_record.read1.chr_read[0].chr != "".to_string()
             {
               mapq_switch = true;
             }
           },
-          ChrAnchor::Read2 => {
+          ChrAnchorEnum::Read2 => {
             if current_record.read2.chr_read[0].mapq < MAPQ && current_record.read2.chr_read[0].chr != "".to_string()
             {
               mapq_switch = true;

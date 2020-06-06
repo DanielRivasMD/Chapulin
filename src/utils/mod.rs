@@ -1,10 +1,10 @@
 
 // data structures
-pub mod read_record;
-  pub mod read_sequence;
-    pub mod me_read;
-    pub mod anchor_read;
-  pub mod chranchor_enum;
+pub mod me_chimeric_pair;
+  pub mod me_chimeric_read;
+    pub mod me_anchor;
+    pub mod chr_anchor;
+  pub mod chr_anchor_enum;
   pub mod break_point;
 
 pub mod cigar;
@@ -17,7 +17,7 @@ pub mod file_reader;
 
 pub mod flag_interpretor;
 
-pub mod mobel_counter;
+pub mod element_counter;
 
 pub mod strander;
 

@@ -7,11 +7,11 @@ use std::sync::{Arc, Mutex};
 use crate::{
   utils::{
     file_reader::file_reader,
-    read_record::ReadRecord,
+    me_chimeric_pair::MEChimericPair,
     me_library::MElibrary,
-    me_read::MERead,
+    me_anchor::MEAnchor,
     cigar::CIGAR,
-    chranchor_enum::ChrAnchor,
+    chr_anchor_enum::ChrAnchorEnum,
     flag_interpretor::interpretor,
   },
   settings::{
@@ -22,7 +22,7 @@ use crate::{
 
 pub fn me_identificator(
   me_bam_file: &String,
-  hm_record_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
+  hm_record_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hm_me_collection: &HashMap<String, MElibrary>,
 ) -> std::io::Result<()> {
 
@@ -123,7 +123,7 @@ pub fn me_identificator(
 
         if ! hm_record_collection.lock().unwrap().contains_key(&read_id) {
         // if ! hm_record_collection.contains_key(&read_id) {
-          hm_record_collection.lock().unwrap().insert((&read_id).to_string(), ReadRecord::new());
+          hm_record_collection.lock().unwrap().insert((&read_id).to_string(), MEChimericPair::new());
           // hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
 
           // println!("Loading 1... {} {} {}", read_id, mobel_anchor, purge_switch);
@@ -131,8 +131,8 @@ pub fn me_identificator(
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read1.sequence = read_seq.clone();
-            current_record.read1.me_read[0] = MERead::loader(&record_line, me_size, &mobel_orientation);
-            if mobel_anchor { current_record.chranchor = ChrAnchor::Read2; }
+            current_record.read1.me_read[0] = MEAnchor::loader(&record_line, me_size, &mobel_orientation);
+            if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
 
             // // record break point signature
             // if
@@ -151,8 +151,8 @@ pub fn me_identificator(
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read2.sequence = read_seq.clone();
-            current_record.read2.me_read[0] = MERead::loader(&record_line, me_size, &mobel_orientation);
-            if mobel_anchor { current_record.chranchor = ChrAnchor::Read1; }
+            current_record.read2.me_read[0] = MEAnchor::loader(&record_line, me_size, &mobel_orientation);
+            if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read1; }
 
             // // record break point signature
             // if
@@ -175,12 +175,12 @@ pub fn me_identificator(
         // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
           if current_record.read2.sequence == "".to_string() {
                     // println!("Supplem 1... {} {} {}", read_id, mobel_anchor, purge_switch);
-            current_record.read1.me_read.push(MERead::loader(&record_line, me_size, &mobel_orientation));
-            if mobel_anchor { current_record.chranchor = ChrAnchor::Read2; }
+            current_record.read1.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
+            if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
           } else {
                     // println!("Supplem 2... {} {} {}", read_id, mobel_anchor, purge_switch);
-            current_record.read2.me_read.push(MERead::loader(&record_line, me_size, &mobel_orientation));
-            if mobel_anchor { current_record.chranchor = ChrAnchor::Read1; }
+            current_record.read2.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
+            if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read1; }
           }
         }
       },

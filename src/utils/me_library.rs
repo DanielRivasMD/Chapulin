@@ -1,7 +1,7 @@
 
 // crate utilities
 use crate::utils::{
-  erv_annotations::ERVannoations,
+  erv_annotations::ERVAnnoations,
 };
 
 // to load onto => hashmap for mobile elements library entries
@@ -9,7 +9,7 @@ use crate::utils::{
 pub struct MElibrary {
   pub me_seq: String,
   pub me_size: i32,
-  pub annotations_erv: ERVannoations,
+  pub annotations_erv: ERVAnnoations,
   // potentially expandable to other types of mobile elements
 }
 
@@ -18,7 +18,7 @@ impl MElibrary {
     Self {
       me_seq: "".to_string(),
       me_size: 0,
-      annotations_erv: ERVannoations {
+      annotations_erv: ERVAnnoations {
         ltr5: false,
         ltr3: false
       }

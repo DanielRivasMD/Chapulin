@@ -1,11 +1,11 @@
 
 #[derive(Debug)]
-pub struct MobelCounter {
+pub struct ElementCounter {
   pub upstream: i32,
   pub downstream: i32,
 }
 
-impl MobelCounter {
+impl ElementCounter {
   pub fn new() -> Self {
     Self {
       upstream: 0,
@@ -14,7 +14,7 @@ impl MobelCounter {
   }
 }
 
-impl MobelCounter {
+impl ElementCounter {
   pub fn counter(&mut self, orientation: &String) {
 
     if orientation == "upstream" {

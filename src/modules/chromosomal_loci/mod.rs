@@ -7,7 +7,7 @@ use std::thread;
 // crate utilities
 use crate::{
   utils::{
-    read_record::ReadRecord,
+    me_chimeric_pair::MEChimericPair,
   }
 };
 
@@ -20,7 +20,7 @@ mod cl_aligned;
 pub fn cl_controller (
   directory: &String,
   cl_aligned_prefix: &String,
-  hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
+  hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
 

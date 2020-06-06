@@ -1,26 +1,26 @@
 
 // crate utilities
 use crate::utils::{
-  me_read::MERead,
-  anchor_read::AnchorRead,
+  me_anchor::MEAnchor,
+  chr_anchor::ChrAnchor,
   break_point::BreakPoint,
 };
 
 // annotate primary (index 0) & secondary aligned reads
 #[derive(Debug)]
-pub struct ReadSequence {
+pub struct MEChimericRead {
   pub sequence: String,
-  pub me_read: Vec<MERead>,
-  pub chr_read: Vec<AnchorRead>,
+  pub me_read: Vec<MEAnchor>,
+  pub chr_read: Vec<ChrAnchor>,
   pub breakpoint: BreakPoint,
 }
 
-impl ReadSequence {
+impl MEChimericRead {
   pub fn new() -> Self {
     Self {
       sequence: "".to_string(),
-      me_read: vec![MERead::new()],
-      chr_read: vec![AnchorRead::new()],
+      me_read: vec![MEAnchor::new()],
+      chr_read: vec![ChrAnchor::new()],
       breakpoint: BreakPoint {
         sequence: "".to_string(),
         coordinate: 0,
@@ -29,7 +29,7 @@ impl ReadSequence {
   }
 }
 
-impl ReadSequence {
+impl MEChimericRead {
 
   // reverse complement sequence
   pub fn sequence_reverser(&self) -> String {

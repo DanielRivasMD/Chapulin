@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 // crate utilities
 use crate::{
   utils::{
-    read_record::ReadRecord
+    me_chimeric_pair::MEChimericPair
   }
 };
 
@@ -19,7 +19,7 @@ pub fn me_controller (
   directory: &String,
   me_library: &String,
   me_aligned_file: &String,
-  hash_map_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
+  hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
 ) -> std::io::Result<()> {
 
 // pub fn me_controller(

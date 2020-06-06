@@ -5,9 +5,9 @@ use std::collections::HashMap;
 // crate utilities
 use crate::{
   utils::{
-    anchor_read::AnchorRead,
-    me_read::MERead,
-    mobel_counter::MobelCounter,
+    chr_anchor::ChrAnchor,
+    me_anchor::MEAnchor,
+    element_counter::ElementCounter,
   },
 };
 
@@ -16,12 +16,12 @@ pub fn strander(
   read_id: String,
   str: &str,
   mut read_count: i32,
-  chr_pair: &AnchorRead,
-  me_pair: &Vec<MERead>,
+  chr_pair: &ChrAnchor,
+  me_pair: &Vec<MEAnchor>,
   position_hm: &mut HashMap<i32, Vec<String>>
 ) -> i32 {
 
-  let mut mobel_counter = MobelCounter::new();
+  let mut mobel_counter = ElementCounter::new();
 
   for i in me_pair.iter() { mobel_counter.counter(&i.orientation); }
 

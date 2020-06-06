@@ -6,8 +6,8 @@ use std::sync::{Arc, Mutex};
 // crate utilities
 use crate::{
   utils::{
-    read_record::ReadRecord,
-    chranchor_enum::ChrAnchor,
+    me_chimeric_pair::MEChimericPair,
+    chr_anchor_enum::ChrAnchorEnum,
     strander::strander,
     thresholder::thresholder,
   },
@@ -22,7 +22,7 @@ use crate::{
 
 pub fn pi_identifier (
   ikey: &String,
-  hm_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
+  hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
 
@@ -45,16 +45,16 @@ pub fn pi_identifier (
     for id_read in ids_read {
 
       if let Some(me_read) = hm_collection.lock().unwrap().get(&id_read) {
-        match &me_read.chranchor {
-          ChrAnchor::Read1 => {
+        match &me_read.chranch {
+          ChrAnchorEnum::Read1 => {
             read_count = strander(id_read, strand, read_count, &me_read.read1.chr_read[0], &me_read.read2.me_read, tmp_position_hm);
           },
 
-          ChrAnchor::Read2 => {
+          ChrAnchorEnum::Read2 => {
             read_count = strander(id_read, strand, read_count, &me_read.read2.chr_read[0], &me_read.read1.me_read, tmp_position_hm);
           },
 
-          ChrAnchor::None => (),
+          ChrAnchorEnum::None => (),
         }
       }
     }

@@ -6,7 +6,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct AnchorRead {
+pub struct ChrAnchor {
   pub chr: String,
   pub flag: i32,
   pub pos: i32,
@@ -14,7 +14,7 @@ pub struct AnchorRead {
   pub mapq: i32,
 }
 
-impl AnchorRead {
+impl ChrAnchor {
   pub fn new() -> Self {
     Self {
       chr: "".to_string(),
