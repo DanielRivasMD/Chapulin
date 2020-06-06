@@ -7,19 +7,21 @@ use std::sync::{Arc, Mutex};
 use crate::{
   utils::{
     file_reader::file_reader,
-    read_record::ReadRecord,
-    anchor_read::AnchorRead,
-    chranchor_enum::ChrAnchor,
+    cigar::CIGAR,
+    flag_interpretor::interpretor,
   },
   settings::{
-    constants::MAPQ,
-  }
+    constants::ME_LIMIT,
+  },
 };
+
+// place holders
+use crate::utils::me_chimeric_pair::MEChimericPair;
 
 
 pub fn sv_mapper(
   sv_bam_file: &String,
-  hm_collection: Arc<Mutex<HashMap<String, ReadRecord>>>,
+  hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
 
@@ -31,66 +33,56 @@ pub fn sv_mapper(
 
     let record_line: Vec<&str> = line?.trim().split("\t").collect();
 
-    // TODO: write SV logic here
+    // update read id
+    let read_id = record_line[0].to_string();
 
-    // if hm_collection.lock().unwrap().contains_key(record_line[0]) {
-    // // if hm_collection.contains_key(record_line[0]) {
-    //
-    //   let mut mapq_switch = false;
-    //
-    //   if let Some(current_record) = hm_collection.lock().unwrap().get_mut(record_line[0]) {
-    //     // if let Some(current_record) = hm_collection.get_mut(record_line[0]) {
-    //
-    //     if
-    //       (current_record.read1.sequence == record_line[9].to_string()) ||
-    //       (current_record.read1.sequence_reverser() == record_line[9].to_string())
-    //     {
-    //       current_record.read1.chr_read[0] = AnchorRead::loader(&record_line);
-    //
-    //     } else if
-    //       (current_record.read2.sequence == record_line[9].to_string()) ||
-    //       (current_record.read2.sequence_reverser() == record_line[9].to_string())
-    //     {
-    //       current_record.read2.chr_read[0] = AnchorRead::loader(&record_line);
-    //     }
-    //
-    //     match current_record.chranchor {
-    //       ChrAnchor::Read1 => {
-    //         if current_record.read1.chr_read[0].mapq < MAPQ && current_record.read1.chr_read[0].chr != "".to_string()
-    //         {
-    //           mapq_switch = true;
-    //         }
-    //       },
-    //       ChrAnchor::Read2 => {
-    //         if current_record.read2.chr_read[0].mapq < MAPQ && current_record.read2.chr_read[0].chr != "".to_string()
-    //         {
-    //           mapq_switch = true;
-    //         }
-    //       },
-    //       _ => (),
-    //     };
-    //   }
-    //
-    //
-    //   if mapq_switch {
-    //     hm_collection.lock().unwrap().remove(record_line[0]);
-    //   } else {
-    //     // register chromosome anchors
-    //     if ! an_registry.lock().unwrap().contains_key(record_line[2]) {
-    //     // if ! an_registry.contains_key(record_line[2]) {
-    //       an_registry.lock().unwrap().insert(record_line[2].to_string(), Vec::new());
-    //       // an_registry.insert(record_line[2].to_string(), Vec::new());
-    //     }
-    //
-    //     if let Some(current_chr) = an_registry.lock().unwrap().get_mut(record_line[2]) {
-    //     // if let Some(current_chr) = an_registry.get_mut(record_line[2]) {
-    //       current_chr.push(record_line[0].to_string())
-    //
-    //
-    //     }
-    //   }
-    // }
+    // calculate current values
+    let chr = record_line[2].to_string();
+    let read_seq = record_line[9].to_string();
 
+    // flag & read orientation
+    let flag = record_line[1].parse::<i32>().unwrap();
+    // let read_orientation = interpretor(flag, 5);
+
+    // alignment interpretation
+    let position = record_line[3].parse::<i32>().unwrap();
+    let cigar = record_line[5].to_string();
+    let dc_cigar = CIGAR::loader(&cigar);
+    let adj_left_pos = dc_cigar.left_boundry(position);
+    let adj_right_pos = dc_cigar.right_boundry(position);
+
+    if ! hm_collection.lock().unwrap().contains_key(&read_id) {
+      hm_collection.lock().unwrap().insert((&read_id).to_string(), MEChimericPair::new());
+
+      if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
+        // current_record.read1.sequence = read_seq.clone();
+        // current_record.read1.me_read[0] = MEAnchor::loader(&record_line, me_size, &mobel_orientation);
+      }
+    } else {
+      if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
+        // current_record.read2.sequence = read_seq.clone();
+        // current_record.read2.me_read[0] = MEAnchor::loader(&record_line, me_size, &mobel_orientation);
+
+        // evaluate read pairs
+        // TODO: SV deletion => read with large (> 2sd observed) template length
+        // TODO: SV duplication => read orientation reversed outwards + inverted chimerics
+        // TODO: SV inversion => read orientation altered unidirectionally + inverted chimerics
+        // TODO: SV insertion => unmapped reads
+        // TODO: SV translocation => read mapping to other chromosomes
+
+        let sv_switch = true;
+
+        // evaluate read batch
+        if sv_switch {
+          hm_collection.lock().unwrap().remove(&read_id);
+        } else {
+          // register chromosome anchors
+          if ! an_registry.lock().unwrap().contains_key(&chr) {
+            an_registry.lock().unwrap().insert(chr, Vec::new());
+          }
+        }
+      }
+    }
   }
 
   Ok(println!("{} {}", "File read: ", &sv_bam_file))

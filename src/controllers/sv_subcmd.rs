@@ -32,8 +32,10 @@ pub fn sv_subcmd(
   // interpret settings into variables
   let settings_hm = settings.try_into::<HashMap<String, String>>().unwrap();
 
+  let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment").unwrap();
+
   let directory = settings_hm.get("directory").unwrap();
-  let sv_align = settings_hm.get("reference_genome_alignment").unwrap();
+  // let sv_align = settings_hm.get("reference_genome_alignment").unwrap();
 
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
   let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
@@ -45,7 +47,7 @@ pub fn sv_subcmd(
 
   modules::structural_variant::sv_controller(
     directory,
-    sv_align,
+    pair_end_reference_alignment,
     c_sv_record_collection,
     c_sv_anchor_registry,
   )?;
