@@ -2,7 +2,7 @@
 // standard libraries
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use std::time::{SystemTime};
+// use std::time::{SystemTime};
 use clap::{ArgMatches};
 use config::{Config, File};
 
@@ -14,7 +14,7 @@ pub fn me_subcmd(
   matches: &ArgMatches
 ) -> std::io::Result<()> {
 
-  let now = SystemTime::now();
+  // let now = SystemTime::now();
 
   if matches.is_present("verbose") {
     println!("Printing ME verbosely...");
@@ -56,16 +56,16 @@ pub fn me_subcmd(
     c_me_record_collection,
   )?;
 
-  match now.elapsed() {
-    Ok(elapsed) => {
-      println!("{} secs", elapsed.as_secs_f64());
-    }
-
-    Err(e) => {
-      // an error occurred!
-      println!("Error: {:?}", e);
-    }
-  }
+  // match now.elapsed() {
+  //   Ok(elapsed) => {
+  //     println!("{} secs", elapsed.as_secs_f64());
+  //   }
+  //
+  //   Err(e) => {
+  //     // an error occurred!
+  //     println!("Error: {:?}", e);
+  //   }
+  // }
 
   // modules::mobile_elements::me_controller(
   //   &mut record_collection,
@@ -83,16 +83,16 @@ pub fn me_subcmd(
     c_cl_anchor_registry,
   )?;
 
-  match now.elapsed() {
-    Ok(elapsed) => {
-      println!("{} secs", elapsed.as_secs_f64());
-    }
-
-    Err(e) => {
-      // an error occurred!
-      println!("Error: {:?}", e);
-    }
-  }
+  // match now.elapsed() {
+  //   Ok(elapsed) => {
+  //     println!("{} secs", elapsed.as_secs_f64());
+  //   }
+  //
+  //   Err(e) => {
+  //     // an error occurred!
+  //     println!("Error: {:?}", e);
+  //   }
+  // }
 
   // modules::chromosomal_loci::cl_controller(
   //   &mut record_collection,
@@ -109,16 +109,16 @@ pub fn me_subcmd(
     c_pi_anchor_registry,
   )?;
 
-  match now.elapsed() {
-    Ok(elapsed) => {
-      println!("{} secs", elapsed.as_secs_f64());
-    }
-
-    Err(e) => {
-      // an error occurred!
-      println!("Error: {:?}", e);
-    }
-  }
+  // match now.elapsed() {
+  //   Ok(elapsed) => {
+  //     println!("{} secs", elapsed.as_secs_f64());
+  //   }
+  //
+  //   Err(e) => {
+  //     // an error occurred!
+  //     println!("Error: {:?}", e);
+  //   }
+  // }
 
   // modules::peak_identification::pi_controller(
   //   &record_collection,
@@ -136,16 +136,16 @@ pub fn me_subcmd(
 
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
-  match now.elapsed() {
-    Ok(elapsed) => {
-      println!("{} secs", elapsed.as_secs_f64());
-    }
-
-    Err(e) => {
-      // an error occurred!
-      println!("Error: {:?}", e);
-    }
-  }
+  // match now.elapsed() {
+  //   Ok(elapsed) => {
+  //     println!("{} secs", elapsed.as_secs_f64());
+  //   }
+  //
+  //   Err(e) => {
+  //     // an error occurred!
+  //     println!("Error: {:?}", e);
+  //   }
+  // }
 
   Ok(())
 }
