@@ -35,6 +35,8 @@ pub fn sv_subcmd(
   let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment").unwrap();
 
   let directory = settings_hm.get("directory").unwrap();
+
+  let expected_tlen = settings_hm.get("expected_tlen").unwrap().parse::<i32>().unwrap();
   // let sv_align = settings_hm.get("reference_genome_alignment").unwrap();
 
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
@@ -47,6 +49,7 @@ pub fn sv_subcmd(
 
   modules::structural_variant::sv_controller(
     directory,
+    expected_tlen,
     pair_end_reference_alignment,
     c_sv_record_collection,
     c_sv_anchor_registry,

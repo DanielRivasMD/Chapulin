@@ -21,6 +21,7 @@ use crate::utils::me_chimeric_pair::MEChimericPair;
 
 pub fn sv_mapper(
   sv_bam_file: &String,
+  expected_tlen: i32,
   hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {

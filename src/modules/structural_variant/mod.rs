@@ -17,6 +17,7 @@ mod sv_registry;
 
 pub fn sv_controller (
   directory: &String,
+  expected_tlen: i32,
   pair_end_reference_alignment: &String,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
@@ -40,6 +41,7 @@ pub fn sv_controller (
 
         sv_registry::sv_mapper(
           &sv_aligned_file,
+          expected_tlen,
           c_hash_map_collection,
           c_hash_map_anchor,
         ).expect(&sv_aligned_file);
