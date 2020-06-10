@@ -51,6 +51,8 @@ pub fn sv_mapper(
     let adj_left_pos = dc_cigar.left_boundry(position);
     let adj_right_pos = dc_cigar.right_boundry(position);
 
+    let mut sv_switch = true;
+
     if ! hm_collection.lock().unwrap().contains_key(&read_id) {
       hm_collection.lock().unwrap().insert((&read_id).to_string(), MEChimericPair::new());
 
@@ -65,12 +67,39 @@ pub fn sv_mapper(
 
         // evaluate read pairs
         // TODO: SV deletion => read with large (> 2sd observed) template length
-        // TODO: SV duplication => read orientation reversed outwards + inverted chimerics
-        // TODO: SV inversion => read orientation altered unidirectionally + inverted chimerics
-        // TODO: SV insertion => unmapped reads
-        // TODO: SV translocation => read mapping to other chromosomes
+        let tlen = current_record.read1.chr_read[0].tlen - current_record.read2.chr_read[0].tlen;
+        if tlen.abs() > expected_tlen {
+          sv_switch = false;
+        }
 
-        let sv_switch = true;
+        // TODO: SV duplication => read orientation reversed outwards + inverted chimerics
+        if tlen > 0 && interpretor(current_record.read1.chr_read[0].flag, 10) {
+          sv_switch = false;
+        } else if tlen < 0 && interpretor(current_record.read2.chr_read[0].flag, 10) {
+          sv_switch = false;
+        } else if tlen == 0 {
+
+        }
+
+        // TODO: SV inversion => read orientation altered unidirectionally + inverted chimerics
+        let read1_orient = interpretor(current_record.read1.chr_read[0].flag, 10);
+        let read2_orient = interpretor(current_record.read2.chr_read[0].flag, 10);
+        if read1_orient == read2_orient {
+          sv_switch = false;
+        }
+
+        // TODO: SV insertion => unmapped reads
+        if
+          tlen == 0 && (
+          current_record.read1.chr_read[0].pos == "*".parse::<i32>().unwrap() ||
+          current_record.read2.chr_read[0].pos == "*".parse::<i32>().unwrap()
+        ) {
+          sv_switch = false;
+        }
+        // TODO: SV translocation => read mapping to other chromosomes
+        if ! (current_record.read1.chr_read[0].chr == current_record.read2.chr_read[0].chr) {
+          sv_switch = false;
+        }
 
         // evaluate read batch
         if sv_switch {
