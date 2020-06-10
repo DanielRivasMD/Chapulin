@@ -92,8 +92,8 @@ pub fn sv_mapper(
         // TODO: SV insertion => unmapped reads
         if
           tlen == 0 && (
-          current_record.read1.chr_read[0].pos == "*".parse::<i32>().unwrap() ||
-          current_record.read2.chr_read[0].pos == "*".parse::<i32>().unwrap()
+          current_record.read1.chr_read[0].pos.to_string() == "*" ||
+          current_record.read2.chr_read[0].pos.to_string() == "*"
         ) {
           sv_switch = false;
         }

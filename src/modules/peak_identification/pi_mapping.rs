@@ -59,7 +59,7 @@ pub fn pi_identifier (
       }
     }
 
-    println!();
+    // println!();
     let pois_threshold = thresholder(read_count, 1_000_000, 0.001, tmp_position_hm, NO_FDR);
     for (chr_pos, id_vec) in tmp_position_hm.iter() {
       if id_vec.len() > pois_threshold as usize {

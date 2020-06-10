@@ -2,7 +2,7 @@
 // standard libraries
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-// use std::time::{SystemTime};
+use std::time::{SystemTime};
 use clap::{ArgMatches};
 use config::{Config, File};
 
@@ -14,7 +14,7 @@ pub fn me_subcmd(
   matches: &ArgMatches
 ) -> std::io::Result<()> {
 
-  // let now = SystemTime::now();
+  let now = SystemTime::now();
 
   if matches.is_present("verbose") {
     println!("Printing ME verbosely...");
@@ -56,6 +56,8 @@ pub fn me_subcmd(
     c_me_record_collection,
   )?;
 
+  println!("{:?}", now.elapsed().unwrap());
+
   // match now.elapsed() {
   //   Ok(elapsed) => {
   //     println!("{} secs", elapsed.as_secs_f64());
@@ -83,6 +85,8 @@ pub fn me_subcmd(
     c_cl_anchor_registry,
   )?;
 
+  println!("{:?}", now.elapsed().unwrap());
+
   // match now.elapsed() {
   //   Ok(elapsed) => {
   //     println!("{} secs", elapsed.as_secs_f64());
@@ -108,6 +112,8 @@ pub fn me_subcmd(
     c_pi_record_collection,
     c_pi_anchor_registry,
   )?;
+
+  println!("{:?}", now.elapsed().unwrap());
 
   // match now.elapsed() {
   //   Ok(elapsed) => {
