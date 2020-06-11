@@ -29,6 +29,10 @@ pub fn sv_mapper(
   // load file
   let (mut reader, mut buffer) = file_reader(&sv_bam_file);
 
+  // declare initial values
+  let mut prev_read_id = String::new();
+  let mut purge_switch = true;
+
   // iterate through file
   while let Some(line) = reader.read_line(&mut buffer) {
 
@@ -52,13 +56,30 @@ pub fn sv_mapper(
     let adj_left_pos = dc_cigar.left_boundry(position);
     let adj_right_pos = dc_cigar.right_boundry(position);
 
-    let mut sv_switch = true;
+    // purge read pairs
+    if ! ( prev_read_id == read_id || prev_read_id == "".to_string() ) {
+      // evaluate read batch
+      if purge_switch {
+          // println!("Deleting: {}", prev_read_id);
+          hm_collection.lock().unwrap().remove(&prev_read_id);
+          // hm_record_collection.remove(&read_id);
+      } else {
+        // println!("to keep: {}", &read_id);
+        // register chromosome anchors
+        if ! an_registry.lock().unwrap().contains_key(&chr) {
+          an_registry.lock().unwrap().insert(chr, Vec::new());
+        }
+      }
+
+      // reset purge switch
+      purge_switch = true;
+    }
 
     if ! hm_collection.lock().unwrap().contains_key(&read_id) {
       hm_collection.lock().unwrap().insert((&read_id).to_string(), SVChimericPair::new());
 
       if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
-        println!("read 1: {:?}", current_record);
+        // println!("read 1: {:?}", current_record);
         current_record.read1.sequence = read_seq.clone();
         current_record.read1.chr_read = ChrAnchor::loader(&record_line);
       }
@@ -66,11 +87,12 @@ pub fn sv_mapper(
       if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
 
 
-        println!("read 2: {:?}", current_record);
+        // println!("read 2: {:?}", current_record);
         current_record.read2.sequence = read_seq.clone();
         current_record.read2.chr_read = ChrAnchor::loader(&record_line);
 
         // evaluate read pairs
+        // TODO: consider using match on expression => efficiency
         // TODO: SV deletion => read with large (> 2sd observed) template length
         // println!("{:#?}", current_record);
         // println!("R1: {}\tR2: {}", current_record.read1.chr_read.tlen, current_record.read2.chr_read.tlen);
@@ -84,7 +106,7 @@ pub fn sv_mapper(
         // println!("absolute: {}", tlen.abs());
 
           current_record.svtag = SVType::Deletion;
-          sv_switch = false;
+          purge_switch = false;
         }
         // println!("svdeletion: {}\tsvswitch: {}", x, sv_switch);
 
@@ -123,20 +145,15 @@ pub fn sv_mapper(
         // evaluate read batch
       }
     }
+    prev_read_id = read_id;
+  }
 
-    if sv_switch {
-      // println!("eliminating record");
-      // println!("{}", read_id);
-      // println!("{:#?}", hm_collection.lock().unwrap().remove(&read_id));
-      hm_collection.lock().unwrap().remove(&read_id);
-      // println!("gone record");
-    } else {
-      println!("to keep: {}", &read_id);
-      // register chromosome anchors
-      if ! an_registry.lock().unwrap().contains_key(&chr) {
-        an_registry.lock().unwrap().insert(chr, Vec::new());
-      }
-    }
+  // evaluate at end of file
+  if purge_switch {
+          // println!("Last check: {:?}", hm_record_collection.lock().unwrap().get(&prev_read_id));
+
+    hm_collection.lock().unwrap().remove(&prev_read_id);
+    // hm_record_collection.remove(&read_id);
   }
 
   Ok(println!("{} {}", "File read: ", &sv_bam_file))
