@@ -75,15 +75,20 @@ pub fn sv_subcmd(
   //   }
   // }
 
-  // peak identification module
-  let c_pi_record_collection = mutex_record_collection.clone();
-  let c_pi_anchor_registry = mutex_anchor_registry.clone();
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+  // // peak identification module
+  // let c_pi_record_collection = mutex_record_collection.clone();
+  // let c_pi_anchor_registry = mutex_anchor_registry.clone();
+  // println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+  //
+  // modules::peak_identification::pi_controller(
+  //   c_pi_record_collection,
+  //   c_pi_anchor_registry,
+  // )?;
 
-  modules::peak_identification::pi_controller(
-    c_pi_record_collection,
-    c_pi_anchor_registry,
-  )?;
+  // output message to log
+  for (key, val) in mutex_record_collection.lock().unwrap().iter() {
+    println!("key: {}\nval: {:#?}", key, val);
+  }
 
   println!("{:?}", now.elapsed().unwrap());
 

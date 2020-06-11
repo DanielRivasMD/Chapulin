@@ -7,7 +7,7 @@ use std::thread;
 // crate utilities
 use crate::{
   utils::{
-    me_chimeric_pair::MEChimericPair,
+    sv_chimeric_pair::SVChimericPair,
   }
 };
 
@@ -19,7 +19,7 @@ pub fn sv_controller (
   directory: &String,
   expected_tlen: i32,
   pair_end_reference_alignment: &String,
-  hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  hash_map_collection: Arc<Mutex<HashMap<String, SVChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
 

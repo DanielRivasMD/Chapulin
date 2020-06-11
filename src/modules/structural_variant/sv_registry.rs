@@ -9,20 +9,20 @@ use crate::{
     file_reader::file_reader,
     cigar::CIGAR,
     flag_interpretor::interpretor,
+    sv_chimeric_pair::SVChimericPair,
+    chr_anchor::ChrAnchor,
+    sv_type::SVType,
   },
   settings::{
     constants::ME_LIMIT,
   },
 };
 
-// place holders
-use crate::utils::me_chimeric_pair::MEChimericPair;
-
 
 pub fn sv_mapper(
   sv_bam_file: &String,
   expected_tlen: i32,
-  hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  hm_collection: Arc<Mutex<HashMap<String, SVChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
 
@@ -55,62 +55,86 @@ pub fn sv_mapper(
     let mut sv_switch = true;
 
     if ! hm_collection.lock().unwrap().contains_key(&read_id) {
-      hm_collection.lock().unwrap().insert((&read_id).to_string(), MEChimericPair::new());
+      hm_collection.lock().unwrap().insert((&read_id).to_string(), SVChimericPair::new());
 
       if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
-        // current_record.read1.sequence = read_seq.clone();
-        // current_record.read1.me_read[0] = MEAnchor::loader(&record_line, me_size, &mobel_orientation);
+        println!("read 1: {:?}", current_record);
+        current_record.read1.sequence = read_seq.clone();
+        current_record.read1.chr_read = ChrAnchor::loader(&record_line);
       }
     } else {
       if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
-        // current_record.read2.sequence = read_seq.clone();
-        // current_record.read2.me_read[0] = MEAnchor::loader(&record_line, me_size, &mobel_orientation);
+
+
+        println!("read 2: {:?}", current_record);
+        current_record.read2.sequence = read_seq.clone();
+        current_record.read2.chr_read = ChrAnchor::loader(&record_line);
 
         // evaluate read pairs
         // TODO: SV deletion => read with large (> 2sd observed) template length
-        let tlen = current_record.read1.chr_read[0].tlen - current_record.read2.chr_read[0].tlen;
+        // println!("{:#?}", current_record);
+        // println!("R1: {}\tR2: {}", current_record.read1.chr_read.tlen, current_record.read2.chr_read.tlen);
+        // println!("R1: {}\tR2: {}", current_record.read1.chr_read.pos, current_record.read2.chr_read.pos);
+        let tlen = current_record.read1.chr_read.pos - current_record.read2.chr_read.pos;
+        // let x = tlen.abs() > expected_tlen;
+        // if x {
         if tlen.abs() > expected_tlen {
-          sv_switch = false;
-        }
 
-        // TODO: SV duplication => read orientation reversed outwards + inverted chimerics
-        if tlen > 0 && interpretor(current_record.read1.chr_read[0].flag, 10) {
-          sv_switch = false;
-        } else if tlen < 0 && interpretor(current_record.read2.chr_read[0].flag, 10) {
-          sv_switch = false;
-        } else if tlen == 0 {
+        // println!("observed tlen: {}, expected tlen: {}", tlen, expected_tlen);
+        // println!("absolute: {}", tlen.abs());
 
+          current_record.svtag = SVType::Deletion;
+          sv_switch = false;
         }
+        // println!("svdeletion: {}\tsvswitch: {}", x, sv_switch);
 
-        // TODO: SV inversion => read orientation altered unidirectionally + inverted chimerics
-        let read1_orient = interpretor(current_record.read1.chr_read[0].flag, 10);
-        let read2_orient = interpretor(current_record.read2.chr_read[0].flag, 10);
-        if read1_orient == read2_orient {
-          sv_switch = false;
-        }
+        // // TODO: SV duplication => read orientation reversed outwards + inverted chimerics
+        // if tlen > 0 && interpretor(current_record.read1.chr_read.flag, 10) {
+        //   sv_switch = false;
+        // } else if tlen < 0 && interpretor(current_record.read2.chr_read.flag, 10) {
+        //   sv_switch = false;
+        // } else if tlen == 0 {
+        //
+        // }
+        //
+        // // TODO: SV inversion => read orientation altered unidirectionally + inverted chimerics
+        // let read1_orient = interpretor(current_record.read1.chr_read.flag, 10);
+        // let read2_orient = interpretor(current_record.read2.chr_read.flag, 10);
+        // if read1_orient == read2_orient {
+        //   sv_switch = false;
+        // }
+        //
+        // // TODO: SV insertion => unmapped reads
+        // if
+        //   tlen == 0 && (
+        //   current_record.read1.chr_read.pos.to_string() == "*" ||
+        //   current_record.read2.chr_read.pos.to_string() == "*"
+        // ) {
+        //   sv_switch = false;
+        // }
+        // // TODO: SV translocation => read mapping to other chromosomes
+        // if ! (current_record.read1.chr_read.chr == current_record.read2.chr_read.chr) {
+        //   sv_switch = false;
+        // }
 
-        // TODO: SV insertion => unmapped reads
-        if
-          tlen == 0 && (
-          current_record.read1.chr_read[0].pos.to_string() == "*" ||
-          current_record.read2.chr_read[0].pos.to_string() == "*"
-        ) {
-          sv_switch = false;
-        }
-        // TODO: SV translocation => read mapping to other chromosomes
-        if ! (current_record.read1.chr_read[0].chr == current_record.read2.chr_read[0].chr) {
-          sv_switch = false;
-        }
+        // // debug sv
+        // sv_switch = false;
 
         // evaluate read batch
-        if sv_switch {
-          hm_collection.lock().unwrap().remove(&read_id);
-        } else {
-          // register chromosome anchors
-          if ! an_registry.lock().unwrap().contains_key(&chr) {
-            an_registry.lock().unwrap().insert(chr, Vec::new());
-          }
-        }
+      }
+    }
+
+    if sv_switch {
+      // println!("eliminating record");
+      // println!("{}", read_id);
+      // println!("{:#?}", hm_collection.lock().unwrap().remove(&read_id));
+      hm_collection.lock().unwrap().remove(&read_id);
+      // println!("gone record");
+    } else {
+      println!("to keep: {}", &read_id);
+      // register chromosome anchors
+      if ! an_registry.lock().unwrap().contains_key(&chr) {
+        an_registry.lock().unwrap().insert(chr, Vec::new());
       }
     }
   }
