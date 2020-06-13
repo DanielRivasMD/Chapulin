@@ -118,15 +118,20 @@ pub fn sv_mapper(
         // } else if tlen == 0 {
         //
         // }
-        //
+
+
         // // TODO: SV inversion => read orientation altered unidirectionally + inverted chimerics
+        if interpretor(current_record.read1.chr_read.flag, 5) == interpretor(current_record.read1.chr_read.flag, 6) {
+          current_record.svtag = SVType::Inversion;
+          purge_switch = false;
+        }
         // let read1_orient = interpretor(current_record.read1.chr_read.flag, 10);
         // let read2_orient = interpretor(current_record.read2.chr_read.flag, 10);
         // if read1_orient == read2_orient {
         //   sv_switch = false;
         // }
         //
-        // // TODO: SV insertion => unmapped reads
+        // TODO: SV insertion => unmapped reads
         // if
         //   tlen == 0 && (
         //   current_record.read1.chr_read.pos.to_string() == "*" ||
@@ -134,10 +139,21 @@ pub fn sv_mapper(
         // ) {
         //   sv_switch = false;
         // }
+        if interpretor(current_record.read1.chr_read.flag, 3) | interpretor(current_record.read1.chr_read.flag, 4) {
+          current_record.svtag = SVType::Insetion;
+          purge_switch = false;
+        }
         // // TODO: SV translocation => read mapping to other chromosomes
         // if ! (current_record.read1.chr_read.chr == current_record.read2.chr_read.chr) {
         //   sv_switch = false;
         // }
+
+        if
+          tlen.abs() > TRANSLOCATION_DISTANCE |
+        ! (current_record.read1.chr_read.chr == current_record.read2.chr_read.chr) {
+          current_record.svtag == SVType::Translocation;
+          purge_switch = false;
+        }
 
         // // debug sv
         // sv_switch = false;
