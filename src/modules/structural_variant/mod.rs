@@ -2,7 +2,6 @@
 // standard libraries
 use std::collections::HashMap;
 use std::sync::{Mutex, Arc};
-use std::thread;
 
 // crate utilities
 use crate::{

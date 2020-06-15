@@ -4,7 +4,7 @@ pub enum SVType {
   Deletion,
   Duplication,
   Inversion,
-  Insetion,
+  Insertion,
   Translocation,
   None,
 }
