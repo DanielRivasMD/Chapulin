@@ -2,20 +2,41 @@
 // standard libraries
 use std::{
   fs::File,
-  io::{self, prelude::*},
+  io::{
+    self,
+    BufReader,
+    prelude::*
+  },
 };
 
-pub fn file_reader(input_file: &String) -> (BufReader, String) {
-  let reader = BufReader::open(&input_file).unwrap();
+use bytelines::{
+  ByteLines,
+  ByteLinesReader,
+};
+
+
+pub fn byte_file_reader(
+  input_file: &String,
+) -> ByteLines<BufReader<File>> {
+
+  let file = File::open(&input_file).unwrap();
+  let reader = BufReader::new(file);
+
+  let lines = reader.byte_lines();
+  return lines
+}
+
+pub fn buff_file_reader(input_file: &String) -> (CustBufReader, String) {
+  let reader = CustBufReader::open(&input_file).unwrap();
   let buffer = String::new();
   return (reader, buffer)
 }
 
-pub struct BufReader {
+pub struct CustBufReader {
   reader: io::BufReader<File>,
 }
 
-impl BufReader {
+impl CustBufReader {
   pub fn open(
     path: impl AsRef<std::path::Path>
   ) -> io::Result<Self> {
