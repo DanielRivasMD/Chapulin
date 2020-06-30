@@ -2,11 +2,13 @@
 // standard libraries
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
+use std::str::from_utf8;
 
 // crate utilities
 use crate::{
   utils::{
-    file_reader::file_reader,
+    file_reader::byte_file_reader,
+    // file_reader::buff_file_reader,
     me_chimeric_pair::MEChimericPair,
     chr_anchor::ChrAnchor,
     chr_anchor_enum::ChrAnchorEnum,
@@ -30,12 +32,19 @@ pub fn cl_mapper(
 // ) -> std::io::Result<()> {
 
   // load file
-  let (mut reader, mut buffer) = file_reader(&cl_bam_file);
+  // let (mut reader, mut buffer) = buff_file_reader(&cl_bam_file);
+  let mut lines = byte_file_reader(&cl_bam_file);
 
   // iterate through file
-  while let Some(line) = reader.read_line(&mut buffer) {
+  // while let Some(line) = reader.read_line(&mut buffer) {
+  while let Some(line) = lines.next() {
 
-    let record_line: Vec<&str> = line?.trim().split("\t").collect();
+    // let record_line: Vec<&str> = line?.trim().split("\t").collect();
+    let record_line: Vec<&str> = from_utf8(&line?)
+      .unwrap()
+      .trim()
+      .split("\t")
+      .collect();
 
     if hm_collection.lock().unwrap().contains_key(record_line[0]) {
     // if hm_collection.contains_key(record_line[0]) {

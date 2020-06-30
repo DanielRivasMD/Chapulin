@@ -2,11 +2,13 @@
 // standard libraries
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
+use std::str::from_utf8;
 
 // crate utilities
 use crate::{
   utils::{
-    file_reader::file_reader,
+    file_reader::byte_file_reader,
+    // file_reader::buff_file_reader,
     me_chimeric_pair::MEChimericPair,
     me_library::MElibrary,
     me_anchor::MEAnchor,
@@ -33,7 +35,8 @@ pub fn me_identificator(
 // ) -> std::io::Result<()> {
 
   // load file
-  let (mut reader, mut buffer) = file_reader(&me_bam_file);
+  // let (mut reader, mut buffer) = buff_file_reader(&me_bam_file);
+  let mut lines = byte_file_reader(&me_bam_file);
 
   // declare initial values
   let mut prev_read_id = String::new();
@@ -44,10 +47,16 @@ pub fn me_identificator(
   // let mut bk_count = 0;
 
   // iterate through file
-  while let Some(line) = reader.read_line(&mut buffer) {
+  // while let Some(line) = reader.read_line(&mut buffer) {
+  while let Some(line) = lines.next() {
 
     // load line into vector
-    let record_line: Vec<&str> = line?.trim().split("\t").collect();
+    // let record_line: Vec<&str> = line?.trim().split("\t").collect();
+    let record_line: Vec<&str> = from_utf8(&line?)
+      .unwrap()
+      .trim()
+      .split("\t")
+      .collect();
 
     // update read id
     let read_id = record_line[0].to_string();

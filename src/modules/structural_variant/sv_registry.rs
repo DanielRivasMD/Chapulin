@@ -2,13 +2,16 @@
 // standard libraries
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
+use std::str::from_utf8;
 
 // crate utilities
 use crate::{
   utils::{
-    file_reader::file_reader,
-    cigar::CIGAR,
+    file_reader::byte_file_reader,
+    // file_reader::buff_file_reader,
+    // cigar::CIGAR,
     flag_interpretor::interpretor,
+    flag_interpretor::SamFlag,
     sv_chimeric_pair::SVChimericPair,
     chr_anchor::ChrAnchor,
     sv_type::SVType,
@@ -27,16 +30,23 @@ pub fn sv_mapper(
 ) -> std::io::Result<()> {
 
   // load file
-  let (mut reader, mut buffer) = file_reader(&sv_bam_file);
+  // let (mut reader, mut buffer) = buff_file_reader(&sv_bam_file);
+  let mut lines = byte_file_reader(&sv_bam_file);
 
   // declare initial values
   let mut prev_read_id = String::new();
   let mut purge_switch = true;
 
   // iterate through file
-  while let Some(line) = reader.read_line(&mut buffer) {
+  // while let Some(line) = reader.read_line(&mut buffer) {
+  while let Some(line) = lines.next() {
 
-    let record_line: Vec<&str> = line?.trim().split("\t").collect();
+    // let record_line: Vec<&str> = line?.trim().split("\t").collect();
+    let record_line: Vec<&str> = from_utf8(&line?)
+      .unwrap()
+      .trim()
+      .split("\t")
+      .collect();
 
     // update read id
     let read_id = record_line[0].to_string();
