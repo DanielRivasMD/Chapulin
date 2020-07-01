@@ -1,11 +1,20 @@
-use crate::utils::file_reader::byte_file_reader;
-use std::str::from_utf8;
-use std::collections::HashMap;
-// use std::thread::current;
+
+// standard libraries
+use std::collections::{HashMap};
+use std::sync::{Arc, Mutex};
+use std::str::{from_utf8};
+
+// crate utilities
+use crate::{
+  utils::{
+    file_reader::byte_file_reader,
+  }
+};
+
 
 pub fn reference_reader(
   ref_seq: String,
-  chr_registry: &mut HashMap<String, i64>,
+  chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> std::io::Result<()> {
 
   let mut current_chr = String::new();
@@ -19,7 +28,7 @@ pub fn reference_reader(
       let record_entry: Vec<&str> = record_line.trim().split(" ").collect();
       current_chr = record_entry[0].replace(">", "");
     } else {
-      chr_registry.insert(current_chr, record_line.len() as i64);
+      chr_assembly.lock().unwrap().insert(current_chr, record_line.len() as f64);
       current_chr = String::new();
     }
   }

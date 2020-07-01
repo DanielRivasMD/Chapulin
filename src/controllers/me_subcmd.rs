@@ -1,6 +1,6 @@
 
 // standard libraries
-use std::collections::HashMap;
+use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
 use clap::{ArgMatches};
@@ -33,17 +33,27 @@ pub fn me_subcmd(
   let settings_hm = settings.try_into::<HashMap<String, String>>().unwrap();
 
   let directory = settings_hm.get("directory").unwrap();
+  let reference_file = settings_hm.get("reference").unwrap();
   let me_library_file = settings_hm.get("mobile_element_library").unwrap();
   let me_align = settings_hm.get("mobile_element_alignment").unwrap();
   let cl_align = settings_hm.get("reference_genome_alignment").unwrap();
 
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
   let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
+  let mutex_chr_assembly = Arc::new(Mutex::new(HashMap::new()));
 
   // let mut record_collection = HashMap::new();
   // let mut anchor_registry = HashMap::new();
 
   // TODO: write pre processing recomendations => fastq filtering, alignment
+
+  // reference genome module
+  let c_rg_chr_assembly = mutex_chr_assembly.clone();
+  modules::reference_genome::ref_controller(
+    directory,
+    reference_file,
+    c_rg_chr_assembly,
+  )?;
 
   // mobile elements module
   let c_me_record_collection = mutex_record_collection.clone();
@@ -106,11 +116,13 @@ pub fn me_subcmd(
   // peak identification module
   let c_pi_record_collection = mutex_record_collection.clone();
   let c_pi_anchor_registry = mutex_anchor_registry.clone();
+  let c_pi_chr_assembly = mutex_chr_assembly.clone();
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   modules::peak_identification::pi_controller(
     c_pi_record_collection,
     c_pi_anchor_registry,
+    c_pi_chr_assembly,
   )?;
 
   println!("{:?}", now.elapsed().unwrap());

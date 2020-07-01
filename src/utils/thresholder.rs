@@ -31,9 +31,9 @@ extern {
 
 
 fn effective_genome_length_calculator(
-  genome_length: i32,
-) -> i32 {
-  let effective_genome_length = genome_length * BIN_SIZE / BIN_OVERLAP;
+  genome_length: f64,
+) -> f64 {
+  let effective_genome_length = genome_length * BIN_SIZE as f64 / BIN_OVERLAP as f64;
   return effective_genome_length
 }
 
@@ -55,21 +55,21 @@ fn r_ppoisson(
 fn tabler(
   bined_hm: &HashMap<i32, Vec<String>>,
   psize: usize,
-) -> Vec<i32> {
-  let mut out_vec = vec![0; psize];
+) -> Vec<f64> {
+  let mut out_vec = vec![0.; psize];
   for (_, i) in bined_hm.iter() {
     let length_count = i.len();
     if length_count < psize {
-      out_vec[length_count - 1] = out_vec[length_count - 1] + 1;
+      out_vec[length_count - 1] = out_vec[length_count - 1] + 1.;
     }
   }
   return out_vec
 }
 
 fn cumsum(
-  mut cum_vec: Vec<i32>,
-) -> Vec<i32> {
-  let mut cumulus = 0;
+  mut cum_vec: Vec<f64>,
+) -> Vec<f64> {
+  let mut cumulus = 0.;
   for i in 0..cum_vec.len() {
     cumulus = cumulus + cum_vec[i];
     cum_vec[i] = cumulus;
@@ -78,26 +78,26 @@ fn cumsum(
 }
 
 pub fn thresholder(
-  pop_reads: i32,
-  genome_size: i32,
+  pop_reads: f64,
+  chromosome_size: f64,
   false_discovery_tolerance: f64,
   read_hm: &HashMap<i32, Vec<String>>,
   psize: usize,
-) -> i32 {
-  let eff_genome_length = effective_genome_length_calculator(genome_size);
-  let lambda = pop_reads * BIN_SIZE / eff_genome_length;
-  let p_values = r_ppoisson(lambda as f64, psize);
+) -> usize {
+  let eff_genome_length = effective_genome_length_calculator(chromosome_size);
+  let lambda = pop_reads * BIN_SIZE as f64 / eff_genome_length;
+  let p_values = r_ppoisson(lambda, psize);
 
   let mut peak_prob = vec![0.; psize];
   for (ix, p_val) in p_values.iter().enumerate() {
-    peak_prob[ix] = p_val * genome_size as f64;
+    peak_prob[ix] = p_val * chromosome_size;
   }
 
   let bin_tb = tabler(read_hm, psize);
   let cum_bin_tb = cumsum(bin_tb);
   let mut false_disc_values = vec![0.; psize];
   for ix in 0..psize {
-    false_disc_values[ix] = peak_prob[ix] / cum_bin_tb[ix] as f64;
+    false_disc_values[ix] = peak_prob[ix] / cum_bin_tb[ix];
   }
 
   let mut threshold = 0;
@@ -106,7 +106,7 @@ pub fn thresholder(
       threshold = ix;
     }
   }
-  return threshold as i32;
+  return threshold;
 }
 
 // // R

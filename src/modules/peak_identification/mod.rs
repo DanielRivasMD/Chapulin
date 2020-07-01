@@ -18,6 +18,7 @@ use crate::{
 pub fn pi_controller(
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
+  hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> std::io::Result<()> {
 
 // pub fn pi_controller(
@@ -37,12 +38,14 @@ pub fn pi_controller(
 
     let c_hash_map_collection = hash_map_collection.clone();
     let c_hash_map_anchor = hash_map_anchor.clone();
+    let c_hash_map_chr_assembly = hash_map_chr_assembly.clone();
 
     let pi_handle = thread::spawn(move || {
       pi_mapping::pi_identifier(
         &okey,
         c_hash_map_collection,
         c_hash_map_anchor,
+        c_hash_map_chr_assembly,
       ).expect(&okey);
     });
     pi_handle.join().unwrap();

@@ -24,9 +24,11 @@ pub fn pi_identifier (
   ikey: &String,
   hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
+  chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> std::io::Result<()> {
 
   let mut chr_position_hm = HashMap::new();
+  let chr_size = chr_assembly.lock().unwrap().get(ikey).unwrap().clone();
 
   for strand in STRAND_VEC.iter() {
 
@@ -47,11 +49,25 @@ pub fn pi_identifier (
       if let Some(me_read) = hm_collection.lock().unwrap().get(&id_read) {
         match &me_read.chranch {
           ChrAnchorEnum::Read1 => {
-            read_count = strander(id_read, strand, read_count, &me_read.read1.chr_read[0], &me_read.read2.me_read, tmp_position_hm);
+            read_count = strander(
+              id_read,
+              strand,
+              read_count,
+              &me_read.read1.chr_read[0],
+              &me_read.read2.me_read,
+              tmp_position_hm
+            );
           },
 
           ChrAnchorEnum::Read2 => {
-            read_count = strander(id_read, strand, read_count, &me_read.read2.chr_read[0], &me_read.read1.me_read, tmp_position_hm);
+            read_count = strander(
+              id_read,
+              strand,
+              read_count,
+              &me_read.read2.chr_read[0],
+              &me_read.read1.me_read,
+              tmp_position_hm
+            );
           },
 
           ChrAnchorEnum::None => (),
@@ -60,9 +76,15 @@ pub fn pi_identifier (
     }
 
     // println!();
-    let pois_threshold = thresholder(read_count, 1_000_000, 0.001, tmp_position_hm, NO_FDR);
+    let pois_threshold = thresholder(
+      read_count as f64,
+      chr_size,
+      0.001,
+      tmp_position_hm,
+      NO_FDR
+    );
     for (chr_pos, id_vec) in tmp_position_hm.iter() {
-      if id_vec.len() > pois_threshold as usize {
+      if id_vec.len() > pois_threshold {
         println!("Position: {} => {}", chr_pos, id_vec.len());
         println!("IDs: {:?}", id_vec);
       }
