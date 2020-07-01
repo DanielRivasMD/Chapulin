@@ -1,6 +1,4 @@
 
-// standard libraries
-
 // crate utilities
 use crate::utils::{
   sv_chimeric_read::SVChimericRead,

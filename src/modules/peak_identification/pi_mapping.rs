@@ -1,6 +1,6 @@
 
 // standard libraries
-use std::collections::HashMap;
+use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 
 // crate utilities

@@ -1,7 +1,10 @@
 
 // standard libraries
-use std::collections::HashMap;
-use std::sync::{Mutex, Arc};
+use std::collections::{HashMap};
+use std::sync::{Arc, Mutex};
+
+// modules
+mod sv_registry;
 
 // crate utilities
 use crate::{
@@ -9,9 +12,6 @@ use crate::{
     sv_chimeric_pair::SVChimericPair,
   }
 };
-
-// modules
-mod sv_registry;
 
 
 pub fn sv_controller (

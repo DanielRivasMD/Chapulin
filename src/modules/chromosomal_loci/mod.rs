@@ -1,8 +1,11 @@
 
 // standard libraries
-use std::collections::HashMap;
-use std::sync::{Mutex, Arc};
-use std::thread;
+use std::collections::{HashMap};
+use std::sync::{Arc, Mutex};
+use std::{thread};
+
+// modules
+mod cl_aligned;
 
 // crate utilities
 use crate::{
@@ -10,11 +13,6 @@ use crate::{
     me_chimeric_pair::MEChimericPair,
   }
 };
-
-// modules
-mod cl_aligned;
-
-// type Records = Mutex<HashMap<String, ReadRecord>>;
 
 
 pub fn cl_controller (

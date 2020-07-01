@@ -1,7 +1,11 @@
 
 // standard libraries
-use std::collections::HashMap;
+use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
+
+// modules
+mod me_registry;
+mod me_aligned;
 
 // crate utilities
 use crate::{
@@ -9,10 +13,6 @@ use crate::{
     me_chimeric_pair::MEChimericPair
   }
 };
-
-// modules
-mod me_registry;
-mod me_aligned;
 
 
 pub fn me_controller (

@@ -1,8 +1,11 @@
 
 // standard libraries
-use std::collections::HashMap;
+use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
-use std::thread;
+use std::{thread};
+
+// modules
+mod pi_mapping;
 
 // crate utilities
 use crate::{
@@ -10,9 +13,6 @@ use crate::{
     me_chimeric_pair::MEChimericPair
   }
 };
-
-// modules
-mod pi_mapping;
 
 
 pub fn pi_controller(

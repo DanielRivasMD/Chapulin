@@ -1,7 +1,7 @@
 
 // standard libraries
-use std::collections::HashMap;
-use std::str::from_utf8;
+use std::collections::{HashMap};
+use std::str::{from_utf8};
 
 // crate utilities
 use crate::{

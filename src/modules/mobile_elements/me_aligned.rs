@@ -1,8 +1,8 @@
 
 // standard libraries
-use std::collections::HashMap;
+use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
-use std::str::from_utf8;
+use std::str::{from_utf8};
 
 // crate utilities
 use crate::{

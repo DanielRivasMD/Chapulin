@@ -1,8 +1,7 @@
 
 // standard libraries
-use std::collections::HashMap;
-use clap::ArgMatches;
-use config::{Config, File};
+use std::collections::{HashMap};
+use std::sync::{Arc, Mutex};
 
 // modules
 mod reference_read;

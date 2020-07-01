@@ -1,7 +1,8 @@
 
+// crate utilities
 use crate::{
   settings::{
-    constants::BIN_SIZE
+    constants::BIN_SIZE,
   },
 };
 
