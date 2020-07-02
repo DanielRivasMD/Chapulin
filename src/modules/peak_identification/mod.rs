@@ -26,10 +26,14 @@ pub fn pi_controller(
 //   hash_map_anchor: &HashMap<String, Vec<String>>,
 // ) -> std::io::Result<()> {
 
+  // iterate on reference chromosomes
   let mut chromosome_vec = Vec::new();
-  for okey in hash_map_anchor.lock().unwrap().keys() {
+  for okey in hash_map_chr_assembly.lock().unwrap().keys() {
     let ckey = okey.clone();
-    chromosome_vec.push(ckey);
+
+    if hash_map_anchor.lock().unwrap().contains_key(okey) {
+      chromosome_vec.push(ckey);
+    }
   }
 
   println!("{}", hash_map_collection.lock().unwrap().len());
