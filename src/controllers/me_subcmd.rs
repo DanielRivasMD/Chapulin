@@ -22,21 +22,29 @@ pub fn me_subcmd(
     println!("Printing ME normally...");
   }
 
-  let config = matches.value_of("CONFIG").unwrap();
+  let config = matches.value_of("CONFIG")
+    .expect("\n\nNo configuration file was set:\nSet a configuration file with option '-c --config'\n\n");
   println!("A config file was passed in: {}", config);
 
   let mut settings = Config::default();
     settings
-      .merge(File::with_name(config)).unwrap();
+      .merge(File::with_name(config))
+      .expect("\n\nConfiguration file not found\n\n");
 
   // interpret settings into variables
   let settings_hm = settings.try_into::<HashMap<String, String>>().unwrap();
 
-  let directory = settings_hm.get("directory").unwrap();
-  let reference_file = settings_hm.get("reference").unwrap();
-  let me_library_file = settings_hm.get("mobile_element_library").unwrap();
-  let me_align = settings_hm.get("mobile_element_alignment").unwrap();
-  let cl_align = settings_hm.get("reference_genome_alignment").unwrap();
+  let directory = settings_hm.get("directory")
+    .expect("\n\nDirectory was not set properly in configuration file\n\nExample: directory = \"/home/favorite_chapulin_directory/\"\n\n");
+  let reference_file = settings_hm.get("reference")
+    .expect("\n\nReference file was not set properly in configuration file\n\nExample: reference = \"awesome_species_reference.fa\"\n\n");
+  let me_library_file = settings_hm.get("mobile_element_library")
+    .expect("\n\nMobile element library was not set properly in configuration file\n\nExample: mobile_element_library = \"cool_ME_library.txt\"\n\n");
+  let me_align = settings_hm.get("mobile_element_alignment")
+    .expect("\n\nMobile element alignment was not set properly in configuration file\n\nExample: mobile_element_alignment = \"ME_alignment_to_awesome_species.sam\"\n\n");
+  let cl_align = settings_hm.get("reference_genome_alignment")
+    .expect("\n\nReference genome alignment was not set properly in configuration file\n\nExample: reference_genome_alignment = \"alignment_to_awesome_species_reference_R\"\n\nNote: this is a single-end alignment, therefore files shoud be: \n\t\"alignment_to_awesome_species_reference_R1.sam\" & \"alignment_to_awesome_species_reference_R2.sam\",\nwhere suffixes are infered\n\n");
+  // let out_file = settings_hm.get("out_file").unwrap();
 
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
   let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
