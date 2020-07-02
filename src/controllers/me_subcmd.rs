@@ -16,11 +16,15 @@ pub fn me_subcmd(
 
   let now = SystemTime::now();
 
+  let mut verbose = false;
   if matches.is_present("verbose") {
-    println!("Printing ME verbosely...");
-  } else {
-    println!("Printing ME normally...");
+    verbose = true;
   }
+
+  //   println!("Printing ME verbosely...");
+  // } else {
+  //   // println!("Printing ME normally...");
+  // }
 
   let config = matches.value_of("CONFIG")
     .expect("\n\nNo configuration file was set:\nSet a configuration file with option '-c --config'\n\n");
@@ -56,6 +60,11 @@ pub fn me_subcmd(
   // TODO: write pre processing recomendations => fastq filtering, alignment
 
   // reference genome module
+
+  if verbose {
+    println!("Running Reference Genome module...")
+  }
+
   let c_rg_chr_assembly = mutex_chr_assembly.clone();
   modules::reference_genome::ref_controller(
     directory,
@@ -66,6 +75,10 @@ pub fn me_subcmd(
   // mobile elements module
   let c_me_record_collection = mutex_record_collection.clone();
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+
+  if verbose {
+    println!("Running Mobile Element module...")
+  }
 
   modules::mobile_elements::me_controller(
     directory,
@@ -95,6 +108,10 @@ pub fn me_subcmd(
   let c_cl_record_collection = mutex_record_collection.clone();
   let c_cl_anchor_registry = mutex_anchor_registry.clone();
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+
+  if verbose {
+    println!("Running Chromosomal Loci module...")
+  }
 
   modules::chromosomal_loci::cl_controller(
     directory,
@@ -126,6 +143,10 @@ pub fn me_subcmd(
   let c_pi_anchor_registry = mutex_anchor_registry.clone();
   let c_pi_chr_assembly = mutex_chr_assembly.clone();
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+
+  if verbose {
+    println!("Running Peak Identification module...")
+  }
 
   modules::peak_identification::pi_controller(
     c_pi_record_collection,
