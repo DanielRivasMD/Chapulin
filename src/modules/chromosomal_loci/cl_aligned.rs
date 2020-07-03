@@ -8,7 +8,6 @@ use std::str::{from_utf8};
 use crate::{
   utils::{
     file_reader::byte_file_reader,
-    // file_reader::buff_file_reader,
     me_chimeric_pair::MEChimericPair,
     chr_anchor::ChrAnchor,
     chr_anchor_enum::ChrAnchorEnum,
@@ -25,21 +24,12 @@ pub fn cl_mapper(
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
 
-// pub fn cl_mapper(
-//   cl_bam_file: &String,
-//   hm_collection: &mut HashMap<String, ReadRecord>,
-//   an_registry: &mut HashMap<String, Vec<String>>,
-// ) -> std::io::Result<()> {
-
   // load file
-  // let (mut reader, mut buffer) = buff_file_reader(&cl_bam_file);
   let mut lines = byte_file_reader(&cl_bam_file);
 
   // iterate through file
-  // while let Some(line) = reader.read_line(&mut buffer) {
   while let Some(line) = lines.next() {
 
-    // let record_line: Vec<&str> = line?.trim().split("\t").collect();
     let record_line: Vec<&str> = from_utf8(&line?)
       .unwrap()
       .trim()
@@ -47,12 +37,10 @@ pub fn cl_mapper(
       .collect();
 
     if hm_collection.lock().unwrap().contains_key(record_line[0]) {
-    // if hm_collection.contains_key(record_line[0]) {
 
       let mut mapq_switch = false;
 
       if let Some(current_record) = hm_collection.lock().unwrap().get_mut(record_line[0]) {
-        // if let Some(current_record) = hm_collection.get_mut(record_line[0]) {
 
         if
           (current_record.read1.sequence == record_line[9].to_string()) ||
@@ -68,42 +56,39 @@ pub fn cl_mapper(
         }
 
         match current_record.chranch {
+
           ChrAnchorEnum::Read1 => {
             if current_record.read1.chr_read[0].mapq < MAPQ && current_record.read1.chr_read[0].chr != "".to_string()
             {
               mapq_switch = true;
             }
           },
+
           ChrAnchorEnum::Read2 => {
             if current_record.read2.chr_read[0].mapq < MAPQ && current_record.read2.chr_read[0].chr != "".to_string()
             {
               mapq_switch = true;
             }
           },
+
           _ => (),
         };
       }
-
 
       if mapq_switch {
         hm_collection.lock().unwrap().remove(record_line[0]);
       } else {
         // register chromosome anchors
         if ! an_registry.lock().unwrap().contains_key(record_line[2]) {
-        // if ! an_registry.contains_key(record_line[2]) {
           an_registry.lock().unwrap().insert(record_line[2].to_string(), Vec::new());
-          // an_registry.insert(record_line[2].to_string(), Vec::new());
         }
 
         if let Some(current_chr) = an_registry.lock().unwrap().get_mut(record_line[2]) {
-        // if let Some(current_chr) = an_registry.get_mut(record_line[2]) {
           current_chr.push(record_line[0].to_string())
-
-
         }
       }
     }
   }
 
-  Ok(println!("{} {}", "File read: ", &cl_bam_file))
+  Ok(())
 }

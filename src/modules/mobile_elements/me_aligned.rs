@@ -8,7 +8,6 @@ use std::str::{from_utf8};
 use crate::{
   utils::{
     file_reader::byte_file_reader,
-    // file_reader::buff_file_reader,
     me_chimeric_pair::MEChimericPair,
     me_library::MElibrary,
     me_anchor::MEAnchor,
@@ -28,14 +27,7 @@ pub fn me_identificator(
   hm_me_collection: &HashMap<String, MElibrary>,
 ) -> std::io::Result<()> {
 
-// pub fn me_identificator(
-//   me_bam_file: &String,
-//   hm_record_collection: &mut HashMap<String, ReadRecord>,
-//   hm_me_collection: &HashMap<String, MElibrary>,
-// ) -> std::io::Result<()> {
-
   // load file
-  // let (mut reader, mut buffer) = buff_file_reader(&me_bam_file);
   let mut lines = byte_file_reader(&me_bam_file);
 
   // declare initial values
@@ -44,14 +36,11 @@ pub fn me_identificator(
   let mut mobel_anchor = false;
   let mut me_size = 0;
   let mut mobel_orientation = String::new();
-  // let mut bk_count = 0;
 
   // iterate through file
-  // while let Some(line) = reader.read_line(&mut buffer) {
   while let Some(line) = lines.next() {
 
     // load line into vector
-    // let record_line: Vec<&str> = line?.trim().split("\t").collect();
     let record_line: Vec<&str> = from_utf8(&line?)
       .unwrap()
       .trim()
@@ -88,25 +77,16 @@ pub fn me_identificator(
     }
 
     // purge read pairs
-    // println!("Post load: {} {} {} {} => {} {}", prev_read_id, read_id, purge_switch, mobel_anchor, record_line[9], pv_flag);
     if ! ( prev_read_id == read_id || prev_read_id == "".to_string() ) {
       // evaluate read batch
       if purge_switch {
-        // println!("Deleting: {}", prev_read_id);
         hm_record_collection.lock().unwrap().remove(&prev_read_id);
-        // hm_record_collection.remove(&read_id);
-      } else {
-        // if let Some(tmp_record) = hm_record_collection.lock().unwrap().get(&prev_read_id) {
-        //   // println!("{}\t{:?}", prev_read_id, tmp_record.chranchor);
-        // }
       }
-      // println!();
 
       // reset purge switch
       purge_switch = true;
     }
 
-    // println!("{:?}", record_line);
     // tagging
     if adj_left_pos <= ME_LIMIT && read_orientation {
       purge_switch = false;
@@ -118,76 +98,40 @@ pub fn me_identificator(
       mobel_orientation = "downstream".to_string();
     }
 
-      // println!("Delta check: {:?}", hm_record_collection.lock().unwrap().get(&prev_read_id));
-      // println!();
-
     // match on proviral flag
-    match pv_flag { // this check is much faster than using binary interpretor
+    // this check is much faster than using binary interpretor
+    match pv_flag {
 
       // primary alignment
       pf if pf <= 255 => {
-      // println!();
-
-              // println!("Flag testing: {:?} {}", hm_record_collection.lock().unwrap().contains_key(&read_id), read_id);
 
         if ! hm_record_collection.lock().unwrap().contains_key(&read_id) {
-        // if ! hm_record_collection.contains_key(&read_id) {
           hm_record_collection.lock().unwrap().insert((&read_id).to_string(), MEChimericPair::new());
-          // hm_record_collection.insert((&read_id).to_string(), ReadRecord::new());
 
-          // println!("Loading 1... {} {} {}", read_id, mobel_anchor, purge_switch);
-      // println!();
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
-          // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read1.sequence = read_seq.clone();
             current_record.read1.me_read[0] = MEAnchor::loader(&record_line, me_size, &mobel_orientation);
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
 
-            // // record break point signature
-            // if
-            //   ( adj_left_pos < 1 ) ||
-            //   ( adj_right_pos > me_size )
-            // {
-            //   // TODO: breakpoint
-            //   bk_count = 1 + bk_count;
-            //   current_record.read1.breakpoint.sequence = (&read_seq.clone()[0..20]).to_string();
-            //   // current_record.read1.breakpoint.coordinate = adj_right_pos;
-            // }
+            // TODO: breakpoint
           }
         } else {
-          // println!("Loading 2... {} {} {}", read_id, mobel_anchor, purge_switch);
-      // println!();
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
-          // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
             current_record.read2.sequence = read_seq.clone();
             current_record.read2.me_read[0] = MEAnchor::loader(&record_line, me_size, &mobel_orientation);
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read1; }
-
-            // // record break point signature
-            // if
-            //   ( adj_left_pos < 1 ) ||
-            //   ( adj_right_pos > me_size )
-            // {
-            //   bk_count = 1 + bk_count;
-            //   current_record.read2.breakpoint.sequence = (&read_seq.clone()[0..20]).to_string();
-            // }
           }
         }
-              // println!("Load check: {:?}", hm_record_collection.lock().unwrap().get(&read_id));
-      // println!();
       },
 
       // secondary alignment
       pf if pf >= 256 => {
 
         if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
-        // if let Some(current_record) = hm_record_collection.get_mut(&read_id) {
           if current_record.read2.sequence == "".to_string() {
-                    // println!("Supplem 1... {} {} {}", read_id, mobel_anchor, purge_switch);
             current_record.read1.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
           } else {
-                    // println!("Supplem 2... {} {} {}", read_id, mobel_anchor, purge_switch);
             current_record.read2.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read1; }
           }
@@ -197,28 +141,15 @@ pub fn me_identificator(
       _ => (),
     }
 
-
-
     // reset anchor switch
     mobel_anchor = false;
-
     prev_read_id = read_id;
-
-      // if let Some(tmp_record) = hm_record_collection.lock().unwrap().get(&prev_read_id) {
-      //   // println!("{}\t{:?}", prev_read_id, tmp_record.chranchor);
-      //   println!("{:#?}", tmp_record.chranchor);
-      // }
-
   }
 
   // evaluate at end of file
   if purge_switch {
-          // println!("Last check: {:?}", hm_record_collection.lock().unwrap().get(&prev_read_id));
-
     hm_record_collection.lock().unwrap().remove(&prev_read_id);
-    // hm_record_collection.remove(&read_id);
   }
 
-  // println!("Break point count: {}", bk_count);
-  Ok(println!("{} {}", "File read: ", &me_bam_file))
+  Ok(())
 }

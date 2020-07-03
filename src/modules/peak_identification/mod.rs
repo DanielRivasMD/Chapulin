@@ -21,11 +21,6 @@ pub fn pi_controller(
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> std::io::Result<()> {
 
-// pub fn pi_controller(
-//   hash_map_collection: &HashMap<String, ReadRecord>,
-//   hash_map_anchor: &HashMap<String, Vec<String>>,
-// ) -> std::io::Result<()> {
-
   // iterate on reference chromosomes
   let mut chromosome_vec = Vec::new();
   for okey in hash_map_chr_assembly.lock().unwrap().keys() {
@@ -50,7 +45,7 @@ pub fn pi_controller(
         c_hash_map_collection,
         c_hash_map_anchor,
         c_hash_map_chr_assembly,
-      ).expect(&okey);
+      )?;
     });
     pi_handle.join().unwrap();
 

@@ -22,11 +22,6 @@ pub fn cl_controller (
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> std::io::Result<()> {
 
-// pub fn cl_controller (
-//   mut hash_map_collection: &mut HashMap<String, ReadRecord>,
-//   mut hash_map_anchor: &mut HashMap<String, Vec<String>>,
-// ) -> std::io::Result<()> {
-
   // load reference chromosome aligned reads
   for i in 1..3 {
 
@@ -38,10 +33,6 @@ pub fn cl_controller (
 
     let cl_handle = thread::spawn(move || {
 
-      // let prefix = "SAMN01162223_R".to_string();
-      // let prefix = "SAMN02692344_R".to_string();
-
-      // let directory = "/Users/drivas/chapulinTest/".to_string();
       let sufix = ".sorted.sam".to_string();
       let cl_aligned_file = format!("{}{}{}{}", c_directory, prefix, i, sufix);
 
@@ -49,17 +40,11 @@ pub fn cl_controller (
           &cl_aligned_file,
           c_hash_map_collection,
           c_hash_map_anchor,
-        ).expect(&cl_aligned_file);
+        )?;
 
     });
     cl_handle.join().unwrap();
-
-      // cl_aligned::cl_mapper(
-      //   &cl_aligned_file,
-      //   &mut hash_map_collection,
-      //   &mut hash_map_anchor,
-      // ).expect(&cl_aligned_file);
-
   }
+
   Ok(())
 }

@@ -32,5 +32,6 @@ pub fn reference_reader(
       current_chr = String::new();
     }
   }
+
   Ok(())
 }

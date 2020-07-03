@@ -7,7 +7,6 @@ use std::str::{from_utf8};
 use crate::{
   utils::{
     file_reader::byte_file_reader,
-    // file_reader::buff_file_reader,
     me_library::MElibrary,
   }
 };
@@ -20,14 +19,11 @@ pub fn me_lib_loader(
 
   // TODO: the original scripts include tagging about LTR type. a way to indicate in a more generic manner is required
   // load file
-  // let (mut reader, mut buffer) = buff_file_reader(&me_lib_file);
   let mut lines = byte_file_reader(&me_lib_file);
 
   // iterate through file
-  // while let Some(line) = reader.read_line(&mut buffer) {
   while let Some(line) = lines.next() {
 
-    // let record_line: Vec<&str> = line?.trim().split("\t").collect();
     let record_line: Vec<&str> = from_utf8(line?)
       .unwrap()
       .split("\t")
@@ -51,5 +47,5 @@ pub fn me_lib_loader(
     }
   }
 
-  Ok(println!("{} {}", "File read: ", &me_lib_file))
+  Ok(())
 }
