@@ -7,26 +7,16 @@ use crate::utils::{
 };
 
 // annotate primary (index 0) & secondary aligned reads
-#[derive(Debug)]
+#[derive(Debug, new, Default)]
 pub struct MEChimericRead {
+  #[new(default)]
   pub sequence: String,
+  #[new(default)]
   pub me_read: Vec<MEAnchor>,
+  #[new(default)]
   pub chr_read: Vec<ChrAnchor>,
+  #[new(default)]
   pub breakpoint: BreakPoint,
-}
-
-impl MEChimericRead {
-  pub fn new() -> Self {
-    Self {
-      sequence: "".to_string(),
-      me_read: vec![MEAnchor::new()],
-      chr_read: vec![ChrAnchor::new()],
-      breakpoint: BreakPoint {
-        sequence: "".to_string(),
-        coordinate: 0,
-      },
-    }
-  }
 }
 
 impl MEChimericRead {

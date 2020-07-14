@@ -1,24 +1,19 @@
 
-#[derive(Debug)]
+#[derive(Debug, new)]
 pub struct CIGAR {
+  #[new(default)]
   pub lclip: i32,
+  #[new(default)]
   pub align: Vec<i32>,
+  #[new(default)]
   pub rclip: i32,
+  #[new(default)]
   pub ins: Vec<i32>,
+  #[new(default)]
   pub del: Vec<i32>,
 }
 
 impl CIGAR {
-
-  pub fn new() -> Self {
-    Self {
-      lclip: 0,
-      align: Vec::new(),
-      rclip: 0,
-      ins: Vec::new(),
-      del: Vec::new(),
-    }
-  }
 
   pub fn loader(to_interpret: &String) -> Self {
 

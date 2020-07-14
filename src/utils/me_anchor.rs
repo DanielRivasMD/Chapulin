@@ -1,26 +1,21 @@
 
-#[derive(Debug)]
+#[derive(Debug, new)]
 pub struct MEAnchor {
+  #[new(default)]
   pub mobel: String,
-  pub size: i32, 
+  #[new(default)]
+  pub size: i32,
+  #[new(default)]
   pub flag: i32,
+  #[new(default)]
   pub pos: i32,
+  #[new(default)]
   pub cigar: String,
+  #[new(default)]
   pub orientation: String,
 }
 
 impl MEAnchor {
-
-  pub fn new() -> Self {
-    Self {
-      mobel: "".to_string(),
-      size: 0,
-      flag: 0,
-      pos: 0,
-      cigar: "".to_string(),
-      orientation: "".to_string(),
-    }
-  }
 
   pub fn loader(file_line: &Vec<&str>, mobile_size: i32, mobile_orientation: &String) -> Self {
     Self {

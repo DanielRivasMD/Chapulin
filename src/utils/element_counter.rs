@@ -1,17 +1,10 @@
 
-#[derive(Debug)]
+#[derive(Debug, new)]
 pub struct ElementCounter {
+  #[new(default)]
   pub upstream: i32,
+  #[new(default)]
   pub downstream: i32,
-}
-
-impl ElementCounter {
-  pub fn new() -> Self {
-    Self {
-      upstream: 0,
-      downstream: 0,
-    }
-  }
 }
 
 impl ElementCounter {

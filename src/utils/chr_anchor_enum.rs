@@ -1,5 +1,5 @@
 
-#[derive(Debug)]
+#[derive(Debug, new)]
 pub enum ChrAnchorEnum {
   Read1,
   Read2,

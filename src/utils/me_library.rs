@@ -5,23 +5,13 @@ use crate::utils::{
 };
 
 // to load onto => hashmap for mobile elements library entries
-#[derive(Debug)]
+#[derive(Debug, new, Default)]
 pub struct MElibrary {
+  #[new(default)]
   pub me_seq: String,
+  #[new(default)]
   pub me_size: i32,
+  #[new(default)]
   pub annotations_erv: ERVAnnoations,
   // potentially expandable to other types of mobile elements
-}
-
-impl MElibrary {
-  pub fn new() -> Self {
-    Self {
-      me_seq: "".to_string(),
-      me_size: 0,
-      annotations_erv: ERVAnnoations {
-        ltr5: false,
-        ltr3: false
-      }
-    }
-  }
 }

@@ -6,27 +6,23 @@ use crate::{
   },
 };
 
-#[derive(Debug)]
+#[derive(Debug, new, Default)]
 pub struct ChrAnchor {
+  #[new(default)]
   pub chr: String,
+  #[new(default)]
   pub flag: i32,
+  #[new(default)]
   pub pos: i32,
+  #[new(default)]
   pub cigar: String,
+  #[new(default)]
   pub mapq: i32,
+  #[new(default)]
   pub tlen: i32,
 }
 
 impl ChrAnchor {
-  pub fn new() -> Self {
-    Self {
-      chr: "".to_string(),
-      flag: 0,
-      pos: 0,
-      cigar: "".to_string(),
-      mapq: 0,
-      tlen: 0
-    }
-  }
 
   pub fn loader(file_line: &Vec<&str>) -> Self {
     Self {

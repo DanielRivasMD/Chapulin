@@ -6,20 +6,11 @@ use crate::utils::{
 };
 
 // to load onto => hashmap for reads aligned to mobile elements
-#[derive(Debug)]
+#[derive(Debug, new)]
 pub struct SVChimericPair {
+  #[new(default)]
   pub read1: SVChimericRead,
+  #[new(default)]
   pub read2: SVChimericRead,
   pub svtag: SVType,
-}
-// TODO: add non-cigar anchor identification
-
-impl SVChimericPair {
-  pub fn new() -> Self {
-    Self {
-      read1: SVChimericRead::new(),
-      read2: SVChimericRead::new(),
-      svtag: SVType::None,
-    }
-  }
 }
