@@ -38,12 +38,12 @@ pub fn sv_controller (
       let sv_aligned_file = format!("{}{}", c_directory, pair_end_reference_alignment);
       println!("{}", sv_aligned_file);
 
-        sv_registry::sv_mapper(
-          &sv_aligned_file,
-          expected_tlen,
-          c_hash_map_collection,
-          c_hash_map_anchor,
-        ).expect(&sv_aligned_file);
+      sv_registry::sv_mapper(
+        &sv_aligned_file,
+        expected_tlen,
+        c_hash_map_collection,
+        c_hash_map_anchor,
+      ).expect(&sv_aligned_file);
 
     // });
     // sv_handle.join().unwrap();

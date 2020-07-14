@@ -40,7 +40,7 @@ pub fn cl_controller (
           &cl_aligned_file,
           c_hash_map_collection,
           c_hash_map_anchor,
-        )?;
+        ).unwrap();
 
     });
     cl_handle.join().unwrap();

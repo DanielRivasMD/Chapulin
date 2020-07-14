@@ -45,7 +45,7 @@ pub fn pi_controller(
         c_hash_map_collection,
         c_hash_map_anchor,
         c_hash_map_chr_assembly,
-      )?;
+      ).unwrap();
     });
     pi_handle.join().unwrap();
 

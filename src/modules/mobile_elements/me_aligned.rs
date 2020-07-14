@@ -106,14 +106,13 @@ pub fn me_identificator(
       pf if pf <= 255 => {
 
         if ! hm_record_collection.lock().unwrap().contains_key(&read_id) {
-          hm_record_collection.lock().unwrap().insert((&read_id).to_string(), MEChimericPair::new());
+          hm_record_collection.lock().unwrap().insert((&read_id).to_string(), MEChimericPair::new(ChrAnchorEnum::None));
 
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
             current_record.read1.sequence = read_seq.clone();
             current_record.read1.me_read[0] = MEAnchor::loader(&record_line, me_size, &mobel_orientation);
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
 
-            // TODO: breakpoint
           }
         } else {
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {

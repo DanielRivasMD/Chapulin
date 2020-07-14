@@ -1,7 +1,8 @@
+
 [package]
-name = "chapulin"
+name = "Chapulin"
 version = "0.1.0"
-authors = ["DanielRivasMD <danielrivasmd@gmail.com>"]
+authors = ["Daniel Rivas <danielrivasmd@gmail.com>"]
 edition = "2018"
 
 
@@ -20,5 +21,5 @@ path = "src/chapulin.rs"
 libc = "0.2.70"
 clap = "2.33.1"
 config = "0.10.1"
-# lazy_static = "1.4.0"
+bytelines = "2.2"
 derive-new = "0.5"

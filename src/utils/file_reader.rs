@@ -1,18 +1,8 @@
 
 // standard libraries
-use std::{
-  fs::File,
-  io::{
-    self,
-    BufReader,
-    prelude::*
-  },
-};
-
-use bytelines::{
-  ByteLines,
-  ByteLinesReader,
-};
+use std::fs::{File};
+use std::io::{self, BufReader, {prelude::*}};
+use bytelines::{ByteLines, ByteLinesReader};
 
 
 pub fn byte_file_reader(
