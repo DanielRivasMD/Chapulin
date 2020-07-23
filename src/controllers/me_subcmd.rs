@@ -5,14 +5,26 @@ use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
 use clap::{ArgMatches};
 use config::{Config, File};
+use thiserror::Error;
 
 // modules
 use crate::modules;
+use std::io::Error as StandardError;
 
+#[derive(Debug, Error)]
+pub enum NanoErratum {
+  #[error("data store disconnected")]
+  Probing,
+
+impl From<StandardError> for NanoErratum {
+  fn from(_: StandardError) -> Self {
+    NanoErratum::Probing
+  }
+}
 
 pub fn me_subcmd(
   matches: &ArgMatches
-) -> std::io::Result<()> {
+) -> Result<(), NanoErratum> {
 
   let mut verbose = false;
   if matches.is_present("verbose") {
@@ -21,10 +33,14 @@ pub fn me_subcmd(
 
   let now = SystemTime::now();
 
-  let config = matches.value_of("CONFIG")
-    .expect("\n\nNo configuration file was set:\nSet a configuration file with option '-c --config'\n\n");
-  println!("A config file was passed in: {}", config);
+  let conf_res = matches.value_of("CONFIG")
+    .ok_or(NanoErratum::Probing);
 
+    let conf = match conf_res {
+      Ok(gottya) => gottya,
+      Err(ou) => return Err(ou),
+    };
+  let config = conf;
   let mut settings = Config::default();
     settings
       .merge(File::with_name(config))

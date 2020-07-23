@@ -56,6 +56,8 @@ fn main () -> std::io::Result<()> {
   // ME controller
   if let Some(matches) = matches.subcommand_matches("ME") {
     controllers::me_subcmd::me_subcmd(matches)?;
+    let res_me = controllers::me_subcmd::me_subcmd(matches);
+    println!("{:?}", res_me);
   }
 
   // SV controller
