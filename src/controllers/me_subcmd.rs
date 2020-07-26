@@ -5,26 +5,18 @@ use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
 use clap::{ArgMatches};
 use config::{Config, File};
-use thiserror::Error;
+use anyhow::{Context};
+use anyhow::Result as anyResult;
 
 // modules
 use crate::modules;
-use std::io::Error as StandardError;
 
-#[derive(Debug, Error)]
-pub enum NanoErratum {
-  #[error("data store disconnected")]
-  Probing,
+use crate::error::config_error::ChapulinConfigError;
 
-impl From<StandardError> for NanoErratum {
-  fn from(_: StandardError) -> Self {
-    NanoErratum::Probing
-  }
-}
 
 pub fn me_subcmd(
   matches: &ArgMatches
-) -> Result<(), NanoErratum> {
+) -> anyResult<()> {
 
   let mut verbose = false;
   if matches.is_present("verbose") {
@@ -33,32 +25,28 @@ pub fn me_subcmd(
 
   let now = SystemTime::now();
 
-  let conf_res = matches.value_of("CONFIG")
-    .ok_or(NanoErratum::Probing);
+  let config = matches.value_of("CONFIG")
+    .context(ChapulinConfigError::EmptyConfigOption)?;
 
-    let conf = match conf_res {
-      Ok(gottya) => gottya,
-      Err(ou) => return Err(ou),
-    };
-  let config = conf;
   let mut settings = Config::default();
     settings
       .merge(File::with_name(config))
-      .expect("\n\nConfiguration file not found\n\n");
+      .context(ChapulinConfigError::NoConfigFile)?;
 
   // interpret settings into variables
-  let settings_hm = settings.try_into::<HashMap<String, String>>().unwrap();
+  let settings_hm = settings.try_into::<HashMap<String, String>>()
+    .context(ChapulinConfigError::ConfigHashMap)?;
 
   let directory = settings_hm.get("directory")
-    .expect("\n\nDirectory was not set properly in configuration file\n\nExample: directory = \"/home/favorite_chapulin_directory/\"\n\n");
+    .context(ChapulinConfigError::BadDirectoryVar)?;
   let reference_file = settings_hm.get("reference")
-    .expect("\n\nReference file was not set properly in configuration file\n\nExample: reference = \"awesome_species_reference.fa\"\n\n");
+    .context(ChapulinConfigError::BadReferenceVar)?;
   let me_library_file = settings_hm.get("mobile_element_library")
-    .expect("\n\nMobile element library was not set properly in configuration file\n\nExample: mobile_element_library = \"cool_ME_library.txt\"\n\n");
+    .context(ChapulinConfigError::BadMELibVar)?;
   let me_align = settings_hm.get("mobile_element_alignment")
-    .expect("\n\nMobile element alignment was not set properly in configuration file\n\nExample: mobile_element_alignment = \"ME_alignment_to_awesome_species.sam\"\n\n");
+    .context(ChapulinConfigError::BadMEAlignVar)?;
   let cl_align = settings_hm.get("reference_genome_alignment")
-    .expect("\n\nReference genome alignment was not set properly in configuration file\n\nExample: reference_genome_alignment = \"alignment_to_awesome_species_reference_R\"\n\nNote: this is a single-end alignment, therefore files shoud be: \n\t\"alignment_to_awesome_species_reference_R1.sam\" & \"alignment_to_awesome_species_reference_R2.sam\",\nwhere suffixes are infered\n\n");
+    .context(ChapulinConfigError::BadReferenceGenomeVar)?;
 
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
   let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));

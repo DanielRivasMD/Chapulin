@@ -23,3 +23,8 @@ clap = "2.33.1"
 config = "0.10.1"
 bytelines = "2.2"
 derive-new = "0.5"
+thiserror = "1.0.20"
+anyhow = "1.0.31"
+
+# NOTE: this import bugs `convert` implementation
+# anyhow = { version = "1.0", default-features = false }

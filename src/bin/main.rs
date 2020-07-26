@@ -26,7 +26,10 @@ create unit tests
 */
 
 
-fn main () -> std::io::Result<()> {
+use anyhow::Result as anyResult;
+
+
+fn main () -> anyResult<()> {
 
   // read configuration from file
   let matches = clap_app!(Chapilin =>
