@@ -110,14 +110,14 @@ pub fn me_identificator(
 
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
             current_record.read1.sequence = read_seq.clone();
-            current_record.read1.me_read[0] = MEAnchor::loader(&record_line, me_size, &mobel_orientation);
+            current_record.read1.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
 
           }
         } else {
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
             current_record.read2.sequence = read_seq.clone();
-            current_record.read2.me_read[0] = MEAnchor::loader(&record_line, me_size, &mobel_orientation);
+            current_record.read2.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read1; }
           }
         }

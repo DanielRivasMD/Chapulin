@@ -46,28 +46,36 @@ pub fn cl_mapper(
           (current_record.read1.sequence == record_line[9].to_string()) ||
           (current_record.read1.sequence_reverser() == record_line[9].to_string())
         {
-          current_record.read1.chr_read[0] = ChrAnchor::loader(&record_line);
+          current_record.read1.chr_read.push(ChrAnchor::loader(&record_line));
 
         } else if
           (current_record.read2.sequence == record_line[9].to_string()) ||
           (current_record.read2.sequence_reverser() == record_line[9].to_string())
         {
-          current_record.read2.chr_read[0] = ChrAnchor::loader(&record_line);
+          current_record.read2.chr_read.push(ChrAnchor::loader(&record_line));
         }
 
         match current_record.chranch {
 
           ChrAnchorEnum::Read1 => {
-            if current_record.read1.chr_read[0].mapq < MAPQ && current_record.read1.chr_read[0].chr != "".to_string()
-            {
+            if current_record.read1.chr_read.len() == 0 {
               mapq_switch = true;
+            } else {
+              if current_record.read1.chr_read[0].mapq < MAPQ
+              {
+                mapq_switch = true;
+              }
             }
           },
 
           ChrAnchorEnum::Read2 => {
-            if current_record.read2.chr_read[0].mapq < MAPQ && current_record.read2.chr_read[0].chr != "".to_string()
-            {
+            if current_record.read2.chr_read.len() == 0 {
               mapq_switch = true;
+            } else {
+              if current_record.read2.chr_read[0].mapq < MAPQ
+              {
+                mapq_switch = true;
+              }
             }
           },
 
