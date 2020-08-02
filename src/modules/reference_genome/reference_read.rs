@@ -18,6 +18,7 @@ pub fn reference_reader(
 ) -> std::io::Result<()> {
 
   let mut current_chr = String::new();
+  let mut current_len = 0.;
 
   let mut lines = byte_file_reader(&ref_seq);
   while let Some(line) = lines.next() {
@@ -25,13 +26,17 @@ pub fn reference_reader(
     let record_line = from_utf8(&line?).unwrap();
 
     if record_line.starts_with('>') {
+      if ! ( current_chr == "".to_string() ) {
+        chr_assembly.lock().unwrap().insert(current_chr, current_len);
+        current_len = 0.;
+      }
       let record_entry: Vec<&str> = record_line.trim().split(" ").collect();
       current_chr = record_entry[0].replace(">", "");
     } else {
-      chr_assembly.lock().unwrap().insert(current_chr, record_line.len() as f64);
-      current_chr = String::new();
+      current_len = current_len + record_line.len() as f64;
     }
   }
+  chr_assembly.lock().unwrap().insert(current_chr, current_len as f64);
 
   Ok(())
 }
