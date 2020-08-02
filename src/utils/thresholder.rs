@@ -105,13 +105,18 @@ pub fn thresholder(
   let cum_bin_tb = cumsum(bin_tb);
   let mut false_disc_values = vec![0.; psize];
   for ix in 0..psize {
-    false_disc_values[ix] = peak_prob[ix] / cum_bin_tb[ix];
+    if cum_bin_tb[ix] == 0. {
+      false_disc_values[ix] = 1.;
+    } else {
+      false_disc_values[ix] = peak_prob[ix] / cum_bin_tb[ix];
+    }
   }
 
   let mut threshold = 0;
   for (ix, fd_val) in false_disc_values.iter().enumerate() {
     if *fd_val < false_discovery_tolerance {
-      threshold = ix;
+      threshold = ix + 1;
+      break
     }
   }
   return threshold;
