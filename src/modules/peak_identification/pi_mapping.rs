@@ -74,20 +74,20 @@ pub fn pi_identifier (
       }
     }
 
-    let pois_threshold = thresholder(
-      read_count as f64,
-      chr_size,
-      0.001,
-      tmp_position_hm,
-      NO_FDR,
-    );
+    if ! ( read_count == 0 ) {
+      let pois_threshold = thresholder(
+        read_count as f64,
+        chr_size,
+        0.001,
+        tmp_position_hm,
+        NO_FDR,
+      );
 
-    println!("Calculated threshold is: {}", pois_threshold);
-
-    for (chr_pos, id_vec) in tmp_position_hm.iter() {
-      if id_vec.len() > pois_threshold {
-        println!("Position: {} @ strand: {} => {}", chr_pos, strand, id_vec.len());
-        println!("IDs: {:?}", id_vec);
+      for (chr_pos, id_vec) in tmp_position_hm.iter() {
+        if id_vec.len() > pois_threshold {
+          println!("Position: {} @ strand: {} => {}", chr_pos, strand, id_vec.len());
+          println!("IDs: {:?}", id_vec);
+        }
       }
     }
 
