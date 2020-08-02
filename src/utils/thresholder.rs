@@ -32,9 +32,10 @@ extern {
 
 fn effective_genome_length_calculator(
   genome_length: f64,
+  bin_size: f64,
+  bin_overlap: f64,
 ) -> f64 {
-  let effective_genome_length = genome_length * BIN_SIZE as f64 / BIN_OVERLAP as f64;
-  return effective_genome_length
+  genome_length * bin_size / bin_overlap
 }
 
 
@@ -84,8 +85,8 @@ pub fn thresholder(
   read_hm: &HashMap<i32, Vec<String>>,
   psize: usize,
 ) -> usize {
-  let eff_genome_length = effective_genome_length_calculator(chromosome_size);
   let lambda = pop_reads * BIN_SIZE as f64 / eff_genome_length;
+  let eff_genome_length = effective_genome_length_calculator!(chromosome_size);
   let p_values = r_ppoisson(lambda, psize);
 
   let mut peak_prob = vec![0.; psize];
@@ -129,6 +130,7 @@ mod tests {
   use data_test::data_test;
   use super::{
     ppois,
+    effective_genome_length_calculator,
     r_ppoisson,
   };
 
@@ -157,6 +159,11 @@ mod tests {
     - ku (vec![0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., ], 9., vec![0.00012340980408667956121, 0.0012340980408667970216, 0.0062321951063773160795, 0.021226486302908888215, 0.054963641495104915979, 0.11569052084105772848, 0.20678083985998707561, 0.32389696431289594081, 0.45565260432241877497, 0.58740824433194127607, 0.70598832034051173245, ])
     - juu (vec![0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., ], 10., vec![4.5399929762484854173e-05, 0.00049939922738733333492, 0.0027693957155115757861, 0.010336050675925727987, 0.029252688076961082253, 0.067085962879031804662, 0.1301414208824830665, 0.22022064660169907158, 0.33281967875071877261, 0.45792971447185226719, 0.58303975019298537319, ])
 
+    fn test_effective_genome_length_calculator(glen, expected) => {
+      assert_eq!(super::effective_genome_length_calculator(glen, super::BIN_SIZE as f64, super::BIN_OVERLAP as f64), expected)
+    }
+    - dosmil (2000., 4000., )
+    - dizmil (3243556456., 6487112912., )
     // test inverted probability poisson function
     fn test_r_poisson(lambda, psize, expected) => {
       assert_eq!(super::r_ppoisson(lambda, psize), expected)
