@@ -9,3 +9,12 @@ macro_rules! effective_genome_length_calculator {
     };
 }
 
+#[macro_export]
+macro_rules! lambda_calculator {
+    ($pr: expr, $egl: expr, $bs: expr) => {
+        lambda_calculator($pr, $egl, $bs)
+    };
+    ($pr: expr, $egl: expr) => {
+        lambda_calculator($pr, $egl, BIN_SIZE as f64)
+    };
+}

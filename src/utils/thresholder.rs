@@ -38,6 +38,13 @@ fn effective_genome_length_calculator(
   genome_length * bin_size / bin_overlap
 }
 
+fn lambda_calculator(
+  pop_reads: f64,
+  eff_genome_length: f64,
+  bin_size: f64,
+) -> f64 {
+  pop_reads * bin_size / eff_genome_length
+}
 
 fn r_ppoisson(
   lambda: f64,
@@ -85,8 +92,8 @@ pub fn thresholder(
   read_hm: &HashMap<i32, Vec<String>>,
   psize: usize,
 ) -> usize {
-  let lambda = pop_reads * BIN_SIZE as f64 / eff_genome_length;
   let eff_genome_length = effective_genome_length_calculator!(chromosome_size);
+  let lambda = lambda_calculator!(pop_reads, eff_genome_length);
   let p_values = r_ppoisson(lambda, psize);
 
   let mut peak_prob = vec![0.; psize];
@@ -128,9 +135,11 @@ pub fn thresholder(
 #[cfg(test)]
 mod tests {
   use data_test::data_test;
+  use crate::settings::constants::{BIN_SIZE, BIN_OVERLAP};
   use super::{
     ppois,
     effective_genome_length_calculator,
+    lambda_calculator,
     r_ppoisson,
   };
 
@@ -164,6 +173,12 @@ mod tests {
     }
     - dosmil (2000., 4000., )
     - dizmil (3243556456., 6487112912., )
+    fn test_lambda_calculator(preads, eflen, expected) => {
+      assert_eq!(super::lambda_calculator(preads, eflen, super::BIN_SIZE as f64), expected)
+    }
+    - prim (100., 400., 25., )
+    - secs (5050., 75400000., 0.0066976127320954904898, )
+
     // test inverted probability poisson function
     fn test_r_poisson(lambda, psize, expected) => {
       assert_eq!(super::r_ppoisson(lambda, psize), expected)
