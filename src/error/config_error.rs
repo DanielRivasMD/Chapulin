@@ -1,6 +1,11 @@
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // standard libraries
 use thiserror::Error;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 #[derive(Debug, Error)]
@@ -22,3 +27,5 @@ pub enum ChapulinConfigError {
   #[error("\n\nReference genome alignment was not set properly in configuration file\n\nExample: reference_genome_alignment = \"alignment_to_awesome_species_reference_R\"\n\nNote: this is a single-end alignment, therefore files shoud be: \n\t\"alignment_to_awesome_species_reference_R1.sam\" & \"alignment_to_awesome_species_reference_R2.sam\",\nwhere suffixes are infered\n\n")]
   BadReferenceGenomeVar,
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////

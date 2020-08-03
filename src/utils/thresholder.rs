@@ -1,6 +1,10 @@
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // standard libraries
 use std::collections::{HashMap};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate utilities
 use crate::{
@@ -12,13 +16,18 @@ use crate::{
   },
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // C bindings
 use libc::{
   c_int,
   c_double,
 };
 
-// R function signature declaration
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/// R function signature declaration
 #[link(name="Rmath")]
 extern {
   fn ppois(
@@ -122,23 +131,11 @@ pub fn thresholder(
   return threshold;
 }
 
-// // R
-// eff_genome_length <- length_post_contig * bin_size / bin_overlaps
-//
-// pop_reads <- sum(peak_strand[, "seq_sum"])
-// lamm <- pop_reads * bin_size / eff_genome_length
-// lambda_ls[[which_strand]] <- lamm
-// p_values <- 1-ppois(1:(no_fdr), lambda = lamm)
-//
-// peak_prob <- p_values * length_post_contig
-// false_disc_values <- peak_prob / cumsum(table(peak_strand[, "seq_max"]))[1:no_fdr]
-// pop_thres_ls[[which_strand]] <- min(which(false_disc_values < false_discovery_tolerance))
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // test private functions
 #[cfg(test)]
-mod tests {
+mod pthreshold_tests {
   use data_test::data_test;
   use crate::settings::constants::{BIN_SIZE, BIN_OVERLAP};
   use super::{
@@ -241,3 +238,5 @@ mod tests {
   }
 
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
