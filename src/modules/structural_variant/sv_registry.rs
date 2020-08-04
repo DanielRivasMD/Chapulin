@@ -5,6 +5,8 @@
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::str::{from_utf8};
+use anyhow::{Context};
+use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -27,13 +29,21 @@ use crate::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// error handler
+use crate::error::{
+  // sv_error::ChapulinSVError,
+  common_error::ChapulinCommonError,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 pub fn sv_mapper(
   sv_bam_file: &String,
   expected_tlen: i32,
   hm_collection: Arc<Mutex<HashMap<String, SVChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
-) -> std::io::Result<()> {
+) -> anyResult<()> {
 
   // load file
   // let (mut reader, mut buffer) = buff_file_reader(&sv_bam_file);
@@ -49,7 +59,7 @@ pub fn sv_mapper(
 
     // let record_line: Vec<&str> = line?.trim().split("\t").collect();
     let record_line: Vec<&str> = from_utf8(&line?)
-      .unwrap()
+      .context(ChapulinCommonError::RegistryLine)?
       .trim()
       .split("\t")
       .collect();

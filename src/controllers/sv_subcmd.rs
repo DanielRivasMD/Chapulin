@@ -7,19 +7,28 @@ use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
 use clap::{ArgMatches};
 use config::{Config, File};
+use anyhow::{Context};
+use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 // modules
 use crate::modules;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// error handler
+use crate::error::{
+  config_error::ChapulinConfigError,
+  common_error::ChapulinCommonError,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 pub fn sv_subcmd(
   matches: &ArgMatches
-) -> std::io::Result<()> {
+) -> anyResult<()> {
 
   let now = SystemTime::now();
 
@@ -31,21 +40,33 @@ pub fn sv_subcmd(
     println!("Printing SV normally...");
   }
 
-  let config = matches.value_of("CONFIG").unwrap();
+  let config = matches.value_of("CONFIG")
+    .context(ChapulinConfigError::EmptyConfigOption)?;
+
   println!("A config file was passed in: {}", config);
 
   let mut settings = Config::default();
     settings
-      .merge(File::with_name(config)).unwrap();
+      .merge(File::with_name(config))
+      .context(ChapulinConfigError::NoConfigFile)?;
 
   // interpret settings into variables
-  let settings_hm = settings.try_into::<HashMap<String, String>>().unwrap();
+  let settings_hm = settings.try_into::<HashMap<String, String>>()
+    .context(ChapulinConfigError::ConfigHashMap)?;
 
-  let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment").unwrap();
+  let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment")
+    .context(ChapulinConfigError::ConfigHashMap)?;
 
-  let directory = settings_hm.get("directory").unwrap();
 
-  let expected_tlen = settings_hm.get("expected_tlen").unwrap().parse::<i32>().unwrap();
+  let directory = settings_hm.get("directory")
+    .context(ChapulinConfigError::BadDirectoryVar)?;
+
+  let expected_tlen = settings_hm.get("expected_tlen")
+    .unwrap()
+    // .context(ChapulinConfigError::TODO)
+    .parse::<i32>()
+    .unwrap();
+    // .context(ChapulinCommonError::Parsing);
   // let sv_align = settings_hm.get("reference_genome_alignment").unwrap();
 
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
@@ -92,10 +113,10 @@ pub fn sv_subcmd(
   //   c_pi_anchor_registry,
   // )?;
 
-  // output message to log
-  for (key, val) in mutex_record_collection.lock().unwrap().iter() {
-    println!("key: {}\nval: {:#?}", key, val);
-  }
+    // // output message to log
+    // for (key, val) in mutex_record_collection.lock().unwrap().iter() {
+    //   println!("key: {}\nval: {:#?}", key, val);
+    // }
 
   println!("{:?}", now.elapsed().unwrap());
 

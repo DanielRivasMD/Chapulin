@@ -4,6 +4,7 @@
 // standard libraries
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
+use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +29,7 @@ pub fn sv_controller (
   pair_end_reference_alignment: &String,
   hash_map_collection: Arc<Mutex<HashMap<String, SVChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
-) -> std::io::Result<()> {
+) -> anyResult<()> {
 
   // load reference chromosome aligned reads
   // for i in 1..3 {
