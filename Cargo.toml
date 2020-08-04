@@ -26,6 +26,7 @@ derive-new = "0.5"
 thiserror = "1.0.20"
 anyhow = "1.0.31"
 icecream = "0.1.0"
+data-test = "0.1.0"
 colored = "2"
 
 # NOTE: this import bugs `convert` implementation
