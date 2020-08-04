@@ -5,6 +5,8 @@
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::{thread};
+use anyhow::{Context};
+use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,12 +24,20 @@ use crate::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// error handler
+use crate::error::{
+  me_error::ChapulinMEError,
+  common_error::ChapulinCommonError,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 pub fn pi_controller(
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
-) -> std::io::Result<()> {
+) -> anyResult<()> {
 
   // iterate on reference chromosomes
   let mut chromosome_vec = Vec::new();
@@ -53,9 +63,9 @@ pub fn pi_controller(
         c_hash_map_collection,
         c_hash_map_anchor,
         c_hash_map_chr_assembly,
-      ).unwrap();
+      ).context(ChapulinMEError::TODO);
     });
-    pi_handle.join().unwrap();
+    pi_handle.join().expect("MESSAGE_JOIN");
 
   }
   // TODO: gather all positions & output a comprenhensive list

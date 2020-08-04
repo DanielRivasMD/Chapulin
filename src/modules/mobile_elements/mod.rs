@@ -4,6 +4,7 @@
 // standard libraries
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
+use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +29,7 @@ pub fn me_controller (
   me_library: &String,
   me_aligned_file: &String,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
-) -> std::io::Result<()> {
+) -> anyResult<()> {
 
   // init mobile element library hashmap
   let mut me_collection = HashMap::new();

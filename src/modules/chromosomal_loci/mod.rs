@@ -5,6 +5,8 @@
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::{thread};
+use anyhow::{Context};
+use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,13 +24,21 @@ use crate::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// error handler
+use crate::error::{
+  me_error::ChapulinMEError,
+  common_error::ChapulinCommonError,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 pub fn cl_controller (
   directory: &String,
   cl_aligned_prefix: &String,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
-) -> std::io::Result<()> {
+) -> anyResult<()> {
 
   // load reference chromosome aligned reads
   for i in 1..3 {
@@ -48,10 +58,10 @@ pub fn cl_controller (
           &cl_aligned_file,
           c_hash_map_collection,
           c_hash_map_anchor,
-        ).unwrap();
+        ).context(ChapulinMEError::TODO);
 
     });
-    cl_handle.join().unwrap();
+    cl_handle.join().expect("MESSAGE_JOIN");
   }
 
   Ok(())

@@ -5,6 +5,8 @@
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::str::{from_utf8};
+use anyhow::{Context};
+use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -23,12 +25,20 @@ use crate::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// error handler
+use crate::error::{
+  me_error::ChapulinMEError,
+  common_error::ChapulinCommonError,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 pub fn cl_mapper(
   cl_bam_file: &String,
   hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
-) -> std::io::Result<()> {
+) -> anyResult<()> {
 
   // load file
   let mut lines = byte_file_reader(&cl_bam_file);
@@ -37,7 +47,7 @@ pub fn cl_mapper(
   while let Some(line) = lines.next() {
 
     let record_line: Vec<&str> = from_utf8(&line?)
-      .unwrap()
+      .context(ChapulinCommonError::RegistryLine)?
       .trim()
       .split("\t")
       .collect();

@@ -4,6 +4,8 @@
 // standard libraries
 use std::collections::{HashMap};
 use std::str::{from_utf8};
+use anyhow::{Context};
+use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,11 +19,19 @@ use crate::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// error handler
+use crate::error::{
+  me_error::ChapulinMEError,
+  common_error::ChapulinCommonError,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 pub fn me_lib_loader(
   me_lib_file: &String,
   hm_me_collection: &mut HashMap<String, MElibrary>,
-) -> std::io::Result<()> {
+) -> anyResult<()> {
 
   // TODO: the original scripts include tagging about LTR type. a way to indicate in a more generic manner is required
   // load file
@@ -31,11 +41,11 @@ pub fn me_lib_loader(
   while let Some(line) = lines.next() {
 
     let record_line: Vec<&str> = from_utf8(line?)
-      .unwrap()
+      .context(ChapulinCommonError::RegistryLine)?
       .split("\t")
       .collect();
 
-    let mobile_element_tag: String = record_line[0].parse().unwrap();
+    let mobile_element_tag: String = record_line[0].parse().context(ChapulinCommonError::Parsing)?;
     let mobile_element_id: String = record_line[1].to_string();
 
     if ! hm_me_collection.contains_key(&mobile_element_id) {
@@ -43,7 +53,7 @@ pub fn me_lib_loader(
       hm_me_collection.insert((&mobile_element_id).to_string(), MElibrary::new());
 
       if let Some(current_record) = hm_me_collection.get_mut(&mobile_element_id) {
-        current_record.me_size = record_line[2].parse().unwrap();
+        current_record.me_size = record_line[2].parse().context(ChapulinCommonError::Parsing)?;
         if mobile_element_tag == "ltr3".to_string() {
           current_record.annotations_erv.ltr3 = true;
         } else if mobile_element_tag == "ltr5".to_string() {

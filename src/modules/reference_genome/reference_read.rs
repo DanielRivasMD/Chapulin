@@ -5,6 +5,8 @@
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::str::{from_utf8};
+use anyhow::{Context};
+use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,12 +19,20 @@ use crate::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// error handler
+use crate::error::{
+  me_error::ChapulinMEError,
+  common_error::ChapulinCommonError,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 pub fn reference_reader(
   ref_seq: String,
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
-) -> std::io::Result<()> {
+) -> anyResult<()> {
 
   let mut current_chr = String::new();
   let mut current_len = 0.;
@@ -30,7 +40,8 @@ pub fn reference_reader(
   let mut lines = byte_file_reader(&ref_seq);
   while let Some(line) = lines.next() {
 
-    let record_line = from_utf8(&line?).unwrap();
+    let record_line = from_utf8(&line?)
+      .context(ChapulinCommonError::RegistryLine)?;
 
     if record_line.starts_with('>') {
       if ! ( current_chr == "".to_string() ) {

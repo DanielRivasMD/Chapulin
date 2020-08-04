@@ -5,6 +5,8 @@
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::str::{from_utf8};
+use anyhow::{Context};
+use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -26,12 +28,20 @@ use crate::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// error handler
+use crate::error::{
+  me_error::ChapulinMEError,
+  common_error::ChapulinCommonError,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 pub fn me_identificator(
   me_bam_file: &String,
   hm_record_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hm_me_collection: &HashMap<String, MElibrary>,
-) -> std::io::Result<()> {
+) -> anyResult<()> {
 
   // load file
   let mut lines = byte_file_reader(&me_bam_file);
@@ -48,7 +58,7 @@ pub fn me_identificator(
 
     // load line into vector
     let record_line: Vec<&str> = from_utf8(&line?)
-      .unwrap()
+      .context(ChapulinCommonError::RegistryLine)?
       .trim()
       .split("\t")
       .collect();
@@ -61,11 +71,11 @@ pub fn me_identificator(
     let read_seq = record_line[9].to_string();
 
     // flag & read orientation
-    let pv_flag = record_line[1].parse::<i32>().unwrap();
+    let pv_flag = record_line[1].parse::<i32>().context(ChapulinCommonError::Parsing)?;
     let read_orientation = interpretor(pv_flag, 5);
 
     // alignment interpretation
-    let pv_position = record_line[3].parse::<i32>().unwrap();
+    let pv_position = record_line[3].parse::<i32>().context(ChapulinCommonError::Parsing)?;
     let pv_cigar = record_line[5].to_string();
     let dc_cigar = CIGAR::loader(&pv_cigar);
     let adj_left_pos = dc_cigar.left_boundry(pv_position);
@@ -86,7 +96,7 @@ pub fn me_identificator(
     if ! ( prev_read_id == read_id || prev_read_id == "".to_string() ) {
       // evaluate read batch
       if purge_switch {
-        hm_record_collection.lock().unwrap().remove(&prev_read_id);
+        hm_record_collection.lock().expect("MESSAGE_MUTEX").remove(&prev_read_id);
       }
 
       // reset purge switch
