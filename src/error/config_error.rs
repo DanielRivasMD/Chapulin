@@ -26,6 +26,8 @@ pub enum ChapulinConfigError {
   BadMEAlignVar,
   #[error("\n\t{}\n{}{}", "Reference genome alignment was not set properly in configuration file".red(), "Example: reference_genome_alignment = ", "'alignment_to_awesome_species_reference_R' Note: this is a single-end alignment, therefore files shoud be: 'alignment_to_awesome_species_reference_R1.sam' & 'alignment_to_awesome_species_reference_R2.sam', where suffixes are infered".cyan())]
   BadReferenceGenomeVar,
+  #[error("\n\t{}\n{}{}", "Reference genome alignment was not set properly in configuration file".red(), "Example: reference_genome_alignment = ", "'alignment_to_awesome_species_reference_R' Note: this is a single-end alignment, therefore files shoud be: 'alignment_to_awesome_species_reference_R1.sam' & 'alignment_to_awesome_species_reference_R2.sam', where suffixes are infered".cyan())]
+  TODO,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
