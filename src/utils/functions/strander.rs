@@ -8,10 +8,12 @@ use std::collections::{HashMap};
 
 // crate utilities
 use crate::{
-  utils::{
+  utils::functions::{
+    element_counter::ElementCounter,
+  },
+  utils::structures::{
     chr_anchor::ChrAnchor,
     me_anchor::MEAnchor,
-    element_counter::ElementCounter,
   },
 };
 

@@ -11,11 +11,13 @@ use anyhow::Result as anyResult;
 
 // crate utilities
 use crate::{
-  utils::{
-    me_chimeric_pair::MEChimericPair,
-    chr_anchor_enum::ChrAnchorEnum,
+  utils::functions::{
     strander::strander,
     thresholder::thresholder,
+  },
+  utils::structures::{
+    me_chimeric_pair::MEChimericPair,
+    chr_anchor_enum::ChrAnchorEnum,
   },
   settings::{
     constants::{

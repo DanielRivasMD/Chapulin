@@ -12,15 +12,17 @@ use anyhow::Result as anyResult;
 
 // crate utilities
 use crate::{
-  utils::{
+  utils::functions::{
     file_reader::byte_file_reader,
+  },
+  utils::structures::{
     me_chimeric_pair::MEChimericPair,
     chr_anchor::ChrAnchor,
     chr_anchor_enum::ChrAnchorEnum,
   },
   settings::{
     constants::MAPQ,
-  }
+  },
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

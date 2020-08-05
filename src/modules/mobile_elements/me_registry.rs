@@ -11,10 +11,12 @@ use anyhow::Result as anyResult;
 
 // crate utilities
 use crate::{
-  utils::{
+  utils::functions::{
     file_reader::byte_file_reader,
+  },
+  utils::structures::{
     me_library::MElibrary,
-  }
+  },
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

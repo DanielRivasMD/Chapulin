@@ -17,9 +17,9 @@ mod pi_mapping;
 
 // crate utilities
 use crate::{
-  utils::{
+  utils::structures::{
     me_chimeric_pair::MEChimericPair
-  }
+  },
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

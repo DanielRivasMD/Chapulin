@@ -15,9 +15,9 @@ mod sv_registry;
 
 // crate utilities
 use crate::{
-  utils::{
+  utils::structures::{
     sv_chimeric_pair::SVChimericPair,
-  }
+  },
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

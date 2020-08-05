@@ -12,12 +12,13 @@ use anyhow::Result as anyResult;
 
 // crate utilities
 use crate::{
-  utils::{
+  utils::functions::{
     file_reader::byte_file_reader,
-    // file_reader::buff_file_reader,
-    // cigar::CIGAR,
     flag_interpretor::interpretor,
     flag_interpretor::SamFlag,
+  },
+  utils::structures::{
+    // cigar::CIGAR,
     sv_chimeric_pair::SVChimericPair,
     chr_anchor::ChrAnchor,
     sv_type::SVType,
