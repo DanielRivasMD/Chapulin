@@ -47,7 +47,7 @@ pub fn sv_mapper(
 
   // load file
   // let (mut reader, mut buffer) = buff_file_reader(&sv_bam_file);
-  let mut lines = byte_file_reader(&sv_bam_file);
+  let mut lines = byte_file_reader(&sv_bam_file)?;
 
   // declare initial values
   let mut prev_read_id = String::new();

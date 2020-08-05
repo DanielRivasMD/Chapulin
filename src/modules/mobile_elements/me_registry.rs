@@ -35,7 +35,7 @@ pub fn me_lib_loader(
 
   // TODO: the original scripts include tagging about LTR type. a way to indicate in a more generic manner is required
   // load file
-  let mut lines = byte_file_reader(&me_lib_file);
+  let mut lines = byte_file_reader(&me_lib_file)?;
 
   // iterate through file
   while let Some(line) = lines.next() {

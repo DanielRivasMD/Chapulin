@@ -37,7 +37,7 @@ pub fn reference_reader(
   let mut current_chr = String::new();
   let mut current_len = 0.;
 
-  let mut lines = byte_file_reader(&ref_seq);
+  let mut lines = byte_file_reader(&ref_seq)?;
   while let Some(line) = lines.next() {
 
     let record_line = from_utf8(&line?)

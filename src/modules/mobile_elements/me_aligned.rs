@@ -44,7 +44,7 @@ pub fn me_identificator(
 ) -> anyResult<()> {
 
   // load file
-  let mut lines = byte_file_reader(&me_bam_file);
+  let mut lines = byte_file_reader(&me_bam_file)?;
 
   // declare initial values
   let mut prev_read_id = String::new();

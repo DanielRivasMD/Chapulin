@@ -5,20 +5,29 @@
 use std::fs::{File};
 use std::io::{self, BufReader, {prelude::*}};
 use bytelines::{ByteLines, ByteLinesReader};
+use anyhow::{Context};
+use anyhow::Result as anyResult;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// error handler
+use crate::error::{
+  common_error::ChapulinCommonError,
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 pub fn byte_file_reader(
   input_file: &String,
-) -> ByteLines<BufReader<File>> {
+) -> anyResult<ByteLines<BufReader<File>>> {
 
   let file = File::open(&input_file)
-    .expect(format!("\n\nProblem opening file:\n\n{}\n\nPossibly file does not exist\n\n", &input_file).as_str());
+    .context(ChapulinCommonError::ReadFile)?;
   let reader = BufReader::new(file);
 
   let lines = reader.byte_lines();
-  return lines
+  Ok(lines)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

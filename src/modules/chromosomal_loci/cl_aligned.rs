@@ -41,7 +41,7 @@ pub fn cl_mapper(
 ) -> anyResult<()> {
 
   // load file
-  let mut lines = byte_file_reader(&cl_bam_file);
+  let mut lines = byte_file_reader(&cl_bam_file)?;
 
   // iterate through file
   while let Some(line) = lines.next() {
