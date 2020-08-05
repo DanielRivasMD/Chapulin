@@ -25,9 +25,9 @@ use crate::{
 
 
 pub fn me_controller (
-  directory: &String,
-  me_library: &String,
-  me_aligned_file: &String,
+  directory: &str,
+  me_library: &str,
+  me_aligned_file: &str,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
 ) -> anyResult<()> {
 

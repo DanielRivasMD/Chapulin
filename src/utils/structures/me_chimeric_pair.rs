@@ -28,7 +28,7 @@ pub struct MEChimericPair {
 // TODO: add non-cigar anchor identification
 
 impl MEChimericPair {
-  pub fn chr_anchor_retriever<'a>(&'a self) -> &'a MEChimericRead {
+  pub fn chr_anchor_retriever(&self) -> &MEChimericRead {
     match self.chranch {
       ChrAnchorEnum::None => {
         // TODO: think about an alternative here

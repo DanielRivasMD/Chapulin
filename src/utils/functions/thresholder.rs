@@ -66,7 +66,7 @@ fn r_ppoisson(
       ppois_vec[ppois_index - 1] = 1. - ppois(ppois_index as f64, lambda, 1, 0);
     }
   }
-  return ppois_vec
+  ppois_vec
 }
 
 fn tabler(
@@ -77,21 +77,21 @@ fn tabler(
   for (_, i) in bined_hm.iter() {
     let length_count = i.len();
     if length_count < psize {
-      out_vec[length_count - 1] = out_vec[length_count - 1] + 1.;
+      out_vec[length_count - 1] += 1.;
     }
   }
-  return out_vec
+  out_vec
 }
 
 fn cumsum(
   mut cum_vec: Vec<f64>,
 ) -> Vec<f64> {
   let mut cumulus = 0.;
-  for i in 0..cum_vec.len() {
-    cumulus = cumulus + cum_vec[i];
-    cum_vec[i] = cumulus;
+  for cix in &mut cum_vec {
+    cumulus += *cix;
+    *cix = cumulus;
   }
-  return cum_vec
+  cum_vec
 }
 
 pub fn thresholder(
@@ -128,7 +128,7 @@ pub fn thresholder(
       break
     }
   }
-  return threshold;
+  threshold
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

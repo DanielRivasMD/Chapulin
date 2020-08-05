@@ -32,7 +32,6 @@ use crate::{
 
 // error handler
 use crate::error::{
-  me_error::ChapulinMEError,
   common_error::ChapulinCommonError,
 };
 
@@ -40,7 +39,7 @@ use crate::error::{
 
 
 pub fn me_identificator(
-  me_bam_file: &String,
+  me_bam_file: &str,
   hm_record_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hm_me_collection: &HashMap<String, MElibrary>,
 ) -> anyResult<()> {
@@ -62,7 +61,7 @@ pub fn me_identificator(
     let record_line: Vec<&str> = from_utf8(&line?)
       .context(ChapulinCommonError::RegistryLine)?
       .trim()
-      .split("\t")
+      .split('\t')
       .collect();
 
     // update read id
@@ -86,16 +85,12 @@ pub fn me_identificator(
     // TODO: describe break point signature
 
     // retrieve mobile element library records
-    let me_option = hm_me_collection.get(&mobel);
-    match me_option {
-      Some(me_record) => {
+    if let Some(me_record) = hm_me_collection.get(&mobel) {
         me_size = me_record.me_size;
-      },
-      None => (),
     }
 
     // purge read pairs
-    if ! ( prev_read_id == read_id || prev_read_id == "".to_string() ) {
+    if ! ( prev_read_id == read_id || prev_read_id == "" ) {
       // evaluate read batch
       if purge_switch {
         hm_record_collection.lock().expect("MESSAGE_MUTEX").remove(&prev_read_id);
@@ -132,12 +127,10 @@ pub fn me_identificator(
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
 
           }
-        } else {
-          if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
-            current_record.read2.sequence = read_seq.clone();
-            current_record.read2.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
-            if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read1; }
-          }
+        } else if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
+          current_record.read2.sequence = read_seq.clone();
+          current_record.read2.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
+          if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read1; }
         }
       },
 
@@ -145,7 +138,7 @@ pub fn me_identificator(
       pf if pf >= 256 => {
 
         if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
-          if current_record.read2.sequence == "".to_string() {
+          if current_record.read2.sequence == "" {
             current_record.read1.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
           } else {

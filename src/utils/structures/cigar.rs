@@ -19,7 +19,7 @@ pub struct CIGAR {
 
 impl CIGAR {
 
-  pub fn loader(to_interpret: &String) -> Self {
+  pub fn loader(to_interpret: &str) -> Self {
 
     // create new CIGAR with empty values
     let mut this_cigar = CIGAR::new();
@@ -66,7 +66,7 @@ impl CIGAR {
         j = i + 1;
       };
     }
-    return this_cigar
+    this_cigar
   }
 
   // tupple: first => adjusted position; second => total aligned length

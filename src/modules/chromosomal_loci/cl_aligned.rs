@@ -29,7 +29,6 @@ use crate::{
 
 // error handler
 use crate::error::{
-  me_error::ChapulinMEError,
   common_error::ChapulinCommonError,
 };
 
@@ -37,7 +36,7 @@ use crate::error::{
 
 
 pub fn cl_mapper(
-  cl_bam_file: &String,
+  cl_bam_file: &str,
   hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> anyResult<()> {
@@ -51,7 +50,7 @@ pub fn cl_mapper(
     let record_line: Vec<&str> = from_utf8(&line?)
       .context(ChapulinCommonError::RegistryLine)?
       .trim()
-      .split("\t")
+      .split('\t')
       .collect();
 
     if hm_collection.lock().unwrap().contains_key(record_line[0]) {
@@ -61,14 +60,14 @@ pub fn cl_mapper(
       if let Some(current_record) = hm_collection.lock().unwrap().get_mut(record_line[0]) {
 
         if
-          (current_record.read1.sequence == record_line[9].to_string()) ||
-          (current_record.read1.sequence_reverser() == record_line[9].to_string())
+          (current_record.read1.sequence == record_line[9]) ||
+          (current_record.read1.sequence_reverser() == record_line[9])
         {
           current_record.read1.chr_read.push(ChrAnchor::loader(&record_line));
 
         } else if
-          (current_record.read2.sequence == record_line[9].to_string()) ||
-          (current_record.read2.sequence_reverser() == record_line[9].to_string())
+          (current_record.read2.sequence == record_line[9]) ||
+          (current_record.read2.sequence_reverser() == record_line[9])
         {
           current_record.read2.chr_read.push(ChrAnchor::loader(&record_line));
         }
@@ -76,24 +75,14 @@ pub fn cl_mapper(
         match current_record.chranch {
 
           ChrAnchorEnum::Read1 => {
-            if current_record.read1.chr_read.len() == 0 {
+            if current_record.read1.chr_read.is_empty() || current_record.read1.chr_read[0].mapq < MAPQ {
               mapq_switch = true;
-            } else {
-              if current_record.read1.chr_read[0].mapq < MAPQ
-              {
-                mapq_switch = true;
-              }
             }
           },
 
           ChrAnchorEnum::Read2 => {
-            if current_record.read2.chr_read.len() == 0 {
+            if current_record.read2.chr_read.is_empty() || current_record.read2.chr_read[0].mapq < MAPQ {
               mapq_switch = true;
-            } else {
-              if current_record.read2.chr_read[0].mapq < MAPQ
-              {
-                mapq_switch = true;
-              }
             }
           },
 

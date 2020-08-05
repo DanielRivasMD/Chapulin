@@ -20,7 +20,6 @@ use crate::modules;
 // error handler
 use crate::error::{
   config_error::ChapulinConfigError,
-  common_error::ChapulinCommonError,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +73,7 @@ pub fn sv_subcmd(
 
   // chromosomal loci module
   let c_sv_record_collection = mutex_record_collection.clone();
-  let c_sv_anchor_registry = mutex_anchor_registry.clone();
+  // let c_sv_anchor_registry = mutex_anchor_registry;
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   modules::structural_variant::sv_controller(
@@ -82,7 +81,7 @@ pub fn sv_subcmd(
     expected_tlen,
     pair_end_reference_alignment,
     c_sv_record_collection,
-    c_sv_anchor_registry,
+    mutex_anchor_registry,
   )?;
 
   println!("{:?}", now.elapsed().unwrap());

@@ -21,7 +21,6 @@ use crate::{
 
 // error handler
 use crate::error::{
-  me_error::ChapulinMEError,
   common_error::ChapulinCommonError,
 };
 
@@ -44,14 +43,14 @@ pub fn reference_reader(
       .context(ChapulinCommonError::RegistryLine)?;
 
     if record_line.starts_with('>') {
-      if ! ( current_chr == "".to_string() ) {
+      if current_chr != "" {
         chr_assembly.lock().unwrap().insert(current_chr, current_len);
         current_len = 0.;
       }
-      let record_entry: Vec<&str> = record_line.trim().split(" ").collect();
-      current_chr = record_entry[0].replace(">", "");
+      let record_entry: Vec<&str> = record_line.trim().split(' ').collect();
+      current_chr = record_entry[0].replace('>', "");
     } else {
-      current_len = current_len + record_line.len() as f64;
+      current_len += record_line.len() as f64;
     }
   }
   chr_assembly.lock().unwrap().insert(current_chr, current_len as f64);

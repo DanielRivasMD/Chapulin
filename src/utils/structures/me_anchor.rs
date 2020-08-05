@@ -21,7 +21,7 @@ pub struct MEAnchor {
 
 impl MEAnchor {
 
-  pub fn loader(file_line: &Vec<&str>, mobile_size: i32, mobile_orientation: &String) -> Self {
+  pub fn loader(file_line: &[&str], mobile_size: i32, mobile_orientation: &str) -> Self {
     Self {
       mobel: file_line[2].to_string(),
       size: mobile_size,

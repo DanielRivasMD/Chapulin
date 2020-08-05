@@ -3,7 +3,7 @@
 
 // standard libraries
 use std::fs::{File};
-use std::io::{self, BufReader, {prelude::*}};
+use std::io::{BufReader};
 use bytelines::{ByteLines, ByteLinesReader};
 use anyhow::{Context};
 use anyhow::Result as anyResult;
@@ -19,7 +19,7 @@ use crate::error::{
 
 
 pub fn byte_file_reader(
-  input_file: &String,
+  input_file: &str,
 ) -> anyResult<ByteLines<BufReader<File>>> {
 
   let file = File::open(&input_file)

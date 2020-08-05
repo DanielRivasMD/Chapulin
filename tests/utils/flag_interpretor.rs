@@ -60,9 +60,9 @@ data_test! {
   - r_fail_q_dva (901, 10, true)
   - r_fail_q_tree (329, 10, false)
 
-  - r_PCR_op_dup_adeen (1024, 11, true)
-  - r_PCR_op_dup_dva (1157, 11, true)
-  - r_PCR_op_dup_tree (133, 11, false)
+  - r_pcr_op_dup_adeen (1024, 11, true)
+  - r_pcr_op_dup_dva (1157, 11, true)
+  - r_pcr_op_dup_tree (133, 11, false)
 
   - suppl_alig_adeen (2048, 12, true)
   - suppl_alig_dva (3095, 12, true)

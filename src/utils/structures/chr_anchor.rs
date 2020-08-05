@@ -28,7 +28,7 @@ pub struct ChrAnchor {
 
 impl ChrAnchor {
 
-  pub fn loader(file_line: &Vec<&str>) -> Self {
+  pub fn loader(file_line: &[&str]) -> Self {
     Self {
       chr: file_line[2].to_string(),
       flag: file_line[1].parse::<i32>().unwrap(),

@@ -4,7 +4,6 @@
 // standard libraries
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
-use anyhow::{Context};
 use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,23 +29,22 @@ use crate::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // error handler
-use crate::error::{
-  me_error::ChapulinMEError,
-  common_error::ChapulinCommonError,
-};
+// use crate::error::{
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 pub fn pi_identifier (
-  ikey: &String,
+  ikey: &str,
   hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
 
   let mut chr_position_hm = HashMap::new();
-  let chr_size = chr_assembly.lock().unwrap().get(ikey).unwrap().clone();
+  let chr_size = *chr_assembly.lock().unwrap().get(ikey).unwrap();
+
 
   for strand in STRAND_VEC.iter() {
 
@@ -92,7 +90,7 @@ pub fn pi_identifier (
       }
     }
 
-    if ! ( read_count == 0 ) {
+    if read_count != 0 {
       let pois_threshold = thresholder(
         read_count as f64,
         chr_size,

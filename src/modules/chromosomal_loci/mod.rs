@@ -5,7 +5,6 @@
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::{thread};
-use anyhow::{Context};
 use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,17 +24,15 @@ use crate::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // error handler
-use crate::error::{
-  me_error::ChapulinMEError,
-  common_error::ChapulinCommonError,
-};
+// use crate::error::{
+// };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 pub fn cl_controller (
-  directory: &String,
-  cl_aligned_prefix: &String,
+  directory: &str,
+  cl_aligned_prefix: &str,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> anyResult<()> {
@@ -43,8 +40,8 @@ pub fn cl_controller (
   // load reference chromosome aligned reads
   for i in 1..3 {
 
-    let prefix = cl_aligned_prefix.clone();
-    let c_directory = directory.clone();
+    let prefix = cl_aligned_prefix.to_string();
+    let c_directory = directory.to_string();
 
     let c_hash_map_collection = hash_map_collection.clone();
     let c_hash_map_anchor = hash_map_anchor.clone();
@@ -58,7 +55,7 @@ pub fn cl_controller (
           &cl_aligned_file,
           c_hash_map_collection,
           c_hash_map_anchor,
-        ).context(ChapulinMEError::TODO);
+        ).expect("TODO thread error");
 
     });
     cl_handle.join().expect("MESSAGE_JOIN");

@@ -12,12 +12,12 @@ pub struct ElementCounter {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 impl ElementCounter {
-  pub fn counter(&mut self, orientation: &String) {
+  pub fn counter(&mut self, orientation: &str) {
 
     if orientation == "upstream" {
-      self.upstream = self.upstream + 1;
+      self.upstream += 1;
     } else if orientation == "downstream" {
-      self.downstream = self.downstream + 1;
+      self.downstream += 1;
     }
   }
 }

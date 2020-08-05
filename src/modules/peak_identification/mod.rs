@@ -5,7 +5,6 @@
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::{thread};
-use anyhow::{Context};
 use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,10 +24,8 @@ use crate::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // error handler
-use crate::error::{
-  me_error::ChapulinMEError,
-  common_error::ChapulinCommonError,
-};
+// use crate::error::{
+// };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -63,7 +60,7 @@ pub fn pi_controller(
         c_hash_map_collection,
         c_hash_map_anchor,
         c_hash_map_chr_assembly,
-      ).context(ChapulinMEError::TODO);
+      ).expect("TODO thread error");
     });
     pi_handle.join().expect("MESSAGE_JOIN");
 
