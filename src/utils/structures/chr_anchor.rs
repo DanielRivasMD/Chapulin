@@ -6,6 +6,12 @@ use crate::{
   settings::{
     constants::BIN_SIZE,
   },
+  utils::functions::{
+    flag_interpretor::{
+      SamFlag,
+      interpretor,
+    },
+  }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,6 +50,12 @@ impl ChrAnchor {
     self.pos - binned
   }
 
+}
+
+impl SamFlag for ChrAnchor {
+  fn interpretor(&self, p: usize) -> bool {
+    interpretor(self.flag, p)
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

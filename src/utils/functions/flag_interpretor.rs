@@ -15,6 +15,11 @@
 // 12) supplementary alignment
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pub trait SamFlag {
+  fn interpretor(&self, p: usize) -> bool;
+}
+
 pub fn interpretor(n: i32, p: usize) -> bool {
   let bin_n: String = format!("{:b}", n)
     .chars()
