@@ -16,12 +16,15 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 pub fn interpretor(n: i32, p: usize) -> bool {
-  let bin_n = format!("{:b}", n);
+  let bin_n: String = format!("{:b}", n)
+    .chars()
+    .rev()
+    .collect();
   let mut stat_array = ['0'; 12];
   for i in bin_n.char_indices() {
     stat_array[i.0] = i.1;
   }
-  stat_array[p] == '1'
+  stat_array[p - 1] == '1'
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

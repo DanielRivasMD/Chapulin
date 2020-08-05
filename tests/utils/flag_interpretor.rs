@@ -16,10 +16,6 @@ data_test! {
   fn test_interpretor(flag, digit, expected) => {
     assert_eq!(super::interpretor(flag, digit), expected);
   }
-
-
-
-
   - r_p_adeen (1, 1, true)
   - r_p_dva (177, 1, true)
   - r_p_tree (72, 1, false)
@@ -29,7 +25,7 @@ data_test! {
   - r_mp_tree (177, 2, false)
 
   - r_unmp_adeen (4, 3, true)
-  - r_unmp_dva (2161, 3, true)
+  - r_unmp_dva (2165, 3, true)
   - r_unmp_tree (121, 3, false)
 
   - m_unmp_adeen (8, 4, true)
@@ -49,7 +45,7 @@ data_test! {
   - f_pair_tree (133, 7, false)
 
   - s_pair_adeen (128, 8, true)
-  - s_pair_dva (329, 8, true)
+  - s_pair_dva (457, 8, true)
   - s_pair_tree (73, 8, false)
 
   - not_pr_align_adeen (256, 9, true)
@@ -67,8 +63,6 @@ data_test! {
   - suppl_alig_adeen (2048, 12, true)
   - suppl_alig_dva (3095, 12, true)
   - suppl_alig_tree (99, 12, false)
-  
-  
 
 }
 

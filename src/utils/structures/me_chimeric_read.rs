@@ -30,15 +30,18 @@ impl MEChimericRead {
   // reverse complement sequence
   pub fn sequence_reverser(&self) -> String {
 
-    self.sequence.chars()
-    .map(|x| match x {
-        '!' => '?',
-        'A' => 'T',
-        'T' => 'A',
-        'C' => 'G',
-        'G' => 'C',
-        _ => x
-    }).rev().collect()
+    self.sequence
+      .chars()
+      .map(|x| match x {
+          '!' => '?',
+          'A' => 'T',
+          'T' => 'A',
+          'C' => 'G',
+          'G' => 'C',
+          _ => x
+      })
+      .rev()
+      .collect()
   }
 
   //  TODO: add breakpoint determination as trait
