@@ -21,7 +21,6 @@ pub fn ref_controller (
 ) -> anyResult<()> {
 
   // let mut hash_map_chr = HashMap::new();
-  // let c_hash_map_chr_assembly = hash_map_chr_assembly;
 
   let ref_sequence = format!("{}{}", directory, reference_file);
   reference_read::reference_reader(

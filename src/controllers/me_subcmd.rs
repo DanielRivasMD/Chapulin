@@ -120,8 +120,6 @@ pub fn me_subcmd(
 
   // peak identification module
   let c_pi_record_collection = mutex_record_collection.clone();
-  let c_pi_anchor_registry = mutex_anchor_registry.clone();
-  let c_pi_chr_assembly = mutex_chr_assembly.clone();
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   if verbose {
@@ -130,8 +128,8 @@ pub fn me_subcmd(
 
   modules::peak_identification::pi_controller(
     c_pi_record_collection,
-    c_pi_anchor_registry,
-    c_pi_chr_assembly,
+    mutex_anchor_registry,
+    mutex_chr_assembly,
   )?;
 
   println!("{:?}", now.elapsed().unwrap());
