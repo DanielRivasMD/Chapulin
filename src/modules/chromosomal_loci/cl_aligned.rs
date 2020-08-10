@@ -99,7 +99,9 @@ pub fn cl_mapper(
         }
 
         if let Some(current_chr) = an_registry.lock().unwrap().get_mut(record_line[2]) {
-          current_chr.push(record_line[0].to_string())
+          if ! current_chr.contains(&record_line[0].to_string()) {
+            current_chr.push(record_line[0].to_string())
+          }
         }
       }
     }
