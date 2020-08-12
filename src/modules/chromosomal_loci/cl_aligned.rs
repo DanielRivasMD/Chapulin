@@ -59,35 +59,15 @@ pub fn cl_mapper(
 
       if let Some(current_record) = hm_collection.lock().unwrap().get_mut(record_line[0]) {
 
-        if
-          (current_record.read1.sequence == record_line[9]) ||
-          (current_record.read1.sequence_reverser() == record_line[9])
-        {
-          current_record.read1.chr_read.push(ChrAnchor::loader(&record_line));
-
-        } else if
-          (current_record.read2.sequence == record_line[9]) ||
-          (current_record.read2.sequence_reverser() == record_line[9])
-        {
-          current_record.read2.chr_read.push(ChrAnchor::loader(&record_line));
-        }
+        cl_load!(current_record, read1, record_line);
+        cl_load!(current_record, read2, record_line);
 
         match current_record.chranch {
-
-          ChrAnchorEnum::Read1 => {
-            if current_record.read1.chr_read.is_empty() || current_record.read1.chr_read[0].mapq < MAPQ {
-              mapq_switch = true;
-            }
-          },
-
-          ChrAnchorEnum::Read2 => {
-            if current_record.read2.chr_read.is_empty() || current_record.read2.chr_read[0].mapq < MAPQ {
-              mapq_switch = true;
-            }
-          },
-
+          ChrAnchorEnum::Read1 => { mapq_switch = cl_mapq!(current_record, read1); },
+          ChrAnchorEnum::Read2 => { mapq_switch = cl_mapq!(current_record, read2); },
           _ => (),
         };
+
       }
 
       if mapq_switch {
