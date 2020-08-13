@@ -69,7 +69,7 @@ pub fn me_identificator(
 
     // calculate current values
     let mobel = record_line[2].to_string();
-    let read_seq = record_line[9].to_string();
+    // let read_seq = record_line[9].to_string();
 
     // flag & read orientation
     let pv_flag = record_line[1].parse::<i32>().context(ChapulinCommonError::Parsing)?;
@@ -119,17 +119,21 @@ pub fn me_identificator(
       pf if pf <= 255 => {
 
         if ! hm_record_collection.lock().unwrap().contains_key(&read_id) {
-          hm_record_collection.lock().unwrap().insert((&read_id).to_string(), MEChimericPair::new(ChrAnchorEnum::None));
+          hm_record_collection.lock().unwrap().insert(
+            (&read_id).to_string(), 
+            MEChimericPair::new(
+              ChrAnchorEnum::None, 
+            )
+          );
 
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
-            current_record.read1.sequence = read_seq.clone();
-            current_record.read1.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
+
+            me_load!(current_record, read1, record_line, me_size, mobel_orientation);
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
 
           }
         } else if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
-          current_record.read2.sequence = read_seq.clone();
-          current_record.read2.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
+          me_load!(current_record, read2, record_line, me_size, mobel_orientation);
           if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read1; }
         }
       },
