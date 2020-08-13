@@ -5,7 +5,9 @@
 
 macro_rules! me_load {
   ($record: expr, $read_no: tt, $flines: expr, $ms: expr, $mo: expr) => {
-    $record.$read_no.sequence = $flines[9].to_string();
+    if $flines[1].parse::<i32>().unwrap() <= 255 {
+      $record.$read_no.sequence = $flines[9].to_string();
+    }
     $record.$read_no.me_read.push(MEAnchor::loader(&$flines, $ms, &$mo));
   };
 }

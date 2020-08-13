@@ -127,10 +127,8 @@ pub fn me_identificator(
           );
 
           if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
-
             me_load!(current_record, read1, record_line, me_size, mobel_orientation);
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
-
           }
         } else if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           me_load!(current_record, read2, record_line, me_size, mobel_orientation);
@@ -143,10 +141,10 @@ pub fn me_identificator(
 
         if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
           if current_record.read2.sequence == "" {
-            current_record.read1.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
+            me_load!(current_record, read1, record_line, me_size, mobel_orientation);
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
           } else {
-            current_record.read2.me_read.push(MEAnchor::loader(&record_line, me_size, &mobel_orientation));
+            me_load!(current_record, read2, record_line, me_size, mobel_orientation);
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read1; }
           }
         }
