@@ -84,6 +84,10 @@ pub fn cl_mapper(
           }
         }
       }
+
+      // TODO: write no found record to error file
+    // } else {
+    //   ic!(record_line);
     }
   }
 

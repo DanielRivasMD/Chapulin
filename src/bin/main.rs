@@ -39,15 +39,21 @@ use anyhow::Result as anyResult;
 fn main () -> anyResult<()> {
 
   // read configuration from file
-  let matches = clap_app!(Chapilin =>
+  let matches = clap_app!(Chapulin =>
     (version: crate_version!())
     (author: crate_authors!())
-    (about: "Mobile Element Identification")
+    (about: "
+      \nChapulin: Mobile Element Identification
+      \nSoftware for mobile element identification in resequenced short-read data with a reference genome.
+      \n\n\tAvailable subcommands are:
+      \nMobile Element (ME): performs sequence similarity search to a customized mobile element library and insertion calls by probability or a set threshold.
+      \nStructural Variant (SV): performs read selection based on alignment data and variant calls by probability or a set threshold.
+    ")
 
     (@subcommand ME =>
       (version: crate_version!())
       (author: crate_authors!())
-      (about: "ME subcommand")
+      (about: "Mobile Element Identification")
       (@arg verbose: -v --verbose "Print test verbosely")
       (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
     )
@@ -55,24 +61,35 @@ fn main () -> anyResult<()> {
     (@subcommand SV =>
       (version: crate_version!())
       (author: crate_authors!())
-      (about: "SV subcommand")
+      (about: "Structural Variant Identification")
       (@arg verbose: -v --verbose "Print test verbosely")
       (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
     )
 
+    (@subcommand T =>
+      (version: crate_version!())
+      (author: crate_authors!())
+      (about: "Testing")
+      (@arg verbose: -v --verbose "Print test verbosely")
+      (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
+    )
   )
   .get_matches();
 
   // ME controller
   if let Some(matches) = matches.subcommand_matches("ME") {
     controllers::me_subcmd::me_subcmd(matches)?;
-    let res_me = controllers::me_subcmd::me_subcmd(matches);
-    println!("{:?}", res_me);
   }
 
   // SV controller
   if let Some(matches) = matches.subcommand_matches("SV") {
     controllers::sv_subcmd::sv_subcmd(matches)?;
+
+  // T controller
+  if let Some(matches) = matches.subcommand_matches("T") {
+
+    controllers::file_test::ftest(matches)?;
+
   }
 
   Ok(())

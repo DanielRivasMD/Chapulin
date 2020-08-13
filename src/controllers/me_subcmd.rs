@@ -29,6 +29,10 @@ pub fn me_subcmd(
   matches: &ArgMatches
 ) -> anyResult<()> {
 
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // collect settings
   let mut verbose = false;
   if matches.is_present("verbose") {
     verbose = true;
@@ -40,9 +44,9 @@ pub fn me_subcmd(
     .context(ChapulinConfigError::EmptyConfigOption)?;
 
   let mut settings = Config::default();
-    settings
-      .merge(File::with_name(config))
-      .context(ChapulinConfigError::NoConfigFile)?;
+  settings
+    .merge(File::with_name(config))
+    .context(ChapulinConfigError::NoConfigFile)?;
 
   // interpret settings into variables
   let settings_hm = settings.try_into::<HashMap<String, String>>()
@@ -59,9 +63,13 @@ pub fn me_subcmd(
   let cl_align = settings_hm.get("reference_genome_alignment")
     .context(ChapulinConfigError::BadReferenceGenomeVar)?;
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
   let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
   let mutex_chr_assembly = Arc::new(Mutex::new(HashMap::new()));
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // TODO: write pre processing recomendations => fastq filtering, alignment
 
@@ -69,8 +77,8 @@ pub fn me_subcmd(
   let c_rg_chr_assembly = mutex_chr_assembly.clone();
 
   if verbose {
-    println!("Running Reference Genome module...");
-    println!("Reference file read: {}", reference_file);
+    println!("\nRunning Reference Genome module...");
+    println!("Reference file read: {}\n", reference_file);
   }
 
   modules::reference_genome::ref_controller(
@@ -81,13 +89,15 @@ pub fn me_subcmd(
 
   println!("{:?}", now.elapsed().unwrap());
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
   // mobile elements module
   let c_me_record_collection = mutex_record_collection.clone();
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   if verbose {
-    println!("Running Mobile Element module...");
-    println!("ME alignment file read: {}", me_align);
+    println!("\nRunning Mobile Element module...");
+    println!("ME alignment file read: {}\n", me_align);
   }
 
   modules::mobile_elements::me_controller(
@@ -99,14 +109,16 @@ pub fn me_subcmd(
 
   println!("{:?}", now.elapsed().unwrap());
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
   // chromosomal loci module
   let c_cl_record_collection = mutex_record_collection.clone();
   let c_cl_anchor_registry = mutex_anchor_registry.clone();
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   if verbose {
-    println!("Running Chromosomal Loci module...");
-    println!("Chromosomal alignment file read: {}", cl_align);
+    println!("\nRunning Chromosomal Loci module...");
+    println!("Chromosomal alignment file read: {}\n", cl_align);
   }
 
   modules::chromosomal_loci::cl_controller(
@@ -117,6 +129,8 @@ pub fn me_subcmd(
   )?;
 
   println!("{:?}", now.elapsed().unwrap());
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // peak identification module
   let c_pi_record_collection = mutex_record_collection.clone();
@@ -135,6 +149,8 @@ pub fn me_subcmd(
   println!("{:?}", now.elapsed().unwrap());
 
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // TODO: build interphase to PostgreSQL
 
