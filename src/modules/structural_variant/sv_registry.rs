@@ -14,8 +14,8 @@ use anyhow::Result as anyResult;
 use crate::{
   utils::functions::{
     file_reader::byte_file_reader,
-    flag_interpretor::interpretor,
-    flag_interpretor::SamFlag,
+    // flag_interpretor::interpretor,
+    // flag_interpretor::SamFlag,
   },
   utils::structures::{
     // cigar::CIGAR,
@@ -23,9 +23,9 @@ use crate::{
     chr_anchor::ChrAnchor,
     sv_type::SVType,
   },
-  settings::{
-    constants::TRANSLOCATION_DISTANCE,
-  },
+  // settings::{
+    // constants::TRANSLOCATION_DISTANCE,
+  // },
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,6 @@ pub fn sv_mapper(
 ) -> anyResult<()> {
 
   // load file
-  // let (mut reader, mut buffer) = buff_file_reader(&sv_bam_file);
   let mut lines = byte_file_reader(&sv_bam_file)?;
 
   // declare initial values
@@ -55,16 +54,15 @@ pub fn sv_mapper(
   let mut purge_switch = true;
 
   // iterate through file
-  // while let Some(line) = reader.read_line(&mut buffer) {
   while let Some(line) = lines.next() {
 
-    // let record_line: Vec<&str> = line?.trim().split("\t").collect();
     let record_line: Vec<&str> = from_utf8(&line?)
       .context(ChapulinCommonError::RegistryLine)?
       .trim()
       .split('\t')
       .collect();
 
+    // TODO: beware of these strings being cloned latter
     // update read id
     let read_id = record_line[0].to_string();
 
@@ -112,40 +110,43 @@ pub fn sv_mapper(
       current_record.read2.sequence = read_seq.clone();
       current_record.read2.chr_read = ChrAnchor::loader(&record_line);
 
-      // evaluate read pairs
-      // TODO: SV deletion => read with large (> 2sd observed) template length
-      let tlen = current_record.read1.chr_read.pos - current_record.read2.chr_read.pos;
-      if tlen.abs() > expected_tlen {
-        current_record.svtag = SVType::Deletion;
-        purge_switch = false;
-      }
+      current_record.identificator(purge_switch, expected_tlen);
 
-      // TODO: SV duplication => read orientation reversed outwards + inverted chimerics
-      if current_record.read1.chr_read.tlen > 0 && ! interpretor(current_record.read1.chr_read.flag, 5) && ! interpretor(current_record.read2.chr_read.flag, 5) {
-        current_record.svtag = SVType::Duplication;
-        purge_switch = false;
-      }
+      // // evaluate read pairs
+      // // TODO: SV deletion => read with large (> 2sd observed) template length
+      // let tlen = current_record.read1.chr_read.pos - current_record.read2.chr_read.pos;
+      // if tlen.abs() > expected_tlen {
+      //   current_record.svtag = SVType::Deletion;
+      //   purge_switch = false;
+      // }
+      //
+      // // TODO: SV duplication => read orientation reversed outwards + inverted chimerics
+      // if current_record.read1.chr_read.tlen > 0 && ! interpretor(current_record.read1.chr_read.flag, 5) && ! interpretor(current_record.read2.chr_read.flag, 5) {
+      //   current_record.svtag = SVType::Duplication;
+      //   purge_switch = false;
+      // }
+      //
+      // // TODO: SV inversion => read orientation altered unidirectionally + inverted chimerics
+      // if interpretor(current_record.read1.chr_read.flag, 5) == interpretor(current_record.read2.chr_read.flag, 5) && (current_record.read1.chr_read.chr == current_record.read2.chr_read.chr) {
+      //   current_record.svtag = SVType::Inversion;
+      //   purge_switch = false;
+      // }
+      //
+      // // TODO: SV insertion => unmapped reads
+      //
+      // current_record.read1.chr_read.interpretor(3);
+      // if interpretor(current_record.read1.chr_read.flag, 3) || interpretor(current_record.read2.chr_read.flag, 3) {
+      //   current_record.svtag = SVType::Insertion;
+      //   purge_switch = false;
+      // }
+      //
+      // // TODO: SV translocation => read mapping to other chromosomes
+      // if
+      //   tlen.abs() > TRANSLOCATION_DISTANCE || current_record.read1.chr_read.chr != current_record.read2.chr_read.chr {
+      //   current_record.svtag = SVType::Translocation;
+      //   purge_switch = false;
+      // }
 
-      // TODO: SV inversion => read orientation altered unidirectionally + inverted chimerics
-      if interpretor(current_record.read1.chr_read.flag, 5) == interpretor(current_record.read2.chr_read.flag, 5) && (current_record.read1.chr_read.chr == current_record.read2.chr_read.chr) {
-        current_record.svtag = SVType::Inversion;
-        purge_switch = false;
-      }
-
-      // TODO: SV insertion => unmapped reads
-
-      current_record.read1.chr_read.interpretor(3);
-      if interpretor(current_record.read1.chr_read.flag, 3) || interpretor(current_record.read2.chr_read.flag, 3) {
-        current_record.svtag = SVType::Insertion;
-        purge_switch = false;
-      }
-
-      // TODO: SV translocation => read mapping to other chromosomes
-      if
-        tlen.abs() > TRANSLOCATION_DISTANCE || current_record.read1.chr_read.chr != current_record.read2.chr_read.chr {
-        current_record.svtag = SVType::Translocation;
-        purge_switch = false;
-      }
     }
     prev_read_id = read_id;
   }
