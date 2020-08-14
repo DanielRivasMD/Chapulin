@@ -94,6 +94,8 @@ fn cumsum(
   cum_vec
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 pub fn thresholder(
   pop_reads: f64,
   chromosome_size: f64,
@@ -135,7 +137,7 @@ pub fn thresholder(
 
 // test private functions
 #[cfg(test)]
-mod pthreshold_tests {
+mod priv_tests {
   use data_test::data_test;
   use crate::settings::constants::{BIN_SIZE, BIN_OVERLAP};
   use super::{
@@ -175,8 +177,8 @@ mod pthreshold_tests {
     fn test_effective_genome_length_calculator(glen, expected) => {
       assert_eq!(super::effective_genome_length_calculator(glen, super::BIN_SIZE as f64, super::BIN_OVERLAP as f64), expected)
     }
-    - dosmil (2000., 4000., )
-    - dizmil (3243556456., 6487112912., )
+    - dosml (2000., 4000., )
+    - dizml (3243556456., 6487112912., )
 
     fn test_lambda_calculator(preads, eflen, expected) => {
       assert_eq!(super::lambda_calculator(preads, eflen, super::BIN_SIZE as f64), expected)
@@ -231,9 +233,9 @@ mod pthreshold_tests {
     fn test_cumsum(cum_vec, expected) => {
       assert_eq!(super::cumsum(cum_vec), expected)
     }
-    - cscuatro (vec![0., 1., 2., 3., 4., ], vec![0., 1., 3., 6., 10., ])
-    - csdiez (vec![0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., ], vec![0., 1., 3., 6., 10., 15., 21., 28., 36., 45., 55., ])
-    - cszeid (vec![10., 9., 8., 7., 6., 5., 4., 3., 2., 1., 0., ], vec![10., 19., 27., 34., 40., 45., 49., 52., 54., 55., 55., ])
+    - cuatr (vec![0., 1., 2., 3., 4., ], vec![0., 1., 3., 6., 10., ])
+    - diez (vec![0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., ], vec![0., 1., 3., 6., 10., 15., 21., 28., 36., 45., 55., ])
+    - zeid (vec![10., 9., 8., 7., 6., 5., 4., 3., 2., 1., 0., ], vec![10., 19., 27., 34., 40., 45., 49., 52., 54., 55., 55., ])
 
   }
 

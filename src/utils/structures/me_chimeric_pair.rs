@@ -19,13 +19,19 @@ use crate::{
 // to load onto => hashmap for reads aligned to mobile elements
 #[derive(Debug, new)]
 pub struct MEChimericPair {
+
   #[new(default)]
   pub read1: MEChimericRead,
+
   #[new(default)]
   pub read2: MEChimericRead,
+
   pub chranch: ChrAnchorEnum,
+
 }
 // TODO: add non-cigar anchor identification
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 impl MEChimericPair {
   pub fn chr_anchor_retriever(&self) -> &MEChimericRead {

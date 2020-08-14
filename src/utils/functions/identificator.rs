@@ -67,6 +67,8 @@ fn sv_translocation(pair: &mut SVChimericPair) -> bool {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 pub fn identificator(pair: &mut SVChimericPair, expected_tlen: i32) -> bool {
 
   let mut psw = vec![];

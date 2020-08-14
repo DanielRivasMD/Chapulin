@@ -18,19 +18,28 @@ use crate::{
 
 #[derive(Debug, new, Default)]
 pub struct ChrAnchor {
+
   #[new(default)]
   pub chr: String,
+
   #[new(default)]
   pub flag: i32,
+
   #[new(default)]
   pub pos: i32,
+
   #[new(default)]
   pub cigar: String,
+
   #[new(default)]
   pub mapq: i32,
+
   #[new(default)]
   pub tlen: i32,
+
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 impl ChrAnchor {
 
@@ -51,6 +60,8 @@ impl ChrAnchor {
   }
 
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 impl SamFlag for ChrAnchor {
   fn interpretor(&self, p: usize) -> bool {

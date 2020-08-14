@@ -15,15 +15,22 @@ use crate::{
 // annotate primary (index 0) & secondary aligned reads
 #[derive(Debug, new, Default)]
 pub struct MEChimericRead {
+
   #[new(default)]
   pub sequence: String,
+
   #[new(default)]
   pub me_read: Vec<MEAnchor>,
+
   #[new(default)]
   pub chr_read: Vec<ChrAnchor>,
+
   #[new(default)]
   pub breakpoint: BreakPoint,
+
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 impl MEChimericRead {
 

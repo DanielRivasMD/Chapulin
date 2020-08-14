@@ -3,16 +3,22 @@
 
 #[derive(Debug, new)]
 pub struct CIGAR {
+
   #[new(default)]
   pub lclip: i32,
+
   #[new(default)]
   pub align: Vec<i32>,
+
   #[new(default)]
   pub rclip: i32,
+
   #[new(default)]
   pub ins: Vec<i32>,
+
   #[new(default)]
   pub del: Vec<i32>,
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
