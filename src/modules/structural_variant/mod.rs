@@ -41,7 +41,7 @@ pub fn sv_controller (
     expected_tlen,
     hash_map_collection,
     hash_map_anchor,
-  ).expect(&sv_aligned_file);
+  )?;
 
   Ok(())
 }
