@@ -8,6 +8,8 @@ pub mod flag_interpretor;
 
 pub mod element_counter;
 
+pub mod identificator;
+
 pub mod strander;
 
 pub mod thresholder;

@@ -3,11 +3,17 @@
 
 // crate utilities
 use crate::{
-  utils::structures::{
-    sv_chimeric_read::SVChimericRead,
-    sv_type::SVType,
-  },
+  utils::{
+    functions::{
+      identificator::identificator, 
+    }, 
+    structures::{
+      sv_chimeric_read::SVChimericRead,
+      sv_type::SVType,
+    }, 
+  }, 
 };
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -19,6 +25,10 @@ pub struct SVChimericPair {
   #[new(default)]
   pub read2: SVChimericRead,
   pub svtag: SVType,
+impl SVChimericPair {
+  pub fn identificator(&mut self, expected_tlen: i32) -> bool {
+    identificator(self, expected_tlen)
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

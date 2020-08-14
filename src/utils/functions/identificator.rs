@@ -82,3 +82,10 @@ pub fn identificator(pair: &mut SVChimericPair, expected_tlen: i32) -> bool {
 
   psw.contains(&true)
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pub trait SVIdentificator {
+  fn identificator(self, expected_tlen: i32) -> bool;
+}
+
