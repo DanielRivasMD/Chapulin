@@ -102,13 +102,10 @@ pub fn sv_mapper(
       hm_collection.lock().unwrap().insert((&read_id).to_string(), SVChimericPair::new(SVType::None));
 
       if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
-        current_record.read1.sequence = read_seq.clone();
-        current_record.read1.chr_read = ChrAnchor::loader(&record_line);
+        load!(current_record, read1, record_line);
       }
     } else if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
-
-      current_record.read2.sequence = read_seq.clone();
-      current_record.read2.chr_read = ChrAnchor::loader(&record_line);
+      load!(current_record, read2, record_line);
 
       current_record.identificator(purge_switch, expected_tlen);
 
