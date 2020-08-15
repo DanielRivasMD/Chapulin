@@ -35,16 +35,20 @@ use crate::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-pub fn pi_identifier (
+// TODO: make this module only dedicated to peak thresholding & detection for SV compatibility
+pub fn pi_me_identifier (
   ikey: &str,
   hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
 
-  let mut chr_position_hm = HashMap::new();
-  let chr_size = *chr_assembly.lock().unwrap().get(ikey).unwrap();
+  ic!(ikey);
 
+  let mut chr_position_hm = HashMap::new();
+  let chr_size = *chr_assembly.lock().expect("chromosome not found").get(ikey).unwrap();
+
+  // TODO: implement parallel iteration here
 
   for strand in STRAND_VEC.iter() {
 
@@ -90,6 +94,7 @@ pub fn pi_identifier (
       }
     }
 
+// TODO: memotization
     if read_count != 0 {
       let pois_threshold = thresholder(
         read_count as f64,
@@ -99,10 +104,35 @@ pub fn pi_identifier (
         NO_FDR,
       );
 
+      // TODO: verify read pairs some are empty
+      // TODO: verify read passing map quality
+      // TODO: verify reads no counted twice
+      // TODO: format output => possibly 1) raw 2) postgreSQL
+
       for (chr_pos, id_vec) in tmp_position_hm.iter() {
+
         if id_vec.len() > pois_threshold {
-          println!("Position: {} @ strand: {} => {}", chr_pos, strand, id_vec.len());
-          println!("IDs: {:?}", id_vec);
+          // println!();
+          // println!("Position: {} @ strand: {} => {}", chr_pos, strand, id_vec.len());
+          println!("{}, {}, {}, {}", ikey, chr_pos, strand, id_vec.len());
+          // println!("{:?}", id_vec);
+
+          // for id_read in id_vec.iter() {
+          //   if let Some((id, read)) = hm_collection.lock().unwrap().get_key_value(id_read) {
+
+          //     // ic!(id);
+          //     // ic!(read);
+          //     // ic!(read.chr_anchor_retriever());
+
+          //     match read.chranch {
+          //       ChrAnchorEnum::Read1 => println!("{} -> {}", id, read.read1),
+          //       ChrAnchorEnum::Read2 => println!("{} -> {}", id, read.read2),
+          //       ChrAnchorEnum::None => (),
+          //     }
+
+          //   }
+          // }
+
         }
       }
     }

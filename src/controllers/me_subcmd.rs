@@ -140,7 +140,7 @@ pub fn me_subcmd(
     println!("Running Peak Identification module...");
   }
 
-  modules::peak_identification::pi_controller(
+  modules::peak_identification::pi_me_controller(
     c_pi_record_collection,
     mutex_anchor_registry,
     mutex_chr_assembly,
