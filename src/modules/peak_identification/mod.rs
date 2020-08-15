@@ -36,15 +36,7 @@ pub fn pi_me_controller(
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
 
-  // iterate on reference chromosomes
-  let mut chromosome_vec = Vec::new();
-  for okey in hash_map_chr_assembly.lock().unwrap().keys() {
-    let ckey = okey.clone();
-
-    if hash_map_anchor.lock().unwrap().contains_key(okey) {
-      chromosome_vec.push(ckey);
-    }
-  }
+  let chromosome_vec = chr_contructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 
   println!("{}", hash_map_collection.lock().unwrap().len());
 
@@ -68,6 +60,27 @@ pub fn pi_me_controller(
   // TODO: gather all positions & output a comprenhensive list
 
   Ok(())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+fn chr_contructor(
+  hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
+  hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
+  ) -> Vec<String> {
+
+  // iterate on reference chromosomes
+  let mut chromosome_vec = Vec::new();
+  for okey in hash_map_chr_assembly.lock().unwrap().keys() {
+    let ckey = okey.clone();
+
+    if hash_map_anchor.lock().unwrap().contains_key(okey) {
+      chromosome_vec.push(ckey);
+    }
+  }
+
+  chromosome_vec
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
