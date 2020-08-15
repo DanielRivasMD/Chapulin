@@ -33,15 +33,16 @@ pub fn me_subcmd(
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // collect settings
-  let mut verbose = false;
-  if matches.is_present("verbose") {
-    verbose = true;
-  }
+  let verbose = matches.is_present("verbose");
 
   let now = SystemTime::now();
 
   let config = matches.value_of("CONFIG")
     .context(ChapulinConfigError::EmptyConfigOption)?;
+
+  if verbose {
+    println!("Configuration file read: {}\n", config);
+  }
 
   let mut settings = Config::default();
   settings
@@ -54,12 +55,16 @@ pub fn me_subcmd(
 
   let directory = settings_hm.get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
+
   let reference_file = settings_hm.get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
+
   let me_library_file = settings_hm.get("mobile_element_library")
     .context(ChapulinConfigError::BadMELibVar)?;
+
   let me_align = settings_hm.get("mobile_element_alignment")
     .context(ChapulinConfigError::BadMEAlignVar)?;
+
   let cl_align = settings_hm.get("reference_genome_alignment")
     .context(ChapulinConfigError::BadReferenceGenomeVar)?;
 
@@ -137,7 +142,7 @@ pub fn me_subcmd(
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   if verbose {
-    println!("Running Peak Identification module...");
+    println!("\nRunning Peak Identification module...\n");
   }
 
   modules::peak_identification::pi_me_controller(
