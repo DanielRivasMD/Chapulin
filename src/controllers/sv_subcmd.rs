@@ -69,6 +69,7 @@ pub fn sv_subcmd(
 
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
   let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
+  let mutex_chr_assembly = Arc::new(Mutex::new(HashMap::new()));
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -92,13 +93,27 @@ pub fn sv_subcmd(
 
   println!("{:?}", now.elapsed().unwrap());
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // peak identification module
+  let c_sv_record_collection = mutex_record_collection.clone();
+  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+
+  if verbose {
+    println!("\nRunning Peak Identification module...\n");
+  }
+
+  modules::peak_identification::pi_sv_controller(
     c_sv_record_collection,
     mutex_anchor_registry,
+    mutex_chr_assembly,
   )?;
 
   println!("{:?}", now.elapsed().unwrap());
 
   println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   Ok(())
 }

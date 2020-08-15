@@ -11,6 +11,7 @@ use anyhow::Result as anyResult;
 
 // modules
 mod pi_me_mapping;
+mod pi_sv_mapping;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,6 +19,7 @@ mod pi_me_mapping;
 use crate::{
   utils::structures::{
     me_chimeric_pair::MEChimericPair,
+    sv_chimeric_pair::SVChimericPair,
   },
 };
 
@@ -64,6 +66,35 @@ pub fn pi_me_controller(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+pub fn pi_sv_controller(
+  hash_map_collection: Arc<Mutex<HashMap<String, SVChimericPair>>>,
+  hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
+  hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
+  ) -> anyResult<()> {
+
+  let chromosome_vec = chr_contructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
+
+  for okey in chromosome_vec {
+    let c_hash_map_collection = hash_map_collection.clone();
+    let c_hash_map_anchor = hash_map_anchor.clone();
+    let c_hash_map_chr_assembly = hash_map_chr_assembly.clone();
+
+    let pi_sv_handle = thread::spawn(move || {
+      pi_sv_mapping::pi_sv_identifier(
+        &okey,
+        c_hash_map_collection,
+        c_hash_map_anchor,
+        c_hash_map_chr_assembly,
+      ).expect("TODO thread error");
+    });
+    pi_sv_handle.join().expect("MESSAGE_JOIN");
+
+  }
+
+  Ok(())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 fn chr_contructor(
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
