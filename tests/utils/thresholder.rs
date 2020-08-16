@@ -27,22 +27,22 @@ data_test! {
 
     let mut hm = std::collections::HashMap::new();
     hm.insert(
-      read_hm_k, 
-      read_hm_v, 
+      read_hm_k,
+      read_hm_v,
     );
 
     assert_eq!(
       super::thresholder(
-        pop_reads, 
-        chromosome_size, 
-        false_discovery_tolerance, 
-        &hm, 
-        psize, 
+        pop_reads,
+        chromosome_size,
+        false_discovery_tolerance,
+        &hm,
+        psize,
       ),
       expected
     );
   }
-  - talfa (0., 1000., 0.001, 1, vec!["uno".to_string(), "dos".to_string(), "tres".to_string(),], super::NO_FDR, 3)
+  - talfa (0., 1000., 0.001, "1".to_string(), vec!["uno".to_string(), "dos".to_string(), "tres".to_string(),], super::NO_FDR, 3)
   // TODO: add more tests
 
 }

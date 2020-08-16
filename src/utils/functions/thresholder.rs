@@ -70,7 +70,7 @@ fn r_ppoisson(
 }
 
 fn tabler(
-  bined_hm: &HashMap<i32, Vec<String>>,
+  bined_hm: &HashMap<String, Vec<String>>,
   psize: usize,
 ) -> Vec<f64> {
   let mut out_vec = vec![0.; psize];
@@ -100,7 +100,7 @@ pub fn thresholder(
   pop_reads: f64,
   chromosome_size: f64,
   false_discovery_tolerance: f64,
-  read_hm: &HashMap<i32, Vec<String>>,
+  read_hm: &HashMap<String, Vec<String>>,
   psize: usize,
 ) -> usize {
   let eff_genome_length = effective_genome_length_calculator!(chromosome_size);
@@ -205,18 +205,18 @@ mod priv_tests {
     fn test_tabler(hm_keys, hm_vals, psize, expected) => {
       let mut bined_hm = std::collections::HashMap::new();
       for ix in 0..hm_keys.len() {
-        bined_hm.insert(hm_keys[ix], hm_vals[ix].clone());
+        bined_hm.insert(hm_keys[ix].clone(), hm_vals[ix].clone());
       }
       assert_eq!(super::tabler(&bined_hm, psize), expected)
     }
     - tbl (
       [
-        100,
-        200,
-        300,
-        400,
-        500,
-        600,
+        "100".to_string(),
+        "200".to_string(),
+        "300".to_string(),
+        "400".to_string(),
+        "500".to_string(),
+        "600".to_string(),
       ],
       [
         vec!["100.1".to_string(), "100.2".to_string(), ],
