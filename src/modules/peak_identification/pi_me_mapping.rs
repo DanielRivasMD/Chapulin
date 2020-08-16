@@ -65,15 +65,15 @@ pub fn pi_me_identifier (
 
     for id_read in ids_read {
 
-      if let Some(me_read) = hm_collection.lock().unwrap().get(&id_read) {
-        match &me_read.chranch {
+      if let Some(me_pair) = hm_collection.lock().unwrap().get(&id_read) {
+        match &me_pair.chranch {
           ChrAnchorEnum::Read1 => {
             read_count = strander(
               id_read,
               strand,
               read_count,
-              &me_read.read1.chr_read[0],
-              &me_read.read2.me_read,
+              &me_pair.read1.chr_read[0],
+              &me_pair.read2.me_read,
               tmp_position_hm
             );
           },
@@ -83,8 +83,8 @@ pub fn pi_me_identifier (
               id_read,
               strand,
               read_count,
-              &me_read.read2.chr_read[0],
-              &me_read.read1.me_read,
+              &me_pair.read2.chr_read[0],
+              &me_pair.read1.me_read,
               tmp_position_hm
             );
           },
