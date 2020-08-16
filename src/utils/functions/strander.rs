@@ -10,6 +10,7 @@ use std::collections::{HashMap};
 use crate::{
   utils::functions::{
     element_counter::ElementCounter,
+    chr_counter::chr_counter,
   },
   utils::structures::{
     chr_anchor::ChrAnchor,
@@ -20,14 +21,13 @@ use crate::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// TODO: strand macro
 pub fn strander(
   read_id: String,
   str: &str,
   mut read_count: i32,
   chr_pair: &ChrAnchor,
   me_pair: &[MEAnchor],
-  position_hm: &mut HashMap<i32, Vec<String>>
+  position_hm: &mut HashMap<String, Vec<String>>
 ) -> i32 {
 
   let mut mobel_counter = ElementCounter::new();
@@ -37,34 +37,42 @@ pub fn strander(
   match str {
     "F5" => {
       if chr_pair.flag == 0 && mobel_counter.upstream >= mobel_counter.downstream {
-        read_count += 1;
-        let binned_position = chr_pair.binner();
-        position_hm.entry(binned_position).or_insert_with(Vec::new);
-        if let Some(id_vector) = position_hm.get_mut( &binned_position) { id_vector.push(read_id); }
+        chr_counter!(
+          read_id,
+          read_count,
+          chr_pair,
+          position_hm
+        );
       }
     },
     "F3" => {
       if chr_pair.flag == 16 && mobel_counter.upstream <= mobel_counter.downstream {
-        read_count += 1;
-        let binned_position = chr_pair.binner();
-        position_hm.entry(binned_position).or_insert_with(Vec::new);
-        if let Some(id_vector) = position_hm.get_mut( &binned_position) { id_vector.push(read_id); }
+        chr_counter!(
+          read_id,
+          read_count,
+          chr_pair,
+          position_hm
+        );
       }
     },
     "R5" => {
       if chr_pair.flag == 16 && mobel_counter.upstream >= mobel_counter.downstream {
-        read_count += 1;
-        let binned_position = chr_pair.binner();
-        position_hm.entry(binned_position).or_insert_with(Vec::new);
-        if let Some(id_vector) = position_hm.get_mut( &binned_position) { id_vector.push(read_id); }
+        chr_counter!(
+          read_id,
+          read_count,
+          chr_pair,
+          position_hm
+        );
       }
     },
     "R3" => {
       if chr_pair.flag == 0 && mobel_counter.upstream <= mobel_counter.downstream {
-        read_count += 1;
-        let binned_position = chr_pair.binner();
-        position_hm.entry(binned_position).or_insert_with(Vec::new);
-        if let Some(id_vector) = position_hm.get_mut( &binned_position) { id_vector.push(read_id); }
+        chr_counter!(
+          read_id,
+          read_count,
+          chr_pair,
+          position_hm
+        );
       }
     },
     _ => {},
