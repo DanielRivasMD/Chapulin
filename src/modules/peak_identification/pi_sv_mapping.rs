@@ -11,16 +11,14 @@ use anyhow::Result as anyResult;
 // crate utilities
 use crate::{
   utils::functions::{
-    strander::strander,
     thresholder::thresholder,
+    chr_counter::chr_counter,
   },
   utils::structures::{
     sv_chimeric_pair::SVChimericPair,
-    chr_anchor_enum::ChrAnchorEnum,
   },
   settings::{
     constants::{
-      STRAND_VEC,
       NO_FDR,
     },
   },
@@ -45,8 +43,26 @@ pub fn pi_sv_identifier (
 
   ic!(ikey);
 
-  // let mut chr_position_hm = HashMap::new();
   let chr_size = *chr_assembly.lock().expect("chromosome not found").get(ikey).unwrap();
+  let ids_read = an_registry.lock().unwrap().get(ikey).unwrap().clone();
+
+
+  let read_count = ids_read.len();
+
+  let mut chr_position_hm = HashMap::new();
+
+
+  for id_read in ids_read {
+
+    if let Some(sv_pair) = hm_collection.lock().unwrap().get(&id_read) {
+
+        chr_counter!(
+          id_read,
+          sv_pair,
+          &mut chr_position_hm
+        );
+    }
+  }
 
 // TODO: iterate through chromosome binning positions & count
 
@@ -56,12 +72,12 @@ pub fn pi_sv_identifier (
         read_count as f64,
         chr_size,
         0.001,
-        tmp_position_hm,
+        &chr_position_hm,
         NO_FDR,
       );
 
 
-      for (chr_pos, id_vec) in tmp_position_hm.iter() {
+      for (chr_pos, id_vec) in chr_position_hm.iter() {
 
         if id_vec.len() > pois_threshold {
           println!();
