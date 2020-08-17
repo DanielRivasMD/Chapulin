@@ -57,6 +57,9 @@ pub fn sv_subcmd(
   let directory = settings_hm.get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
 
+  let reference_file = settings_hm.get("reference")
+    .context(ChapulinConfigError::BadReferenceVar)?;
+
   let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment")
     .context(ChapulinConfigError::ConfigHashMap)?;
 
@@ -70,6 +73,24 @@ pub fn sv_subcmd(
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
   let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
   let mutex_chr_assembly = Arc::new(Mutex::new(HashMap::new()));
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // reference genome module
+  let c_rg_chr_assembly = mutex_chr_assembly.clone();
+
+  if verbose {
+    println!("\nRunning Reference Genome module...");
+    println!("Reference file read: {}\n", reference_file);
+  }
+
+  modules::reference_genome::ref_controller(
+    directory,
+    reference_file,
+    c_rg_chr_assembly,
+  )?;
+
+  println!("{:?}", now.elapsed().unwrap());
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
