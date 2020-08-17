@@ -69,7 +69,12 @@ pub fn sv_mapper(
       } else {
         // register chromosome anchors
         if ! an_registry.lock().unwrap().contains_key(&chr) {
-          an_registry.lock().unwrap().insert(chr, Vec::new());
+          an_registry.lock().unwrap().insert(chr.clone(), Vec::new());
+        }
+        if let Some(current_chr) = an_registry.lock().unwrap().get_mut(&chr) {
+          if ! current_chr.contains(&read_id) {
+            current_chr.push(read_id.clone())
+          }
         }
       }
 
