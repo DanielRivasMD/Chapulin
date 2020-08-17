@@ -84,6 +84,7 @@ fn main () -> anyResult<()> {
   // SV controller
   if let Some(matches) = matches.subcommand_matches("SV") {
     controllers::sv_subcmd::sv_subcmd(matches)?;
+  }
 
   // T controller
   if let Some(matches) = matches.subcommand_matches("T") {

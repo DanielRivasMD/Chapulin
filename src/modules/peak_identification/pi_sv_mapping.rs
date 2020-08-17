@@ -67,25 +67,24 @@ pub fn pi_sv_identifier (
 // TODO: iterate through chromosome binning positions & count
 
 // TODO: memotization
-    if read_count != 0 {
-      let pois_threshold = thresholder(
-        read_count as f64,
-        chr_size,
-        0.001,
-        &chr_position_hm,
-        NO_FDR,
-      );
+  if read_count != 0 {
+    let pois_threshold = thresholder(
+      read_count as f64,
+      chr_size,
+      0.001,
+      &chr_position_hm,
+      NO_FDR,
+    );
 
 
-      for (chr_pos, id_vec) in chr_position_hm.iter() {
+    for (chr_pos, id_vec) in chr_position_hm.iter() {
 
-        if id_vec.len() > pois_threshold {
-          println!();
-          println!("{}, {}, {}", ikey, chr_pos, id_vec.len());
+      if id_vec.len() > pois_threshold {
+        println!("{}, {}, {}", ikey, chr_pos, id_vec.len());
 
-            }
-          }
-        }
+      }
+    }
+  }
 
   Ok(())
 }

@@ -53,11 +53,15 @@ pub fn cl_mapper(
       .split('\t')
       .collect();
 
-    if hm_collection.lock().unwrap().contains_key(record_line[0]) {
+    // calculate current values
+    let read_id = record_line[0].to_string();
+    let chr = record_line[2].to_string();
+
+    if hm_collection.lock().unwrap().contains_key(&read_id) {
 
       let mut mapq_switch = false;
 
-      if let Some(current_record) = hm_collection.lock().unwrap().get_mut(record_line[0]) {
+      if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
 
         reload!(current_record, read1, record_line);
         reload!(current_record, read2, record_line);
@@ -71,16 +75,16 @@ pub fn cl_mapper(
       }
 
       if mapq_switch {
-        hm_collection.lock().unwrap().remove(record_line[0]);
+        hm_collection.lock().unwrap().remove(&read_id);
       } else {
         // register chromosome anchors
-        if ! an_registry.lock().unwrap().contains_key(record_line[2]) {
-          an_registry.lock().unwrap().insert(record_line[2].to_string(), Vec::new());
+        if ! an_registry.lock().unwrap().contains_key(&chr) {
+          an_registry.lock().unwrap().insert(chr.clone(), Vec::new());
         }
 
-        if let Some(current_chr) = an_registry.lock().unwrap().get_mut(record_line[2]) {
-          if ! current_chr.contains(&record_line[0].to_string()) {
-            current_chr.push(record_line[0].to_string())
+        if let Some(current_chr) = an_registry.lock().unwrap().get_mut(&chr) {
+          if ! current_chr.contains(&read_id.to_string()) {
+            current_chr.push(read_id.to_string())
           }
         }
       }

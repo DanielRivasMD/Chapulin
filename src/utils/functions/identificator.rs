@@ -12,7 +12,7 @@ use crate::{
     },
     structures::{
       sv_chimeric_pair::SVChimericPair,
-      sv_type::SVType, 
+      sv_type::SVType,
     },
   },
 };
