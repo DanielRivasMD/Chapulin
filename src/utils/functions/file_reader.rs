@@ -23,7 +23,8 @@ pub fn byte_file_reader(
 ) -> anyResult<ByteLines<BufReader<File>>> {
 
   let file = File::open(&input_file)
-    .context(ChapulinCommonError::ReadFile)?;
+    .context(ChapulinCommonError::ReadFile{ f: input_file.to_string() })?;
+
   let reader = BufReader::new(file);
 
   let lines = reader.byte_lines();
