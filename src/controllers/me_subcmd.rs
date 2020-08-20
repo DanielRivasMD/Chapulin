@@ -9,6 +9,7 @@ use clap::{ArgMatches};
 use config::{Config, File};
 use anyhow::{Context};
 use anyhow::Result as anyResult;
+use colored::*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,16 +33,36 @@ pub fn me_subcmd(
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  // logging
+  if matches.is_present("LOGGING") {
+
+    let logging = matches
+      .value_of("LOGGING")
+      .context(ChapulinConfigError::TODO)?;
+
+    match logging {
+      "error" => std::env::set_var("RUST_LOG", "error"),
+      "warn" => std::env::set_var("RUST_LOG", "warn"),
+      "info" => std::env::set_var("RUST_LOG", "info"),
+      "debug" => std::env::set_var("RUST_LOG", "debug"),
+      _ => (),
+    }
+
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
   // collect settings
   let verbose = matches.is_present("verbose");
 
   let now = SystemTime::now();
+  pretty_env_logger::init();
 
   let config = matches.value_of("CONFIG")
     .context(ChapulinConfigError::EmptyConfigOption)?;
 
   if verbose {
-    println!("Configuration file read: {}\n", config);
+    println!("\n{}\n{}{}", "Setting up configuration...".green(), "Configuration file read: ".blue(), config.cyan());
   }
 
   let mut settings = Config::default();
@@ -51,7 +72,7 @@ pub fn me_subcmd(
 
   // interpret settings into variables
   let settings_hm = settings.try_into::<HashMap<String, String>>()
-    .context(ChapulinConfigError::ConfigHashMap)?;
+    .context(ChapulinConfigError::ConfigHashMap{ f: config.to_string() })?;
 
   let directory = settings_hm.get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
@@ -66,7 +87,7 @@ pub fn me_subcmd(
     .context(ChapulinConfigError::BadMEAlignVar)?;
 
   let cl_align = settings_hm.get("reference_genome_alignment")
-    .context(ChapulinConfigError::BadReferenceGenomeVar)?;
+    .context(ChapulinConfigError::BadSingleReferenceGenomeVar)?;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -82,8 +103,7 @@ pub fn me_subcmd(
   let c_rg_chr_assembly = mutex_chr_assembly.clone();
 
   if verbose {
-    println!("\nRunning Reference Genome module...");
-    println!("Reference file read: {}\n", reference_file);
+    println!("\n{}\n{}{}", "Running Reference Genome module...".green(), "Reference file read: ".blue(), reference_file.cyan());
   }
 
   modules::reference_genome::ref_controller(
@@ -92,17 +112,15 @@ pub fn me_subcmd(
     c_rg_chr_assembly,
   )?;
 
-  println!("{:?}", now.elapsed().unwrap());
+  info!("{:?}", now.elapsed().unwrap());
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // mobile elements module
   let c_me_record_collection = mutex_record_collection.clone();
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   if verbose {
-    println!("\nRunning Mobile Element module...");
-    println!("ME alignment file read: {}\n", me_align);
+    println!("\n{}\n{}{}", "Running Mobile Element module...".green(), "ME alignment file read: ".blue(), me_align.cyan());
   }
 
   modules::mobile_elements::me_controller(
@@ -112,18 +130,16 @@ pub fn me_subcmd(
     c_me_record_collection,
   )?;
 
-  println!("{:?}", now.elapsed().unwrap());
+  info!("{:?}", now.elapsed().unwrap());
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // chromosomal loci module
   let c_cl_record_collection = mutex_record_collection.clone();
   let c_cl_anchor_registry = mutex_anchor_registry.clone();
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   if verbose {
-    println!("\nRunning Chromosomal Loci module...");
-    println!("Chromosomal alignment file read: {}\n", cl_align);
+    println!("\n{}\n{}{}", "Running Chromosomal Loci module...".green(), "Chromosomal alignment file read: ".blue(), cl_align.cyan());
   }
 
   modules::chromosomal_loci::cl_controller(
@@ -133,38 +149,28 @@ pub fn me_subcmd(
     c_cl_anchor_registry,
   )?;
 
-  println!("{:?}", now.elapsed().unwrap());
+  info!("{:?}", now.elapsed().unwrap());
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // peak identification module
-  let c_pi_record_collection = mutex_record_collection.clone();
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+  // let c_pi_record_collection = mutex_record_collection.clone();
 
   if verbose {
-    println!("\nRunning Peak Identification module...\n");
+    println!("\n{}\n", "Running Peak Identification module...".green());
   }
 
   modules::peak_identification::pi_me_controller(
-    c_pi_record_collection,
+    mutex_record_collection,
     mutex_anchor_registry,
     mutex_chr_assembly,
   )?;
 
-  println!("{:?}", now.elapsed().unwrap());
-
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+  info!("{:?}", now.elapsed().unwrap());
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // TODO: build interphase to PostgreSQL
-
-  // // output message to log
-  // for (key, val) in mutex_record_collection.lock().unwrap().iter() {
-  //   println!("key: {}\nval: {:#?}", key, val.chranchor);
-  // }
-
-  // println!("{:#?}", mutex_record_collection.lock().unwrap().get_key_value("SRR556146.443333"));
 
   Ok(())
 }
