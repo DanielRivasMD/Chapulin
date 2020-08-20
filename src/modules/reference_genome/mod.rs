@@ -5,11 +5,14 @@
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use anyhow::Result as anyResult;
+use std::path::Path;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // modules
 mod reference_read;
+mod ref_cache_read;
+mod ref_cache_write;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,18 +23,33 @@ pub fn ref_controller (
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
 
-  // let mut hash_map_chr = HashMap::new();
-
   let ref_sequence = format!("{}{}", directory, reference_file);
-  reference_read::reference_reader(
-    ref_sequence,
-    hash_map_chr_assembly,
-  )?;
+  let ref_cache = format!("{}.{}.cache", directory, reference_file);
 
-  // // output message to log
-  // for (key, val) in c_hash_map_chr_assembly.iter() {
-  //   println!("key: {}\nval: {:#?}", key, val);
-  // }
+  if Path::new(&ref_cache).exists() {
+
+    // read from cache
+    ref_cache_read::read_cache(
+      ref_cache,
+      hash_map_chr_assembly,
+    )?;
+
+  } else {
+
+    // read fasta reference
+    let c_chr_assembly = hash_map_chr_assembly.clone();
+    reference_read::reference_reader(
+      ref_sequence,
+      c_chr_assembly,
+    )?;
+
+    // write to cache
+    ref_cache_write::write_cache(
+      ref_cache,
+      hash_map_chr_assembly,
+    )?;
+
+  }
 
   Ok(())
 }
