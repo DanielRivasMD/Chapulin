@@ -68,6 +68,7 @@ pub fn sv_mapper(
           hm_collection.lock().unwrap().remove(&prev_read_id);
       } else {
         // register chromosome anchors
+        // TODO: add mapq control
         if ! an_registry.lock().unwrap().contains_key(&chr) {
           an_registry.lock().unwrap().insert(chr.clone(), Vec::new());
         }

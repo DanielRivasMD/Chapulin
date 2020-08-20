@@ -35,15 +35,12 @@ use crate::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// TODO: make this module only dedicated to peak thresholding & detection for SV compatibility
 pub fn pi_me_identifier (
   ikey: &str,
   hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
-
-  ic!(ikey);
 
   let mut chr_position_hm = HashMap::new();
   let chr_size = *chr_assembly.lock().expect("chromosome not found").get(ikey).unwrap();

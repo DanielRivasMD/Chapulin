@@ -74,6 +74,7 @@ pub fn cl_mapper(
 
       }
 
+// TODO: consider tagging strand on the fly to avoid postload counting
       if mapq_switch {
         hm_collection.lock().unwrap().remove(&read_id);
       } else {

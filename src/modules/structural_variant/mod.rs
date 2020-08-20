@@ -31,10 +31,7 @@ pub fn sv_controller (
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> anyResult<()> {
 
-  let c_directory = directory.to_string();
-
-  let sv_aligned_file = format!("{}{}", c_directory, pair_end_reference_alignment);
-  println!("{}", sv_aligned_file);
+  let sv_aligned_file = format!("{}{}", directory, pair_end_reference_alignment);
 
   sv_registry::sv_mapper(
     &sv_aligned_file,

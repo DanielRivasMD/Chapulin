@@ -38,7 +38,7 @@ pub fn pi_me_controller(
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
 
-  let chromosome_vec = chr_contructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
+  let chromosome_vec = chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 
   println!("{}", hash_map_collection.lock().unwrap().len());
 
@@ -72,7 +72,7 @@ pub fn pi_sv_controller(
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
   ) -> anyResult<()> {
 
-  let chromosome_vec = chr_contructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
+  let chromosome_vec = chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 
   for okey in chromosome_vec {
     let c_hash_map_collection = hash_map_collection.clone();
@@ -96,7 +96,7 @@ pub fn pi_sv_controller(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-fn chr_contructor(
+fn chr_constructor(
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
   ) -> Vec<String> {

@@ -33,15 +33,12 @@ use crate::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// TODO: make this module only dedicated to peak thresholding & detection for SV compatibility
 pub fn pi_sv_identifier (
   ikey: &str,
   hm_collection: Arc<Mutex<HashMap<String, SVChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
-
-  ic!(ikey);
 
   let chr_size = *chr_assembly.lock().expect("chromosome not found").get(ikey).unwrap();
   let ids_read = an_registry.lock().unwrap().get(ikey).unwrap().clone();
@@ -53,18 +50,14 @@ pub fn pi_sv_identifier (
 
 
   for id_read in ids_read {
-
     if let Some(sv_pair) = hm_collection.lock().unwrap().get(&id_read) {
-
-        chr_counter!(
-          id_read,
-          sv_pair,
-          &mut chr_position_hm
-        );
+      chr_counter!(
+        id_read,
+        sv_pair,
+        &mut chr_position_hm
+      );
     }
   }
-
-// TODO: iterate through chromosome binning positions & count
 
 // TODO: memotization
   if read_count != 0 {
@@ -76,14 +69,14 @@ pub fn pi_sv_identifier (
       NO_FDR,
     );
 
-
     for (chr_pos, id_vec) in chr_position_hm.iter() {
 
       if id_vec.len() > pois_threshold {
         println!("{}, {}, {}", ikey, chr_pos, id_vec.len());
-
       }
+
     }
+
   }
 
   Ok(())

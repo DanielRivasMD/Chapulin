@@ -36,6 +36,7 @@ pub fn me_controller (
 
   // load mobile element library
   let me_library_file = format!("{}{}", directory, me_library);
+
   me_registry::me_lib_loader(
     &me_library_file,
     &mut me_collection,

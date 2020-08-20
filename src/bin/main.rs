@@ -89,12 +89,14 @@ fn main () -> anyResult<()> {
     controllers::sv_subcmd::sv_subcmd(matches)?;
   }
 
-  // T controller
-  if let Some(matches) = matches.subcommand_matches("T") {
+// TODO: write a cache module
 
-    controllers::file_test::ftest(matches)?;
+  // // T controller
+  // if let Some(matches) = matches.subcommand_matches("T") {
 
-  }
+  //   controllers::file_test::ftest(matches)?;
+
+  // }
 
   Ok(())
 }
