@@ -3,17 +3,17 @@
 
 // standard libraries
 use thiserror::Error;
-use colored::*;
+// use colored::*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 #[derive(Debug, Error)]
 pub enum ChapulinMEError {
-  #[error("\n{}\n", "Fail to reaad configuration".red())]
-  ConfigHashMap,
-  #[error("\n\t{}\n{}{}", "No configuration file not was set:".red(), "Set a configuration file with option ", "'-c --config'".cyan(), )]
+
+  #[error("Error TODO")]
   TODO,
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

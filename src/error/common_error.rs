@@ -11,26 +11,30 @@ use colored::*;
 #[derive(Debug, Error)]
 pub enum ChapulinCommonError {
 
-  #[error("\n{}: {f:?}\n", "Cannot create file".red())]
+  #[error("\n{}: {f:?}\n", "Fail to create file".red())]
   CreateFile {
     f: String,
   },
 
-  #[error("\n{}: {f:?}\n", "Cannot read file".red())]
+  #[error("\n{}: {f:?}\n", "Fail to read file".red())]
   ReadFile {
     f: String,
   },
 
-  #[error("\n{}: {f:?}\n", "Cannot write file".red())]
+  #[error("\n{}: {f:?}\n", "Fail to write file".red())]
   WriteFile {
     f: String,
   },
-  #[error("\n{}\n", "Fail to read lines".red())]
+
+  #[error("\n{}\n", "Fail to parse".red())]
   Parsing,
+
   #[error("\n{}\n", "Fail to read lines".red())]
   RegistryLine,
-  #[error("\n\t{}\n{}{}", "No configuration file not was set:".red(), "Set a configuration file with option ", "'-c --config'".cyan(), )]
+
+  #[error("Error TODO")]
   TODO,
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
