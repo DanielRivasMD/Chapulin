@@ -9,6 +9,7 @@ use clap::{ArgMatches};
 use config::{Config, File};
 use anyhow::{Context};
 use anyhow::Result as anyResult;
+use colored::*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -33,6 +34,25 @@ pub fn sv_subcmd(
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  // logging
+  if matches.is_present("LOGGING") {
+
+    let logging = matches
+      .value_of("LOGGING")
+      .context(ChapulinConfigError::TODO)?;
+
+    match logging {
+      "error" => std::env::set_var("RUST_LOG", "error"),
+      "warn" => std::env::set_var("RUST_LOG", "warn"),
+      "info" => std::env::set_var("RUST_LOG", "info"),
+      "debug" => std::env::set_var("RUST_LOG", "debug"),
+      _ => (),
+    }
+
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
   // collect settings
   let verbose = matches.is_present("verbose");
 
@@ -42,7 +62,7 @@ pub fn sv_subcmd(
     .context(ChapulinConfigError::EmptyConfigOption)?;
 
   if verbose {
-    println!("Configuration file read: {}\n", config);
+    println!("\n{}\n{}{}", "Setting up configuration...".green(), "Configuration file read: ".blue(), config.cyan());
   }
 
   let mut settings = Config::default();
@@ -52,7 +72,7 @@ pub fn sv_subcmd(
 
   // interpret settings into variables
   let settings_hm = settings.try_into::<HashMap<String, String>>()
-    .context(ChapulinConfigError::ConfigHashMap)?;
+    .context(ChapulinConfigError::ConfigHashMap{ f: config.to_string() })?;
 
   let directory = settings_hm.get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
@@ -61,7 +81,7 @@ pub fn sv_subcmd(
     .context(ChapulinConfigError::BadReferenceVar)?;
 
   let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment")
-    .context(ChapulinConfigError::ConfigHashMap)?;
+    .context(ChapulinConfigError::BadPairedReferenceGenomeVar)?;
 
   let expected_tlen = settings_hm.get("expected_tlen")
     .context(ChapulinConfigError::TODO)?
@@ -80,8 +100,7 @@ pub fn sv_subcmd(
   let c_rg_chr_assembly = mutex_chr_assembly.clone();
 
   if verbose {
-    println!("\nRunning Reference Genome module...");
-    println!("Reference file read: {}\n", reference_file);
+    println!("\n{}\n{}{}", "Running Reference Genome module...".green(), "Reference file read: ".blue(), reference_file.cyan());
   }
 
   modules::reference_genome::ref_controller(
@@ -90,18 +109,16 @@ pub fn sv_subcmd(
     c_rg_chr_assembly,
   )?;
 
-  println!("{:?}", now.elapsed().unwrap());
+  info!("{:?}", now.elapsed().unwrap());
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // structural variant module
   let c_sv_record_collection = mutex_record_collection.clone();
   let c_sv_anchor_registry = mutex_anchor_registry.clone();
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
 
   if verbose {
-    println!("\nRunning Structural Variant module...");
-    println!("Alignment file read: {}\n", pair_end_reference_alignment);
+    println!("\n{}\n{}{}", "Running Structural Variant module...".green(), "Alignment file read: ".blue(), pair_end_reference_alignment.cyan());
   }
 
   modules::structural_variant::sv_controller(
@@ -112,27 +129,24 @@ pub fn sv_subcmd(
     c_sv_anchor_registry,
   )?;
 
-  println!("{:?}", now.elapsed().unwrap());
+  info!("{:?}", now.elapsed().unwrap());
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // peak identification module
-  let c_sv_record_collection = mutex_record_collection.clone();
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+  // let c_sv_record_collection = mutex_record_collection.clone();
 
   if verbose {
-    println!("\nRunning Peak Identification module...\n");
+    println!("\n{}\n", "Running Peak Identification module...".green());
   }
 
   modules::peak_identification::pi_sv_controller(
-    c_sv_record_collection,
+    mutex_record_collection,
     mutex_anchor_registry,
     mutex_chr_assembly,
   )?;
 
-  println!("{:?}", now.elapsed().unwrap());
-
-  println!("Length of Hashmap: {}", mutex_record_collection.lock().unwrap().len());
+  info!("{:?}", now.elapsed().unwrap());
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
