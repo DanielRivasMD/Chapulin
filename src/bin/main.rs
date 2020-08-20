@@ -55,6 +55,7 @@ fn main () -> anyResult<()> {
       (author: crate_authors!())
       (about: "Mobile Element Identification")
       (@arg verbose: -v --verbose "Print test verbosely")
+      (@arg LOGGING: -l --log +takes_value "Print log")
       (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
     )
 
@@ -63,6 +64,7 @@ fn main () -> anyResult<()> {
       (author: crate_authors!())
       (about: "Structural Variant Identification")
       (@arg verbose: -v --verbose "Print test verbosely")
+      (@arg LOGGING: -l --log +takes_value "Print log")
       (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
     )
 
@@ -71,6 +73,7 @@ fn main () -> anyResult<()> {
       (author: crate_authors!())
       (about: "Testing")
       (@arg verbose: -v --verbose "Print test verbosely")
+      (@arg LOGGING: -l --log +takes_value "Print log")
       (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
     )
   )

@@ -9,6 +9,7 @@ extern crate derive_new;
 
 #[macro_use]
 extern crate icecream;
+extern crate log;
 
 // local
 #[macro_use]
