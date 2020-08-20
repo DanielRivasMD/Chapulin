@@ -5,7 +5,7 @@ macro_rules! load {
 
   // mobile element
   ( $record: expr, $read_no: tt, $flines: expr, $ms: expr, $mo: expr ) => {
-    if $flines[1].parse::<i32>().unwrap() <= 255 {
+    if $flines[1].parse::<i32>().context(ChapulinCommonError::Parsing)? <= 255 {
       $record.$read_no.sequence = $flines[9].to_string();
     }
     $record.$read_no.me_read.push(MEAnchor::loader(&$flines, $ms, &$mo));
