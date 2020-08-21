@@ -13,6 +13,9 @@ extern crate derive_new;
 #[macro_use]
 extern crate log;
 
+#[macro_use]
+extern crate lazy_static;
+
 // local
 #[macro_use]
 mod macros;
