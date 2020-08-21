@@ -4,7 +4,10 @@
 // standard libraries
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
+use anyhow::{Context};
 use anyhow::Result as anyResult;
+use std::fs::File;
+use std::io::Write;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -29,14 +32,16 @@ use crate::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // error handler
-// use crate::error::{
-// }
+use crate::error::{
+  common_error::ChapulinCommonError,
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 pub fn pi_me_identifier (
   ikey: &str,
+  directory: &str,
   hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
@@ -49,6 +54,10 @@ pub fn pi_me_identifier (
     .unwrap();
 
   // TODO: implement parallel iteration here
+
+  // create output file
+  let fl_write = format!("{}{}.csv", directory, ikey);
+  let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile{ f: fl_write })?;
 
   for strand in STRAND_VEC.iter() {
 
@@ -120,8 +129,12 @@ pub fn pi_me_identifier (
         if id_vec.len() > pois_threshold {
           // println!();
           // println!("Position: {} @ strand: {} => {}", chr_pos, strand, id_vec.len());
-          println!("{}, {}, {}, {}", ikey, chr_pos, strand, id_vec.len());
           // println!("{:?}", id_vec);
+
+          // println!("{}, {}, {}, {}", ikey, chr_pos, strand, id_vec.len());
+          let to_write = format!("{}, {}, {}, {}", ikey, chr_pos, strand, id_vec.len());
+
+          fl.write_all(to_write.as_bytes()).context(ChapulinCommonError::WriteFile{ f: to_write })?;
 
           // for id_read in id_vec.iter() {
           //   if let Some((id, read)) = hm_collection
