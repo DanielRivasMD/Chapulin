@@ -40,8 +40,13 @@ pub fn pi_sv_identifier (
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
 
-  let chr_size = *chr_assembly.lock().expect("chromosome not found").get(ikey).unwrap();
-  let ids_read = an_registry.lock().unwrap().get(ikey).unwrap().clone();
+  let chr_size = *chr_assembly
+    .lock().unwrap()
+    .get(ikey).unwrap();
+  let ids_read = an_registry
+    .lock().unwrap()
+    .get(ikey).unwrap()
+    .clone();
 
 
   let read_count = ids_read.len();
@@ -50,7 +55,9 @@ pub fn pi_sv_identifier (
 
 
   for id_read in ids_read {
-    if let Some(sv_pair) = hm_collection.lock().unwrap().get(&id_read) {
+    if let Some(sv_pair) = hm_collection
+      .lock().unwrap()
+      .get(&id_read) {
       chr_counter!(
         id_read,
         sv_pair,

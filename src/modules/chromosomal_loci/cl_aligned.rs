@@ -57,11 +57,15 @@ pub fn cl_mapper(
     let read_id = record_line[0].to_string();
     let chr = record_line[2].to_string();
 
-    if hm_collection.lock().unwrap().contains_key(&read_id) {
+    if hm_collection
+      .lock().unwrap()
+      .contains_key(&read_id) {
 
       let mut mapq_switch = false;
 
-      if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
+      if let Some(current_record) = hm_collection
+        .lock().unwrap()
+        .get_mut(&read_id) {
 
         reload!(current_record, read1, record_line);
         reload!(current_record, read2, record_line);
@@ -76,14 +80,22 @@ pub fn cl_mapper(
 
 // TODO: consider tagging strand on the fly to avoid postload counting
       if mapq_switch {
-        hm_collection.lock().unwrap().remove(&read_id);
+        hm_collection
+          .lock().unwrap()
+          .remove(&read_id);
       } else {
         // register chromosome anchors
-        if ! an_registry.lock().unwrap().contains_key(&chr) {
-          an_registry.lock().unwrap().insert(chr.clone(), Vec::new());
+        if ! an_registry
+          .lock().unwrap()
+          .contains_key(&chr) {
+          an_registry
+            .lock().unwrap()
+            .insert(chr.clone(), Vec::new());
         }
 
-        if let Some(current_chr) = an_registry.lock().unwrap().get_mut(&chr) {
+        if let Some(current_chr) = an_registry
+          .lock().unwrap()
+          .get_mut(&chr) {
           if ! current_chr.contains(&read_id.to_string()) {
             current_chr.push(read_id.to_string())
           }

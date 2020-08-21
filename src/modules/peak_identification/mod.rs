@@ -103,10 +103,14 @@ fn chr_constructor(
 
   // iterate on reference chromosomes
   let mut chromosome_vec = Vec::new();
-  for okey in hash_map_chr_assembly.lock().unwrap().keys() {
+  for okey in hash_map_chr_assembly
+    .lock().unwrap()
+    .keys() {
     let ckey = okey.clone();
 
-    if hash_map_anchor.lock().unwrap().contains_key(okey) {
+    if hash_map_anchor
+      .lock().unwrap()
+      .contains_key(okey) {
       chromosome_vec.push(ckey);
     }
   }

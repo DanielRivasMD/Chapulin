@@ -43,7 +43,10 @@ pub fn pi_me_identifier (
 ) -> anyResult<()> {
 
   let mut chr_position_hm = HashMap::new();
-  let chr_size = *chr_assembly.lock().expect("chromosome not found").get(ikey).unwrap();
+  let chr_size = *chr_assembly
+    .lock().unwrap()
+    .get(ikey)
+    .unwrap();
 
   // TODO: implement parallel iteration here
 
@@ -58,11 +61,17 @@ pub fn pi_me_identifier (
 
     let mut read_count = 0;
 
-    let ids_read = an_registry.lock().unwrap().get(ikey).unwrap().clone();
+    let ids_read = an_registry
+      .lock().unwrap()
+      .get(ikey)
+      .unwrap()
+      .clone();
 
     for id_read in ids_read {
 
-      if let Some(me_pair) = hm_collection.lock().unwrap().get(&id_read) {
+      if let Some(me_pair) = hm_collection
+        .lock().unwrap()
+        .get(&id_read) {
         match &me_pair.chranch {
           ChrAnchorEnum::Read1 => {
             read_count = strander(
@@ -115,7 +124,9 @@ pub fn pi_me_identifier (
           // println!("{:?}", id_vec);
 
           // for id_read in id_vec.iter() {
-          //   if let Some((id, read)) = hm_collection.lock().unwrap().get_key_value(id_read) {
+          //   if let Some((id, read)) = hm_collection
+          //  .lock().unwrap()
+          //  .get_key_value(id_read) {
 
           //     // ic!(id);
           //     // ic!(read);

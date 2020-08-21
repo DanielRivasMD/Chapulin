@@ -24,7 +24,8 @@ pub fn write_cache(
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
 
-  let chr_hm = chr_assembly.lock().unwrap();
+  let chr_hm = chr_assembly
+    .lock().unwrap();
   let mut ref_cache_file = stdFile::create(&ref_cache)
     .context(ChapulinCommonError::CreateFile{ f: ref_cache })?;
     // .with_context(|| format!("{}: {}", ChapulinCommonError::CreateFile, &ref_cache))?;

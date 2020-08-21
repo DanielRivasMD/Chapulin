@@ -43,7 +43,9 @@ pub fn reference_reader(
 
     if record_line.starts_with('>') {
       if current_chr != "" {
-        chr_assembly.lock().unwrap().insert(current_chr, current_len);
+        chr_assembly
+          .lock().unwrap()
+          .insert(current_chr, current_len);
         current_len = 0.;
       }
       let record_entry: Vec<&str> = record_line.trim().split(' ').collect();
@@ -52,7 +54,9 @@ pub fn reference_reader(
       current_len += record_line.len() as f64;
     }
   }
-  chr_assembly.lock().unwrap().insert(current_chr, current_len as f64);
+  chr_assembly
+    .lock().unwrap()
+    .insert(current_chr, current_len as f64);
 
   Ok(())
 }
