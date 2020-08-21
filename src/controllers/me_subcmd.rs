@@ -6,7 +6,7 @@ use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
 use clap::{ArgMatches};
-use config::{Config, File};
+use config::{File};
 use anyhow::{Context};
 use anyhow::Result as anyResult;
 use colored::*;
@@ -15,6 +15,15 @@ use colored::*;
 
 // modules
 use crate::modules;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// crate utilities
+use crate::{
+  settings::{
+    config::SETTINGS,
+  },
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -65,28 +74,34 @@ pub fn me_subcmd(
     println!("\n{}\n{}{}", "Setting up configuration...".green(), "Configuration file read: ".blue(), config.cyan());
   }
 
-  let mut settings = Config::default();
-  settings
+  SETTINGS
+    .write().unwrap()
     .merge(File::with_name(config))
     .context(ChapulinConfigError::NoConfigFile)?;
 
-  // interpret settings into variables
-  let settings_hm = settings.try_into::<HashMap<String, String>>()
-    .context(ChapulinConfigError::ConfigHashMap{ f: config.to_string() })?;
-
-  let directory = settings_hm.get("directory")
+  let directory: &'static str = SETTINGS
+    .read().unwrap()
+    .get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
 
-  let reference_file = settings_hm.get("reference")
+  let reference_file: &'static str = SETTINGS
+    .read().unwrap()
+    .get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
 
-  let me_library_file = settings_hm.get("mobile_element_library")
+  let me_library_file: &'static str = SETTINGS
+    .read().unwrap()
+    .get("mobile_element_library")
     .context(ChapulinConfigError::BadMELibVar)?;
 
-  let me_align = settings_hm.get("mobile_element_alignment")
+  let me_align: &'static str = SETTINGS
+    .read().unwrap()
+    .get("mobile_element_alignment")
     .context(ChapulinConfigError::BadMEAlignVar)?;
 
-  let cl_align = settings_hm.get("reference_genome_alignment")
+  let cl_align: &'static str = SETTINGS
+    .read().unwrap()
+    .get("reference_genome_alignment")
     .context(ChapulinConfigError::BadSingleReferenceGenomeVar)?;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,6 +176,7 @@ pub fn me_subcmd(
   }
 
   modules::peak_identification::pi_me_controller(
+    directory,
     mutex_record_collection,
     mutex_anchor_registry,
     mutex_chr_assembly,

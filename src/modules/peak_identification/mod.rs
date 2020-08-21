@@ -33,14 +33,13 @@ use crate::{
 
 
 pub fn pi_me_controller(
+  directory: &'static str,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
 
   let chromosome_vec = chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
-
-  println!("{}", hash_map_collection.lock().unwrap().len());
 
   for okey in chromosome_vec {
 
@@ -51,6 +50,7 @@ pub fn pi_me_controller(
     let pi_me_handle = thread::spawn(move || {
       pi_me_mapping::pi_me_identifier(
         &okey,
+        directory,
         c_hash_map_collection,
         c_hash_map_anchor,
         c_hash_map_chr_assembly,

@@ -31,8 +31,8 @@ use crate::{
 
 
 pub fn cl_controller (
-  directory: &str,
-  cl_aligned_prefix: &str,
+  directory: &'static str,
+  prefix: &'static str,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> anyResult<()> {
@@ -40,16 +40,13 @@ pub fn cl_controller (
   // load reference chromosome aligned reads
   for i in 1..3 {
 
-    let c_directory = directory.to_string();
-    let c_prefix = cl_aligned_prefix.to_string();
-
     let c_hash_map_collection = hash_map_collection.clone();
     let c_hash_map_anchor = hash_map_anchor.clone();
 
     let cl_handle = thread::spawn(move || {
 
       let sufix = ".sorted.sam".to_string();
-      let cl_aligned_file = format!("{}{}{}{}", c_directory, c_prefix, i, sufix);
+      let cl_aligned_file = format!("{}{}{}{}", directory, prefix, i, sufix);
 
         cl_aligned::cl_mapper(
           &cl_aligned_file,
