@@ -6,7 +6,7 @@ use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
 use clap::{ArgMatches};
-use config::{Config, File};
+use config::{File};
 use anyhow::{Context};
 use anyhow::Result as anyResult;
 use colored::*;
@@ -15,6 +15,15 @@ use colored::*;
 
 // modules
 use crate::modules;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// crate utilities
+use crate::{
+  settings::{
+    config::SETTINGS,
+  },
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,6 +67,7 @@ pub fn sv_subcmd(
   let verbose = matches.is_present("verbose");
 
   let now = SystemTime::now();
+  pretty_env_logger::init();
 
   let config = matches.value_of("CONFIG")
     .context(ChapulinConfigError::EmptyConfigOption)?;
@@ -66,25 +76,29 @@ pub fn sv_subcmd(
     println!("\n{}\n{}{}", "Setting up configuration...".green(), "Configuration file read: ".blue(), config.cyan());
   }
 
-  let mut settings = Config::default();
-  settings
+  SETTINGS
+    .write().unwrap()
     .merge(File::with_name(config))
     .context(ChapulinConfigError::NoConfigFile)?;
 
-  // interpret settings into variables
-  let settings_hm = settings.try_into::<HashMap<String, String>>()
-    .context(ChapulinConfigError::ConfigHashMap{ f: config.to_string() })?;
-
-  let directory = settings_hm.get("directory")
+  let directory: &'static str = SETTINGS
+    .read().unwrap()
+    .get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
 
-  let reference_file = settings_hm.get("reference")
+  let reference_file: &'static str = SETTINGS
+    .read().unwrap()
+    .get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
 
-  let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment")
+  let pair_end_reference_alignment: &'static str = SETTINGS
+    .read().unwrap()
+    .get("pair_end_reference_alignment")
     .context(ChapulinConfigError::BadPairedReferenceGenomeVar)?;
 
-  let expected_tlen = settings_hm.get("expected_tlen")
+  let expected_tlen = SETTINGS
+    .read().unwrap()
+    .get::<&str>("expected_tlen")
     .context(ChapulinConfigError::TODO)?
     .parse::<i32>()
     .context(ChapulinCommonError::Parsing)?;
