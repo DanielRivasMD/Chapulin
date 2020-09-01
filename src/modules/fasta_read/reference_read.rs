@@ -29,7 +29,7 @@ use crate::error::{
 
 pub fn reference_reader(
   ref_seq: String,
-  chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
+  fasta_record: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
 
   let mut current_chr = String::new();
@@ -43,7 +43,7 @@ pub fn reference_reader(
 
     if record_line.starts_with('>') {
       if current_chr != "" {
-        chr_assembly
+        fasta_record
           .lock().unwrap()
           .insert(current_chr, current_len);
         current_len = 0.;
@@ -54,7 +54,7 @@ pub fn reference_reader(
       current_len += record_line.len() as f64;
     }
   }
-  chr_assembly
+  fasta_record
     .lock().unwrap()
     .insert(current_chr, current_len as f64);
 
