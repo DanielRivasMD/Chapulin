@@ -10,9 +10,9 @@ use std::path::Path;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // modules
-mod ref_cache_read;
-mod ref_cache_write;
-use super::fasta_read::reference_read;
+use super::fasta_read::fasta_read;
+use super::fasta_read::fasta_cache_read;
+use super::fasta_read::fasta_cache_write;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -29,7 +29,7 @@ pub fn ref_controller (
   if Path::new(&ref_cache).exists() {
 
     // read from cache
-    ref_cache_read::read_cache(
+    fasta_cache_read::read_cache(
       ref_cache,
       hash_map_chr_assembly,
     )?;
@@ -38,13 +38,13 @@ pub fn ref_controller (
 
     // read fasta reference
     let c_chr_assembly = hash_map_chr_assembly.clone();
-    reference_read::reference_reader(
+    fasta_read::reference_reader(
       ref_sequence,
       c_chr_assembly,
     )?;
 
     // write to cache
-    ref_cache_write::write_cache(
+    fasta_cache_write::write_cache(
       ref_cache,
       hash_map_chr_assembly,
     )?;
