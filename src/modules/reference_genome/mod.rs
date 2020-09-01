@@ -10,7 +10,7 @@ use std::path::Path;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // modules
-use super::fasta_read::fasta_read;
+use super::fasta_read::fasta_file_read;
 use super::fasta_read::fasta_cache_read;
 use super::fasta_read::fasta_cache_write;
 
@@ -30,7 +30,7 @@ pub fn ref_controller (
 
     // read from cache
     fasta_cache_read::read_cache(
-      ref_cache,
+      &ref_cache,
       hash_map_chr_assembly,
     )?;
 
@@ -38,14 +38,14 @@ pub fn ref_controller (
 
     // read fasta reference
     let c_chr_assembly = hash_map_chr_assembly.clone();
-    fasta_read::reference_reader(
-      ref_sequence,
+    fasta_file_read::fasta_reader(
+      &ref_sequence,
       c_chr_assembly,
     )?;
 
     // write to cache
     fasta_cache_write::write_cache(
-      ref_cache,
+      &ref_cache,
       hash_map_chr_assembly,
     )?;
 

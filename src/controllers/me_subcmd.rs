@@ -109,6 +109,7 @@ pub fn me_subcmd(
   let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
   let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
   let mutex_chr_assembly = Arc::new(Mutex::new(HashMap::new()));
+  let mutex_me_library = Arc::new(Mutex::new(HashMap::new()));
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -142,6 +143,7 @@ pub fn me_subcmd(
     directory,
     me_library_file,
     me_align,
+    mutex_me_library,
     c_me_record_collection,
   )?;
 

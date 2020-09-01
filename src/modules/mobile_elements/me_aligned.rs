@@ -40,8 +40,8 @@ use crate::error::{
 
 pub fn me_identificator(
   me_bam_file: &str,
+  hm_me_collection: Arc<Mutex<HashMap<String, f64>>>,
   hm_record_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
-  hm_me_collection: &HashMap<String, MElibrary>,
 ) -> anyResult<()> {
 
   // load file
@@ -51,7 +51,7 @@ pub fn me_identificator(
   let mut prev_read_id = String::new();
   let mut purge_switch = true;
   let mut mobel_anchor = false;
-  let mut me_size = 0;
+  let mut me_size = 0.;
   let mut mobel_orientation = String::new();
 
   // iterate through file
@@ -85,8 +85,10 @@ pub fn me_identificator(
     // TODO: describe break point signature
 
     // retrieve mobile element library records
-    if let Some(me_record) = hm_me_collection.get(&mobel) {
-        me_size = me_record.me_size;
+    if let Some(me_record) = hm_me_collection
+      .lock().unwrap()
+      .get(&mobel) {
+        me_size = *me_record;
     }
 
     // purge read pairs
@@ -107,7 +109,7 @@ pub fn me_identificator(
       purge_switch = false;
       mobel_anchor = true;
       mobel_orientation = "upstream".to_string();
-    } else if me_size - adj_right_pos <= ME_LIMIT && ! read_orientation {
+    } else if me_size - adj_right_pos as f64 <= ME_LIMIT.into() && ! read_orientation {
       purge_switch = false;
       mobel_anchor = true;
       mobel_orientation = "downstream".to_string();

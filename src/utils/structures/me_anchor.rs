@@ -21,7 +21,7 @@ pub struct MEAnchor {
   pub mobel: String,
 
   #[new(default)]
-  pub size: i32,
+  pub size: f64,
 
   #[new(default)]
   pub flag: i32,
@@ -41,7 +41,7 @@ pub struct MEAnchor {
 
 impl MEAnchor {
 
-  pub fn loader(file_line: &[&str], mobile_size: i32, mobile_orientation: &str) -> Self {
+  pub fn loader(file_line: &[&str], mobile_size: f64, mobile_orientation: &str) -> Self {
     Self {
       mobel: file_line[2].to_string(),
       size: mobile_size,

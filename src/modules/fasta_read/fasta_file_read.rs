@@ -27,8 +27,8 @@ use crate::error::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-pub fn reference_reader(
-  ref_seq: String,
+pub fn fasta_reader(
+  ref_seq: &str,
   fasta_record: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
 

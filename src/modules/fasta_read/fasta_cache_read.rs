@@ -28,7 +28,7 @@ use crate::error::{
 
 
 pub fn read_cache(
-  ref_cache: String,
+  ref_cache: &str,
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
 
