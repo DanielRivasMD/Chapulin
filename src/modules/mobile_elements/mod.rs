@@ -38,14 +38,14 @@ pub fn me_controller (
 
   // load mobile element library
   let me_library_file = format!("{}{}", directory, me_library);
-  let me_library_cache = format!("{}{}.cache", directory, me_library);
+  let me_library_cache = format!("{}.{}.cache", directory, me_library);
 
   if Path::new(&me_library_cache).exists() {
 
     // read from cache
     let cr_me_library = hash_map_me_library.clone();
     fasta_cache_read::read_cache(
-      &me_library_file,
+      &me_library_cache,
       cr_me_library,
     )?;
 
@@ -61,7 +61,7 @@ pub fn me_controller (
     // write to cache
     let cw_me_library = hash_map_me_library.clone();
     fasta_cache_write::write_cache(
-      &me_library_file,
+      &me_library_cache,
       cw_me_library,
     )?;
 
