@@ -74,35 +74,49 @@ pub fn me_subcmd(
     println!("\n{}\n{}{}", "Setting up configuration...".green(), "Configuration file read: ".blue(), config.cyan());
   }
 
-  SETTINGS
-    .write().unwrap()
+  let mut settings = Config::default();
+  // SETTINGS
+  //   .write().unwrap()
+  settings
     .merge(File::with_name(config))
     .context(ChapulinConfigError::NoConfigFile)?;
 
-  let directory: &'static str = SETTINGS
-    .read().unwrap()
-    .get("directory")
+  let settings_hm = settings.try_into::<HashMap<String, String>>()
+    .context(ChapulinConfigError::ConfigHashMap{ f: config.to_string() })?;
+
+  let directory = settings_hm.get("directory")
+  // let directory: &'static str = SETTINGS
+  //   .read().unwrap()
+  //   .get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
 
-  let reference_file: &'static str = SETTINGS
-    .read().unwrap()
-    .get("reference")
+  // let mutex_directory = Arc::new(settings_hm.get("directory").unwrap().to_string());
+
+  let reference_file = settings_hm.get("reference")
+  // let reference_file: &'static str = SETTINGS
+  //   .read().unwrap()
+  //   .get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
 
-  let me_library_file: &'static str = SETTINGS
-    .read().unwrap()
-    .get("mobile_element_library")
+  let me_library_file = settings_hm.get("mobile_element_library")
+  // let me_library_file: &'static str = SETTINGS
+  //   .read().unwrap()
+  //   .get("mobile_element_library")
     .context(ChapulinConfigError::BadMELibVar)?;
 
-  let me_align: &'static str = SETTINGS
-    .read().unwrap()
-    .get("mobile_element_alignment")
+  let me_align = settings_hm.get("mobile_element_alignment")
+  // let me_align: &'static str = SETTINGS
+  //   .read().unwrap()
+  //   .get("mobile_element_alignment")
     .context(ChapulinConfigError::BadMEAlignVar)?;
 
-  let cl_align: &'static str = SETTINGS
-    .read().unwrap()
-    .get("reference_genome_alignment")
+  let cl_align = settings_hm.get("reference_genome_alignment")
+  // let cl_align: &'static str = SETTINGS
+  //   .read().unwrap()
+  //   .get("reference_genome_alignment")
     .context(ChapulinConfigError::BadSingleReferenceGenomeVar)?;
+
+  // let mutex_align = Arc::new(settings_hm.get("reference_genome_alignment").unwrap().to_string());
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
