@@ -2,6 +2,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
+use config::Config;
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
@@ -15,15 +16,6 @@ use colored::*;
 
 // modules
 use crate::modules;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// crate utilities
-use crate::{
-  settings::{
-    config::SETTINGS,
-  },
-};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -75,8 +67,6 @@ pub fn me_subcmd(
   }
 
   let mut settings = Config::default();
-  // SETTINGS
-  //   .write().unwrap()
   settings
     .merge(File::with_name(config))
     .context(ChapulinConfigError::NoConfigFile)?;
@@ -85,38 +75,19 @@ pub fn me_subcmd(
     .context(ChapulinConfigError::ConfigHashMap{ f: config.to_string() })?;
 
   let directory = settings_hm.get("directory")
-  // let directory: &'static str = SETTINGS
-  //   .read().unwrap()
-  //   .get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
 
-  // let mutex_directory = Arc::new(settings_hm.get("directory").unwrap().to_string());
-
   let reference_file = settings_hm.get("reference")
-  // let reference_file: &'static str = SETTINGS
-  //   .read().unwrap()
-  //   .get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
 
   let me_library_file = settings_hm.get("mobile_element_library")
-  // let me_library_file: &'static str = SETTINGS
-  //   .read().unwrap()
-  //   .get("mobile_element_library")
     .context(ChapulinConfigError::BadMELibVar)?;
 
   let me_align = settings_hm.get("mobile_element_alignment")
-  // let me_align: &'static str = SETTINGS
-  //   .read().unwrap()
-  //   .get("mobile_element_alignment")
     .context(ChapulinConfigError::BadMEAlignVar)?;
 
-  let cl_align = settings_hm.get("reference_genome_alignment")
-  // let cl_align: &'static str = SETTINGS
-  //   .read().unwrap()
-  //   .get("reference_genome_alignment")
+  let ref_align = settings_hm.get("reference_genome_alignment")
     .context(ChapulinConfigError::BadSingleReferenceGenomeVar)?;
-
-  // let mutex_align = Arc::new(settings_hm.get("reference_genome_alignment").unwrap().to_string());
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -130,7 +101,7 @@ pub fn me_subcmd(
   // TODO: write pre processing recomendations => fastq filtering, alignment
 
   // reference genome module
-  let c_rg_chr_assembly = mutex_chr_assembly.clone();
+  let crg_chr_assembly = Arc::clone(&mutex_chr_assembly);
 
   if verbose {
     println!("\n{}\n{}{}", "Running Reference Genome module...".green(), "Reference file read: ".blue(), reference_file.cyan());
@@ -139,7 +110,7 @@ pub fn me_subcmd(
   modules::reference_genome::ref_controller(
     directory,
     reference_file,
-    c_rg_chr_assembly,
+    crg_chr_assembly,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());
@@ -147,7 +118,7 @@ pub fn me_subcmd(
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // mobile elements module
-  let c_me_record_collection = mutex_record_collection.clone();
+  let cme_record_collection = Arc::clone(&mutex_record_collection);
 
   if verbose {
     println!("\n{}\n{}{}", "Running Mobile Element module...".green(), "ME alignment file read: ".blue(), me_align.cyan());
@@ -158,7 +129,7 @@ pub fn me_subcmd(
     me_library_file,
     me_align,
     mutex_me_library,
-    c_me_record_collection,
+    cme_record_collection,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());
@@ -166,18 +137,18 @@ pub fn me_subcmd(
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // chromosomal loci module
-  let c_cl_record_collection = mutex_record_collection.clone();
-  let c_cl_anchor_registry = mutex_anchor_registry.clone();
+  let ccl_record_collection = Arc::clone(&mutex_record_collection);
+  let ccl_anchor_registry = Arc::clone(&mutex_anchor_registry);
 
   if verbose {
-    println!("\n{}\n{}{}", "Running Chromosomal Loci module...".green(), "Chromosomal alignment file read: ".blue(), cl_align.cyan());
+    println!("\n{}\n{}{}", "Running Chromosomal Loci module...".green(), "Chromosomal alignment file read: ".blue(), ref_align.cyan());
   }
 
   modules::chromosomal_loci::cl_controller(
-    directory,
-    cl_align,
-    c_cl_record_collection,
-    c_cl_anchor_registry,
+    directory.to_string(),
+    ref_align.to_string(),
+    ccl_record_collection,
+    ccl_anchor_registry,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());
@@ -185,14 +156,12 @@ pub fn me_subcmd(
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // peak identification module
-  // let c_pi_record_collection = mutex_record_collection.clone();
-
   if verbose {
     println!("\n{}\n", "Running Peak Identification module...".green());
   }
 
   modules::peak_identification::pi_me_controller(
-    directory,
+    directory.to_string(),
     mutex_record_collection,
     mutex_anchor_registry,
     mutex_chr_assembly,

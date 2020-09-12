@@ -33,7 +33,7 @@ use crate::{
 
 
 pub fn pi_me_controller(
-  directory: &'static str,
+  directory: String,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
@@ -43,17 +43,18 @@ pub fn pi_me_controller(
 
   for okey in chromosome_vec {
 
-    let c_hash_map_collection = hash_map_collection.clone();
-    let c_hash_map_anchor = hash_map_anchor.clone();
-    let c_hash_map_chr_assembly = hash_map_chr_assembly.clone();
+    let cdirectory = directory.clone();
+    let chash_map_collection = hash_map_collection.clone();
+    let chash_map_anchor = hash_map_anchor.clone();
+    let chash_map_chr_assembly = hash_map_chr_assembly.clone();
 
     let pi_me_handle = thread::spawn(move || {
       pi_me_mapping::pi_me_identifier(
         &okey,
-        directory,
-        c_hash_map_collection,
-        c_hash_map_anchor,
-        c_hash_map_chr_assembly,
+        &cdirectory,
+        chash_map_collection,
+        chash_map_anchor,
+        chash_map_chr_assembly,
       ).expect("TODO thread error");
     });
     pi_me_handle.join().expect("MESSAGE_JOIN");
@@ -75,16 +76,16 @@ pub fn pi_sv_controller(
   let chromosome_vec = chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 
   for okey in chromosome_vec {
-    let c_hash_map_collection = hash_map_collection.clone();
-    let c_hash_map_anchor = hash_map_anchor.clone();
-    let c_hash_map_chr_assembly = hash_map_chr_assembly.clone();
+    let chash_map_collection = hash_map_collection.clone();
+    let chash_map_anchor = hash_map_anchor.clone();
+    let chash_map_chr_assembly = hash_map_chr_assembly.clone();
 
     let pi_sv_handle = thread::spawn(move || {
       pi_sv_mapping::pi_sv_identifier(
         &okey,
-        c_hash_map_collection,
-        c_hash_map_anchor,
-        c_hash_map_chr_assembly,
+        chash_map_collection,
+        chash_map_anchor,
+        chash_map_chr_assembly,
       ).expect("TODO thread error");
     });
     pi_sv_handle.join().expect("MESSAGE_JOIN");
