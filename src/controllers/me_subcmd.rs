@@ -77,6 +77,9 @@ pub fn me_subcmd(
   let directory = settings_hm.get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
 
+  let output = settings_hm.get("output")
+    .context(ChapulinConfigError::BadOutput)?;
+
   let reference_file = settings_hm.get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
 
@@ -161,6 +164,7 @@ pub fn me_subcmd(
   }
 
   modules::peak_identification::pi_me_controller(
+    output.to_string(),
     directory.to_string(),
     mutex_record_collection,
     mutex_anchor_registry,

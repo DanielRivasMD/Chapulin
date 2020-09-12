@@ -25,6 +25,9 @@ pub enum ChapulinConfigError {
   #[error("\n{}\n{}{}\n", "Directory was not set properly in configuration file".red(), "Example: directory = ", "'/home/favorite_chapulin_directory/'".cyan())]
   BadDirectoryVar,
 
+  #[error("\n{}\n{}{}\n", "Output directory was not set properly in configuration file".red(), "Example: directory = ", "'/home/chapulin_will_write_here/'".cyan())]
+  BadOutput,
+
   #[error("\n{}\n{}{}\n", "Reference file was not set properly in configuration file".red(), "Example: reference = ", "'awesome_species_reference.fa'".cyan())]
   BadReferenceVar,
 
