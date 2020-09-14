@@ -4,6 +4,8 @@
 // standard libraries
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
+use std::path::{Path};
+use std::fs::{create_dir_all};
 use std::{thread};
 use anyhow::Result as anyResult;
 
@@ -39,6 +41,12 @@ pub fn pi_me_controller(
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
+
+  // create output file
+  let out_dir = format!("{}{}", directory, output);
+  if ! Path::new(&out_dir).exists() {
+    create_dir_all(&out_dir)?;
+  }
 
   let chromosome_vec = chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 
