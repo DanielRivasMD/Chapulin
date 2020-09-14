@@ -2,7 +2,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use config::Config;
+use config::{Config};
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};

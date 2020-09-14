@@ -132,7 +132,7 @@ pub fn pi_me_identifier (
           // println!("{:?}", id_vec);
 
           // println!("{}, {}, {}, {}", ikey, chr_pos, strand, id_vec.len());
-          let to_write = format!("{}, {}, {}, {}", ikey, chr_pos, strand, id_vec.len());
+          let to_write = format!("{}, {}, {}, {}\n", ikey, chr_pos, strand, id_vec.len());
 
           fl.write_all(to_write.as_bytes()).context(ChapulinCommonError::WriteFile{ f: to_write })?;
 

@@ -57,6 +57,8 @@ pub fn read_cache(
 
   }
 
+  info!("Reading cache");
+
   Ok(())
 }
 
