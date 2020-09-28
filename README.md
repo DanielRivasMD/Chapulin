@@ -1,7 +1,7 @@
 
 ## _Chapulin_: Next-generation genomic mobile element and structural variant identification tool
 
-![The Man in the Chapulin Hill](assests/chapulin.png)
+![The Man in the Chapulin Hill](assets/chapulin.png)
 
 ## Table of contents
 
