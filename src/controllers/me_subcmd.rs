@@ -62,6 +62,9 @@ pub fn me_subcmd(
   let config = matches.value_of("CONFIG")
     .context(ChapulinConfigError::EmptyConfigOption)?;
 
+  let chr_align = matches.value_of("CHRALIGN")
+    .unwrap();
+
   if verbose {
     println!("\n{}\n{}{}", "Setting up configuration...".green(), "Configuration file read: ".blue(), config.cyan());
   }
@@ -91,6 +94,9 @@ pub fn me_subcmd(
 
   let ref_align = settings_hm.get("reference_genome_alignment")
     .context(ChapulinConfigError::BadSingleReferenceGenomeVar)?;
+
+  let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment")
+    .context(ChapulinConfigError::BadPairedReferenceGenomeVar)?;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -143,16 +149,35 @@ pub fn me_subcmd(
   let ccl_record_collection = Arc::clone(&mutex_record_collection);
   let ccl_anchor_registry = Arc::clone(&mutex_anchor_registry);
 
-  if verbose {
-    println!("\n{}\n{}{}", "Running Chromosomal Loci module...".green(), "Chromosomal alignment file read: ".blue(), ref_align.cyan());
+  match chr_align {
+    "single" => {
+      if verbose {
+        println!("\n{}\n{}{}", "Running Chromosomal Loci module...".green(), "Chromosomal alignment file read: ".blue(), ref_align.cyan());
+      }
+
+      modules::chromosomal_loci::cl_single_controller(
+        directory.to_string(),
+        ref_align.to_string(),
+        ccl_record_collection,
+        ccl_anchor_registry,
+      )?;
+    },
+    "paired" => {
+      if verbose {
+        println!("\n{}\n{}{}", "Running Chromosomal Loci module...".green(), "Chromosomal alignment file read: ".blue(), pair_end_reference_alignment.cyan());
+      }
+
+    modules::chromosomal_loci::cl_paired_controller(
+      directory.to_string(),
+      pair_end_reference_alignment.to_string(),
+      ccl_record_collection,
+      ccl_anchor_registry,
+    )?;
+    },
+    _ => ()
   }
 
-  modules::chromosomal_loci::cl_controller(
-    directory.to_string(),
-    ref_align.to_string(),
-    ccl_record_collection,
-    ccl_anchor_registry,
-  )?;
+
 
   info!("{:?}", now.elapsed().unwrap());
 

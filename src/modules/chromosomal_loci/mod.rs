@@ -31,7 +31,7 @@ use crate::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-pub fn cl_controller (
+pub fn cl_single_controller (
   directory: String,
   prefix: String,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
@@ -60,6 +60,26 @@ pub fn cl_controller (
     });
     cl_handle.join().expect("MESSAGE_JOIN");
   }
+
+  Ok(())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pub fn cl_paired_controller (
+  directory: String,
+  prefix: String,
+  hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
+) -> anyResult<()> {
+
+  let cl_aligned_file = format!("{}{}", directory, prefix);
+
+  cl_aligned::cl_mapper(
+    &cl_aligned_file,
+    hash_map_collection,
+    hash_map_anchor,
+  )?;
 
   Ok(())
 }

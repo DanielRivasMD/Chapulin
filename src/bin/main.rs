@@ -57,6 +57,7 @@ fn main () -> anyResult<()> {
       (@arg verbose: -v --verbose "Print test verbosely")
       (@arg LOGGING: -l --log +takes_value "Print log")
       (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
+      (@arg CHRALIGN: -a --alignment +takes_value "Selects alignment")
     )
 
     (@subcommand SV =>
