@@ -31,7 +31,6 @@ pub fn me_subcmd(
   matches: &ArgMatches
 ) -> anyResult<()> {
 
-
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // logging
@@ -116,7 +115,7 @@ pub fn me_subcmd(
     println!("\n{}\n{}{}", "Running Reference Genome module...".green(), "Reference file read: ".blue(), reference_file.cyan());
   }
 
-  modules::reference_genome::ref_controller(
+  modules::fasta_read::cache_controller::cache_controller(
     directory,
     reference_file,
     crg_chr_assembly,
@@ -127,17 +126,25 @@ pub fn me_subcmd(
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // mobile elements module
+  let cref_library = Arc::clone(&mutex_me_library);
   let cme_record_collection = Arc::clone(&mutex_record_collection);
+  let cme_library = Arc::clone(&mutex_me_library);
 
   if verbose {
     println!("\n{}\n{}{}", "Running Mobile Element module...".green(), "ME alignment file read: ".blue(), me_align.cyan());
   }
 
+  modules::fasta_read::cache_controller::cache_controller(
+    directory,
+    me_library_file,
+    cref_library,
+  )?;
+
   modules::mobile_elements::me_controller(
     directory,
     me_library_file,
     me_align,
-    mutex_me_library,
+    cme_library,
     cme_record_collection,
   )?;
 
