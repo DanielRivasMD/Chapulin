@@ -45,10 +45,10 @@ pub fn me_controller (
   )?;
 
   // load mobile element aligned reads
-  let me_aligned_file = format!("{}{}", directory, me_aligned_file);
+  let me_aligned_file_full = format!("{}{}", directory, me_aligned_file);
 
   me_aligned::me_identificator(
-    &me_aligned_file,
+    &me_aligned_file_full,
     hash_map_me_library,
     hash_map_collection,
   )?;
