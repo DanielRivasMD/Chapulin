@@ -2,6 +2,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
+use config::{Config};
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
@@ -15,15 +16,6 @@ use colored::*;
 
 // modules
 use crate::modules;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// crate utilities
-use crate::{
-  settings::{
-    config::SETTINGS,
-  },
-};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,29 +68,27 @@ pub fn sv_subcmd(
     println!("\n{}\n{}{}", "Setting up configuration...".green(), "Configuration file read: ".blue(), config.cyan());
   }
 
-  SETTINGS
-    .write().unwrap()
+  let mut settings = Config::default();
+  settings
     .merge(File::with_name(config))
     .context(ChapulinConfigError::NoConfigFile)?;
 
-  let directory: &'static str = SETTINGS
-    .read().unwrap()
-    .get("directory")
+  let settings_hm = settings.try_into::<HashMap<String, String>>()
+    .context(ChapulinConfigError::ConfigHashMap{ f: config.to_string() })?;
+
+  let directory = settings_hm.get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
 
-  let reference_file: &'static str = SETTINGS
-    .read().unwrap()
-    .get("reference")
+  let output = settings_hm.get("output")
+    .context(ChapulinConfigError::BadOutput)?;
+
+  let reference_file = settings_hm.get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
 
-  let pair_end_reference_alignment: &'static str = SETTINGS
-    .read().unwrap()
-    .get("pair_end_reference_alignment")
+  let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment")
     .context(ChapulinConfigError::BadPairedReferenceGenomeVar)?;
 
-  let expected_tlen = SETTINGS
-    .read().unwrap()
-    .get::<&str>("expected_tlen")
+  let expected_tlen = settings_hm.get("expected_tlen")
     .context(ChapulinConfigError::TODO)?
     .parse::<i32>()
     .context(ChapulinCommonError::Parsing)?;
@@ -149,13 +139,13 @@ pub fn sv_subcmd(
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // peak identification module
-  // let c_sv_record_collection = mutex_record_collection.clone();
-
   if verbose {
     println!("\n{}\n", "Running Peak Identification module...".green());
   }
 
   modules::peak_identification::pi_sv_controller(
+    output.to_string(),
+    directory.to_string(),
     mutex_record_collection,
     mutex_anchor_registry,
     mutex_chr_assembly,
