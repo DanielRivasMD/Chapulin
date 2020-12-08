@@ -50,6 +50,15 @@ fn main () -> anyResult<()> {
       \nStructural Variant (SV): performs read selection based on alignment data and variant calls by probability or a set threshold.
     ")
 
+    (@subcommand CC =>
+      (version: crate_version!())
+      (author: crate_authors!())
+      (about: "Cache Registering")
+      (@arg verbose: -v --verbose "Print test verbosely")
+      (@arg LOGGING: -l --log +takes_value "Print log")
+      (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
+    )
+
     (@subcommand ME =>
       (version: crate_version!())
       (author: crate_authors!())
@@ -90,7 +99,10 @@ fn main () -> anyResult<()> {
     controllers::sv_subcmd::sv_subcmd(matches)?;
   }
 
-// TODO: write a cache module
+  // CC controller
+  if let Some(matches) = matches.subcommand_matches("CC") {
+    controllers::cc_subcmd::cc_subcmd(matches)?;
+  }
 
   // // T controller
   // if let Some(matches) = matches.subcommand_matches("T") {
