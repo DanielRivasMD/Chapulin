@@ -102,16 +102,16 @@ pub fn sv_subcmd(
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // reference genome module
-  let c_rg_chr_assembly = mutex_chr_assembly.clone();
+  let crg_chr_assembly = Arc::clone(&mutex_chr_assembly);
 
   if verbose {
     println!("\n{}\n{}{}", "Running Reference Genome module...".green(), "Reference file read: ".blue(), reference_file.cyan());
   }
 
-  modules::reference_genome::ref_controller(
+  modules::fasta_read::cache_controller::cache_controller(
     directory,
     reference_file,
-    c_rg_chr_assembly,
+    crg_chr_assembly,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());

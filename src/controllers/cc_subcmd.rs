@@ -100,7 +100,7 @@ pub fn cc_subcmd(
     println!("\n{}\n{}{}", "Registering Reference Genome module...".green(), "Reference file read: ".blue(), reference_file.cyan());
   }
 
-  modules::reference_genome::ref_controller(
+  modules::fasta_read::cache_controller::cache_controller(
     directory,
     reference_file,
     crg_chr_assembly,
@@ -112,7 +112,6 @@ pub fn cc_subcmd(
 
   // mobile elements module
   let cref_library = Arc::clone(&mutex_me_library);
-
 
   if verbose {
     println!("\n{}\n{}{}", "Registering Mobile Element module...".green(), "ME alignment file read: ".blue(), me_align.cyan());
