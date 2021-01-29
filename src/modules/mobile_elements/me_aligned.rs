@@ -92,7 +92,7 @@ pub fn me_identificator(
     }
 
     // purge read pairs
-    if ! ( prev_read_id == read_id || prev_read_id == "" ) {
+    if ! ( prev_read_id == read_id || prev_read_id.is_empty() ) {
       // evaluate read batch
       if purge_switch {
         hm_record_collection
@@ -149,7 +149,7 @@ pub fn me_identificator(
         if let Some(current_record) = hm_record_collection
           .lock().unwrap()
           .get_mut(&read_id) {
-          if current_record.read2.sequence == "" {
+          if current_record.read2.sequence.is_empty() {
             load!(current_record, read1, record_line, me_size, mobel_orientation);
             if mobel_anchor { current_record.chranch = ChrAnchorEnum::Read2; }
           } else {

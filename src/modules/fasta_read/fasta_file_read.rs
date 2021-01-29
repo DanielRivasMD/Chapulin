@@ -42,7 +42,7 @@ pub fn fasta_reader(
       .context(ChapulinCommonError::RegistryLine)?;
 
     if record_line.starts_with('>') {
-      if current_chr != "" {
+      if !current_chr.is_empty() {
         fasta_record
           .lock().unwrap()
           .insert(current_chr, current_len);

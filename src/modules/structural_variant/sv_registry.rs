@@ -62,7 +62,7 @@ pub fn sv_mapper(
     let chr = record_line[2].to_string();
 
     // purge read pairs
-    if ! ( prev_read_id == read_id || prev_read_id == "" ) {
+    if ! ( prev_read_id == read_id || prev_read_id.is_empty() ) {
       // evaluate read batch
       if purge_switch {
           hm_collection
