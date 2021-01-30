@@ -48,9 +48,10 @@ fn main () -> anyResult<()> {
       \n\n\tAvailable subcommands are:
       \nMobile Element (ME): performs sequence similarity search to a customized mobile element library and insertion calls by probability or a set threshold.
       \nStructural Variant (SV): performs read selection based on alignment data and variant calls by probability or a set threshold.
+      \nCache Registering (CR): checks for reference genome and mobile element library cache in configuration directory. In case cahces are not found, reads files and writes cache.
     ")
 
-    (@subcommand CC =>
+    (@subcommand CR =>
       (version: crate_version!())
       (author: crate_authors!())
       (about: "Cache Registering")
@@ -100,8 +101,8 @@ fn main () -> anyResult<()> {
   }
 
   // CC controller
-  if let Some(matches) = matches.subcommand_matches("CC") {
-    controllers::cc_subcmd::cc_subcmd(matches)?;
+  if let Some(matches) = matches.subcommand_matches("CR") {
+    controllers::cr_subcmd::cr_subcmd(matches)?;
   }
 
   // // T controller

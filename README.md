@@ -30,11 +30,14 @@
 ## Overview
 
 
-Chapulin offers two different modes: 
-  
-  - Mobile Element identification (ME): 
+
+As such, **Chapulin** offers two different scanning modes:
+
+  - Mobile Element identification (ME):
 
   - Structural Variant identification (SV):
+
+**Chapulin** also offers a third mode, Cache Registering (CR), for writting cache files to read from. This is useful in case you might want to analyze several individuals using a single mobile element library or a single reference genome.
 
 
 ## Installation
@@ -110,26 +113,26 @@ cargo test
 
 ### Usage
 
-Use `chapulin -h` or `chapulin --help` to display help on commandline. 
+Use `chapulin -h` or `chapulin --help` to display help on commandline.
 
 ```
 Chapulin 0.1.0
 Daniel Rivas <danielrivasmd@gmail.com>
 
-      
+
 Chapulin: Mobile Element Identification
-      
+
 Software for mobile element identification in resequenced short-read data with a reference genome.
-      
+
 
   Available subcommands are:
-      
-Mobile Element (ME): performs sequence similarity search to a customized mobile element library and insertion calls by
-probability or a set threshold.
-      
-Structural Variant (SV): performs read selection based on alignment data and variant calls by probability or a set
-threshold.
-    
+
+Mobile Element (ME): performs sequence similarity search to a customized mobile element library and insertion calls by probability or a set threshold.
+
+Structural Variant (SV): performs read selection based on alignment data and variant calls by probability or a set threshold.
+
+Cache Registering (CR): checks for reference genome and mobile element library cache in configuration directory. In case caches are not found, reads files and writes cache.
+
 
 USAGE:
     chapulin [SUBCOMMAND]
