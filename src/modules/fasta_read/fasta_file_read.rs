@@ -58,6 +58,8 @@ pub fn fasta_reader(
     .lock().unwrap()
     .insert(current_chr, current_len as f64);
 
+  info!("Reading fasta: {}", ref_seq);
+
   Ok(())
 }
 

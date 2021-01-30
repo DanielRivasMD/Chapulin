@@ -18,6 +18,7 @@ use crate::modules::fasta_read::fasta_cache_write;
 
 
 pub fn cache_controller (
+  subcmd: &str,
   directory: &str,
   fasta_file: &str,
   hash_map_fasta: Arc<Mutex<HashMap<String, f64>>>,
@@ -28,11 +29,19 @@ pub fn cache_controller (
 
   if Path::new(&ref_cache).exists() {
 
-    // read from cache
-    fasta_cache_read::read_cache(
-      &ref_cache,
-      hash_map_fasta,
-    )?;
+    if subcmd == "CR" {
+
+      info!("Cache exists: {}", ref_cache);
+
+    }else {
+
+      // read from cache
+      fasta_cache_read::read_cache(
+        &ref_cache,
+        hash_map_fasta,
+      )?;
+
+    }
 
   } else {
 

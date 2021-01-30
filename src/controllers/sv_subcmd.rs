@@ -33,6 +33,7 @@ pub fn sv_subcmd(
   matches: &ArgMatches
 ) -> anyResult<()> {
 
+  let subcmd = "SV";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -109,6 +110,7 @@ pub fn sv_subcmd(
   }
 
   modules::fasta_read::cache_controller::cache_controller(
+    subcmd,
     directory,
     reference_file,
     crg_chr_assembly,

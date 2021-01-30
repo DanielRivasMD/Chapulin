@@ -31,6 +31,8 @@ pub fn me_subcmd(
   matches: &ArgMatches
 ) -> anyResult<()> {
 
+  let subcmd = "ME";
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // logging
@@ -116,6 +118,7 @@ pub fn me_subcmd(
   }
 
   modules::fasta_read::cache_controller::cache_controller(
+    subcmd,
     directory,
     reference_file,
     crg_chr_assembly,
@@ -135,6 +138,7 @@ pub fn me_subcmd(
   }
 
   modules::fasta_read::cache_controller::cache_controller(
+    subcmd,
     directory,
     me_library_file,
     cref_library,
@@ -142,7 +146,6 @@ pub fn me_subcmd(
 
   modules::mobile_elements::me_controller(
     directory,
-    me_library_file,
     me_align,
     cme_library,
     cme_record_collection,

@@ -31,7 +31,8 @@ pub fn cr_subcmd(
   matches: &ArgMatches
 ) -> anyResult<()> {
 
-// TODO: write an option to only write caches
+  let subcmd = "CR";
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // logging
@@ -101,6 +102,7 @@ pub fn cr_subcmd(
   }
 
   modules::fasta_read::cache_controller::cache_controller(
+    subcmd,
     directory,
     reference_file,
     crg_chr_assembly,
@@ -118,6 +120,7 @@ pub fn cr_subcmd(
   }
 
   modules::fasta_read::cache_controller::cache_controller(
+    subcmd,
     directory,
     me_library_file,
     cref_library,

@@ -35,7 +35,7 @@ pub fn write_cache(
       .context(ChapulinCommonError::WriteFile{ f: cl_write })?;
   }
 
-  info!("Writing cache");
+  info!("Writing cache: {}", ref_cache);
 
   Ok(())
 }
