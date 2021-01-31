@@ -51,20 +51,11 @@ fn main () -> anyResult<()> {
       \nCache Registering (CR): checks for reference genome and mobile element library cache in configuration directory. In case cahces are not found, reads files and writes cache.
     ")
 
-    (@subcommand CR =>
-      (version: crate_version!())
-      (author: crate_authors!())
-      (about: "Cache Registering")
-      (@arg verbose: -v --verbose "Print test verbosely")
-      (@arg LOGGING: -l --log +takes_value "Print log")
-      (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
-    )
-
     (@subcommand ME =>
       (version: crate_version!())
       (author: crate_authors!())
       (about: "Mobile Element Identification")
-      (@arg verbose: -v --verbose "Print test verbosely")
+      (@arg verbose: -v --verbose "Print verbosely")
       (@arg LOGGING: -l --log +takes_value "Print log")
       (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
       (@arg CHRALIGN: -a --alignment +takes_value "Selects alignment")
@@ -74,9 +65,28 @@ fn main () -> anyResult<()> {
       (version: crate_version!())
       (author: crate_authors!())
       (about: "Structural Variant Identification")
-      (@arg verbose: -v --verbose "Print test verbosely")
+      (@arg verbose: -v --verbose "Print verbosely")
       (@arg LOGGING: -l --log +takes_value "Print log")
       (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
+    )
+
+    (@subcommand CR =>
+      (version: crate_version!())
+      (author: crate_authors!())
+      (about: "Cache Registering")
+      (@arg verbose: -v --verbose "Print verbosely")
+      (@arg LOGGING: -l --log +takes_value "Print log")
+      (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
+    )
+
+    (@subcommand GC =>
+      (version: crate_version!())
+      (author: crate_authors!())
+      (about: "Generate configuration")
+      (@arg verbose: -v --verbose "Print verbosely")
+      (@arg force: -f --force "Print verbosely")
+      (@arg LOGGING: -l --log +takes_value "Print log")
+      (@arg CONFIG: -c --config +takes_value "Selects config file")
     )
 
     (@subcommand T =>
@@ -109,6 +119,10 @@ fn main () -> anyResult<()> {
   // if let Some(matches) = matches.subcommand_matches("T") {
 
   //   controllers::file_test::ftest(matches)?;
+  // GC controller
+  if let Some(matches) = matches.subcommand_matches("GC") {
+    controllers::gc_subcmd::gc_subcmd(matches)?;
+  }
 
   // }
 
