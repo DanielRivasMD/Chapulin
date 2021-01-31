@@ -4,8 +4,6 @@
 // standard libraries
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
-use std::path::{Path};
-use std::fs::{create_dir_all};
 use std::{thread};
 use anyhow::Result as anyResult;
 
@@ -36,24 +34,18 @@ use crate::{
 
 pub fn pi_me_controller(
   output: String,
-  directory: String,
+  errata: String,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
-
-  // create output file
-  let out_dir = format!("{}{}", directory, output);
-  if ! Path::new(&out_dir).exists() {
-    create_dir_all(&out_dir)?;
-  }
 
   let chromosome_vec = chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 
   for okey in chromosome_vec {
 
     let coutput = output.clone();
-    let cdirectory = directory.clone();
+    let cerrata = errata.clone();
     let chash_map_collection = hash_map_collection.clone();
     let chash_map_anchor = hash_map_anchor.clone();
     let chash_map_chr_assembly = hash_map_chr_assembly.clone();
@@ -62,7 +54,7 @@ pub fn pi_me_controller(
       pi_me_mapping::pi_me_identifier(
         &okey,
         &coutput,
-        &cdirectory,
+        &cerrata,
         chash_map_collection,
         chash_map_anchor,
         chash_map_chr_assembly,
@@ -79,18 +71,12 @@ pub fn pi_me_controller(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub fn pi_sv_controller(
-  output: String,
-  directory: String,
+  _output: String,
+  _errata: String,
   hash_map_collection: Arc<Mutex<HashMap<String, SVChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
   ) -> anyResult<()> {
-
-  // create output file
-  let out_dir = format!("{}{}", directory, output);
-  if ! Path::new(&out_dir).exists() {
-    create_dir_all(&out_dir)?;
-  }
 
   let chromosome_vec = chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 

@@ -8,6 +8,8 @@ use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
 use clap::{ArgMatches};
 use config::{File};
+use std::path::{Path};
+use std::fs::{create_dir_all};
 use anyhow::{Context};
 use anyhow::Result as anyResult;
 use colored::*;
@@ -84,6 +86,9 @@ pub fn me_subcmd(
   let output = settings_hm.get("output")
     .context(ChapulinConfigError::BadOutput)?;
 
+  let errata = settings_hm.get("error")
+    .context(ChapulinConfigError::BadError)?;
+
   let reference_file = settings_hm.get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
 
@@ -98,6 +103,20 @@ pub fn me_subcmd(
 
   let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment")
     .context(ChapulinConfigError::BadPairedReferenceGenomeVar)?;
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // create output path
+  let out_dir = format!("{}{}", directory, output);
+  if ! Path::new(&out_dir).exists() {
+    create_dir_all(&out_dir)?;
+  }
+
+  // create error path
+  let err_dir = format!("{}{}", directory, errata);
+  if ! Path::new(&err_dir).exists() {
+    create_dir_all(&err_dir)?;
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -168,6 +187,7 @@ pub fn me_subcmd(
       modules::chromosomal_loci::cl_single_controller(
         directory.to_string(),
         ref_align.to_string(),
+        errata.to_string(),
         ccl_record_collection,
         ccl_anchor_registry,
       )?;
@@ -177,12 +197,13 @@ pub fn me_subcmd(
         println!("\n{}\n{}{}", "Running Chromosomal Loci module...".green(), "Chromosomal alignment file read: ".blue(), pair_end_reference_alignment.cyan());
       }
 
-    modules::chromosomal_loci::cl_paired_controller(
-      directory.to_string(),
-      pair_end_reference_alignment.to_string(),
-      ccl_record_collection,
-      ccl_anchor_registry,
-    )?;
+      modules::chromosomal_loci::cl_paired_controller(
+        directory.to_string(),
+        pair_end_reference_alignment.to_string(),
+        errata.to_string(),
+        ccl_record_collection,
+        ccl_anchor_registry,
+      )?;
     },
     _ => ()
   }
@@ -197,8 +218,8 @@ pub fn me_subcmd(
   }
 
   modules::peak_identification::pi_me_controller(
-    output.to_string(),
-    directory.to_string(),
+    out_dir,
+    err_dir,
     mutex_record_collection,
     mutex_anchor_registry,
     mutex_chr_assembly,

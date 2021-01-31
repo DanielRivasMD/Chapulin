@@ -34,6 +34,7 @@ use crate::{
 pub fn cl_single_controller (
   directory: String,
   prefix: String,
+  errata: String,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> anyResult<()> {
@@ -43,6 +44,7 @@ pub fn cl_single_controller (
 
     let cdirectory = directory.clone();
     let cprefix = prefix.clone();
+    let cerrata = errata.clone();
     let c_hash_map_collection = hash_map_collection.clone();
     let c_hash_map_anchor = hash_map_anchor.clone();
 
@@ -53,6 +55,7 @@ pub fn cl_single_controller (
 
         cl_aligned::cl_mapper(
           &cl_aligned_file,
+          &cerrata,
           c_hash_map_collection,
           c_hash_map_anchor,
         ).expect("TODO thread error");
@@ -69,6 +72,7 @@ pub fn cl_single_controller (
 pub fn cl_paired_controller (
   directory: String,
   prefix: String,
+  errata: String,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> anyResult<()> {
@@ -77,6 +81,7 @@ pub fn cl_paired_controller (
 
   cl_aligned::cl_mapper(
     &cl_aligned_file,
+    &errata,
     hash_map_collection,
     hash_map_anchor,
   )?;

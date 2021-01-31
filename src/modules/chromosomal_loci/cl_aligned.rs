@@ -5,6 +5,8 @@
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
 use std::str::{from_utf8};
+use std::fs::{File};
+use std::io::{Write};
 use anyhow::{Context};
 use anyhow::Result as anyResult;
 
@@ -37,9 +39,13 @@ use crate::error::{
 
 pub fn cl_mapper(
   cl_bam_file: &str,
+  errata: &str,
   hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> anyResult<()> {
+
+  let fl_write = format!("{}.err", errata);
+  let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile{ f: fl_write })?;
 
   // load file
   let mut lines = byte_file_reader(&cl_bam_file)?;
@@ -102,9 +108,9 @@ pub fn cl_mapper(
         }
       }
 
-      // TODO: write no found record to error file
-    // } else {
     //   ic!(record_line);
+    } else {
+      fl.write_all(record_line[0].to_string().as_bytes()).context(ChapulinCommonError::WriteFile{ f: record_line[0].to_string() })?;
     }
   }
 

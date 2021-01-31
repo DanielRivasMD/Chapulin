@@ -4,10 +4,10 @@
 // standard libraries
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
+use std::fs::{File};
+use std::io::{Write};
 use anyhow::{Context};
 use anyhow::Result as anyResult;
-use std::fs::{File};
-use std::io::Write;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -42,7 +42,7 @@ use crate::error::{
 pub fn pi_me_identifier (
   ikey: &str,
   output: &str,
-  directory: &str,
+  _errata: &str,
   hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
@@ -56,7 +56,7 @@ pub fn pi_me_identifier (
 
   // TODO: implement parallel iteration here
 
-  let fl_write = format!("{}{}{}.csv", directory, output, ikey);
+  let fl_write = format!("{}{}.csv", output, ikey);
   let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile{ f: fl_write })?;
 
   for strand in STRAND_VEC.iter() {
