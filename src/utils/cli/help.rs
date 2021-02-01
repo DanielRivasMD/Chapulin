@@ -1,12 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use clap::{
-  App,
-  Arg,
-  crate_authors,
-  crate_version,
-};
+use clap::{App, Arg, crate_authors, crate_version};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -147,6 +142,34 @@ pub fn cli_chapulin() -> App<'static> {
         .short('f')
         .long("force")
         .about("Overwrite configuration")
+      )
+    )
+
+    .subcommand(App::new("AC")
+      .version(crate_version!())
+      .author(crate_authors!())
+      .about("AutoCompletion")
+      .arg(
+        Arg::new("verbose")
+        .short('v')
+        .long("verbose")
+        .about("Prints verbosely")
+      )
+      .arg(
+        Arg::new("LOGGING")
+        .short('l')
+        .long("log")
+        .about("Prints log")
+        .takes_value(true)
+      )
+      .arg(
+        Arg::new("SHELL")
+        .short('s')
+        .long("shell")
+        .about("Selects shell")
+        .required(true)
+        .takes_value(true)
+        .possible_values(&["bash", "elvish", "fish", "powershell", "zsh"])
       )
     )
 

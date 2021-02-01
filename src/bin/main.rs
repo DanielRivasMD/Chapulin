@@ -68,6 +68,11 @@ fn main () -> anyResult<()> {
     controllers::gc_subcmd::gc_subcmd(matches)?;
   }
 
+  // AC controller
+  if let Some(matches) = matches.subcommand_matches("AC") {
+    controllers::ac_subcmd::ac_subcmd(matches)?;
+  }
+
   Ok(())
 }
 
