@@ -179,6 +179,7 @@ pub fn me_subcmd(
   let ccl_anchor_registry = Arc::clone(&mutex_anchor_registry);
 
   match chr_align {
+
     "single" => {
       if verbose {
         println!("\n{}\n{}{}", "Running Chromosomal Loci module...".green(), "Chromosomal alignment file read: ".blue(), ref_align.cyan());
@@ -192,6 +193,7 @@ pub fn me_subcmd(
         ccl_anchor_registry,
       )?;
     },
+
     "paired" => {
       if verbose {
         println!("\n{}\n{}{}", "Running Chromosomal Loci module...".green(), "Chromosomal alignment file read: ".blue(), pair_end_reference_alignment.cyan());
@@ -205,7 +207,9 @@ pub fn me_subcmd(
         ccl_anchor_registry,
       )?;
     },
+
     _ => ()
+
   }
 
   info!("{:?}", now.elapsed().unwrap());

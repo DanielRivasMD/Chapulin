@@ -4,8 +4,8 @@
 // standard libraries
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
+use std::path::{Path};
 use anyhow::Result as anyResult;
-use std::path::Path;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
