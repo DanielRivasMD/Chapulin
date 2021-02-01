@@ -3,11 +3,22 @@
 
 /// Chapulin wrapper
 use chapulin::{*};
-use clap::{
-  clap_app,
-  crate_authors,
-  crate_version,
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// standard libraries
+use anyhow::Result as anyResult;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// crate utilities
+use crate::{
+  utils::cli::help::{
+    cli_chapulin,
+  },
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO: update tool information
 
@@ -30,80 +41,17 @@ use clap::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// standard libraries
-use anyhow::Result as anyResult;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 fn main () -> anyResult<()> {
 
-  // read configuration from file
-  let matches = clap_app!(Chapulin =>
-    (version: crate_version!())
-    (author: crate_authors!())
-    (about: "
-      \nChapulin: Mobile Element Identification
-      \nSoftware for mobile element identification in resequenced short-read data with a reference genome.
-      \n\n\tAvailable subcommands are:
-      \nMobile Element (ME): performs sequence similarity search to a customized mobile element library and insertion calls by probability or a set threshold.
-      \nStructural Variant (SV): performs read selection based on alignment data and variant calls by probability or a set threshold.
-      \nCache Registering (CR): checks for reference genome and mobile element library cache in configuration directory. In case cahces are not found, reads files and writes cache.
-    ")
-
-    (@subcommand ME =>
-      (version: crate_version!())
-      (author: crate_authors!())
-      (about: "Mobile Element Identification")
-      (@arg verbose: -v --verbose "Print verbosely")
-      (@arg LOGGING: -l --log +takes_value "Print log")
-      (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
-      (@arg CHRALIGN: -a --alignment +takes_value "Selects alignment")
-    )
-
-    (@subcommand SV =>
-      (version: crate_version!())
-      (author: crate_authors!())
-      (about: "Structural Variant Identification")
-      (@arg verbose: -v --verbose "Print verbosely")
-      (@arg LOGGING: -l --log +takes_value "Print log")
-      (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
-    )
-
-    (@subcommand CR =>
-      (version: crate_version!())
-      (author: crate_authors!())
-      (about: "Cache Registering")
-      (@arg verbose: -v --verbose "Print verbosely")
-      (@arg LOGGING: -l --log +takes_value "Print log")
-      (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
-    )
-
-    (@subcommand GC =>
-      (version: crate_version!())
-      (author: crate_authors!())
-      (about: "Generate configuration")
-      (@arg verbose: -v --verbose "Print verbosely")
-      (@arg force: -f --force "Print verbosely")
-      (@arg LOGGING: -l --log +takes_value "Print log")
-      (@arg CONFIG: -c --config +takes_value "Selects config file")
-    )
-
-    (@subcommand T =>
-      (version: crate_version!())
-      (author: crate_authors!())
-      (about: "Testing")
-      (@arg verbose: -v --verbose "Print test verbosely")
-      (@arg LOGGING: -l --log +takes_value "Print log")
-      (@arg CONFIG: -c --config +takes_value "Sets a custom config file")
-    )
-  )
-  .get_matches();
+  let matches = cli_chapulin().get_matches();
 
   // ME controller
   if let Some(matches) = matches.subcommand_matches("ME") {
     controllers::me_subcmd::me_subcmd(matches)?;
   }
+
+  // TODO: add single-end reference read support by interpreting CIGAR
 
   // SV controller
   if let Some(matches) = matches.subcommand_matches("SV") {
@@ -115,16 +63,10 @@ fn main () -> anyResult<()> {
     controllers::cr_subcmd::cr_subcmd(matches)?;
   }
 
-  // // T controller
-  // if let Some(matches) = matches.subcommand_matches("T") {
-
-  //   controllers::file_test::ftest(matches)?;
   // GC controller
   if let Some(matches) = matches.subcommand_matches("GC") {
     controllers::gc_subcmd::gc_subcmd(matches)?;
   }
-
-  // }
 
   Ok(())
 }
