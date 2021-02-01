@@ -19,7 +19,8 @@ path = "src/chapulin.rs"
 
 [dependencies]
 libc = "0.2.70"
-clap = "2.33.1"
+clap = "3.0.0-beta.2"
+clap_generate = "3.0.0-beta.2"
 config = "0.10.1"
 bytelines = "2.2"
 derive-new = "0.5"
