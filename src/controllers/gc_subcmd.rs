@@ -2,6 +2,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
+use std::process::{exit};
 use std::time::{SystemTime};
 use clap::{ArgMatches};
 use std::fs::{File};
@@ -56,6 +57,8 @@ pub fn gc_subcmd(
   // collect settings
   let verbose = matches.is_present("verbose");
 
+  let dry_run = matches.is_present("dry");
+
   let force = matches.is_present("force");
 
   let now = SystemTime::now();
@@ -72,15 +75,37 @@ pub fn gc_subcmd(
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  if dry_run {
+
+    print!(
+      "\n{}\n{:<30}{}\n",
+      "Displaying settings".green(),
+      "Configuration file: ".blue(), config.cyan(),
+      // "Directory: ".blue(), directory.cyan(),
+      // "Output: ".blue(), output.cyan(),
+      // "Error: ".blue(), errata.cyan(),
+      // "Reference file: ".blue(), reference_file.cyan(),
+      // "Mobile element library: ".blue(), me_library_file.cyan(),
+      // "Mobile element alignment: ".blue(), me_align.cyan(),
+      // "Reference alignment: ".blue(), ref_align.cyan(),
+      // "Paired end aligment: ".blue(), pair_end_reference_alignment.cyan(),
+    );
+
+    exit(0);
+
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
   let fl_conf = format!("{}.toml", config);
 
   if Path::new(&fl_conf).exists() {
-    info!("Please observe that path exists: {}", config);
+    print!("\n{}{}\n", "Please observe that path exists: ".blue(), config.cyan());
     if force {
-      info!("Excesive force. Overwritting!", );
+      print!("\n{}\n", "Excesive force. Overwritting!".blue());
       write_conf(fl_conf)?;
     } else {
-      info!("If you wish to overwrite, run command with option --force", );
+      print!("\n{}{}\n", "If you wish to overwrite, run command with option ".blue(), "--force".cyan());
     }
   } else {
     write_conf(fl_conf)?;
@@ -99,7 +124,7 @@ pub fn gc_subcmd(
 fn write_conf(
   fl_write: String,
 ) -> anyResult<()> {
-  info!("Writting now!", );
+  info!("Writting...", );
 
   let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile{ f: fl_write })?;
 
