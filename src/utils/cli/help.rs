@@ -45,6 +45,7 @@ pub fn cli_chapulin() -> App<'static> {
         .short('c')
         .long("config")
         .about("Selects config file")
+        .required(true)
         .takes_value(true)
       )
       .arg(
@@ -87,6 +88,7 @@ pub fn cli_chapulin() -> App<'static> {
         .short('c')
         .long("config")
         .about("Selects config file")
+        .required(true)
         .takes_value(true)
       )
       .arg(
@@ -119,6 +121,7 @@ pub fn cli_chapulin() -> App<'static> {
         .short('c')
         .long("config")
         .about("Selects config file")
+        .required(true)
         .takes_value(true)
       )
       .arg(
@@ -151,6 +154,7 @@ pub fn cli_chapulin() -> App<'static> {
         .short('c')
         .long("config")
         .about("Selects config file")
+        .required(true)
         .takes_value(true)
       )
       .arg(
