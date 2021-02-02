@@ -59,6 +59,8 @@ pub fn me_subcmd(
   // collect settings
   let verbose = matches.is_present("verbose");
 
+  let dry_run = matches.is_present("DRY");
+
   let now = SystemTime::now();
   pretty_env_logger::init();
 
@@ -103,6 +105,26 @@ pub fn me_subcmd(
 
   let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment")
     .context(ChapulinConfigError::BadPairedReferenceGenomeVar)?;
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  if dry_run {
+
+    println!(
+      "\n{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}",
+      "Displaying settings".green(),
+      "Configuration file: ".blue(), config.cyan(),
+      "Directory: ".blue(), directory.cyan(),
+      "Output: ".blue(), output.cyan(),
+      "Error: ".blue(), errata.cyan(),
+      "Reference file: ".blue(), reference_file.cyan(),
+      "Mobile element library: ".blue(), me_library_file.cyan(),
+      "Mobile element alignment: ".blue(), me_align.cyan(),
+      "Reference alignment: ".blue(), ref_align.cyan(),
+      "Paired end aligment: ".blue(), pair_end_reference_alignment.cyan(),
+    );
+
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
