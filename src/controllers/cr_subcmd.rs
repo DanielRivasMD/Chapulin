@@ -4,6 +4,7 @@
 // standard libraries
 use config::{Config};
 use std::collections::{HashMap};
+use std::process::{exit};
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
 use clap::{ArgMatches};
@@ -57,6 +58,8 @@ pub fn cr_subcmd(
   // collect settings
   let verbose = matches.is_present("verbose");
 
+  let dry_run = matches.is_present("dry");
+
   let now = SystemTime::now();
   pretty_env_logger::init();
 
@@ -78,14 +81,36 @@ pub fn cr_subcmd(
   let directory = settings_hm.get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
 
+  let output = settings_hm.get("output")
+    .context(ChapulinConfigError::BadOutput)?;
+
+  let errata = settings_hm.get("error")
+    .context(ChapulinConfigError::BadError)?;
+
   let reference_file = settings_hm.get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
 
   let me_library_file = settings_hm.get("mobile_element_library")
     .context(ChapulinConfigError::BadMELibVar)?;
 
-  let me_align = settings_hm.get("mobile_element_alignment")
-    .context(ChapulinConfigError::BadMEAlignVar)?;
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  if dry_run {
+
+    print!(
+      "\n{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n",
+      "Displaying settings".green(),
+      "Configuration file: ".blue(), config.cyan(),
+      "Directory: ".blue(), directory.cyan(),
+      "Output: ".blue(), output.cyan(),
+      "Error: ".blue(), errata.cyan(),
+      "Reference file: ".blue(), reference_file.cyan(),
+      "Mobile element library: ".blue(), me_library_file.cyan(),
+    );
+
+    exit(0);
+
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -116,7 +141,7 @@ pub fn cr_subcmd(
   let cref_library = Arc::clone(&mutex_me_library);
 
   if verbose {
-    println!("\n{}\n{}{}", "Registering Mobile Element module...".green(), "ME alignment file read: ".blue(), me_align.cyan());
+    println!("\n{}\n{}{}", "Registering Mobile Element module...".green(), "Mobile element lirabry read: ".blue(), me_library_file.cyan());
   }
 
   modules::fasta_read::cache_controller::cache_controller(
