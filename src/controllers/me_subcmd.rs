@@ -4,6 +4,7 @@
 // standard libraries
 use config::{Config};
 use std::collections::{HashMap};
+use std::process::{exit};
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime};
 use clap::{ArgMatches};
@@ -123,6 +124,8 @@ pub fn me_subcmd(
       "Reference alignment: ".blue(), ref_align.cyan(),
       "Paired end aligment: ".blue(), pair_end_reference_alignment.cyan(),
     );
+
+    exit(0);
 
   }
 
