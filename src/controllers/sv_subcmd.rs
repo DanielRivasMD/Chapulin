@@ -38,10 +38,10 @@ pub fn sv_subcmd(
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // logging
-  if matches.is_present("LOGGING") {
+  if matches.is_present("logging") {
 
     let logging = matches
-      .value_of("LOGGING")
+      .value_of("logging")
       .context(ChapulinConfigError::TODO)?;
 
     match logging {
@@ -62,7 +62,7 @@ pub fn sv_subcmd(
   let now = SystemTime::now();
   pretty_env_logger::init();
 
-  let config = matches.value_of("CONFIG")
+  let config = matches.value_of("config")
     .context(ChapulinConfigError::EmptyConfigOption)?;
 
   if verbose {

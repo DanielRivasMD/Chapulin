@@ -35,10 +35,10 @@ pub fn gc_subcmd(
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // logging
-  if matches.is_present("LOGGING") {
+  if matches.is_present("logging") {
 
     let logging = matches
-      .value_of("LOGGING")
+      .value_of("logging")
       .context(ChapulinConfigError::TODO)?;
 
     match logging {
@@ -62,7 +62,7 @@ pub fn gc_subcmd(
   pretty_env_logger::init();
 
   let mut config = "chapulin_config".to_string();
-  if let Some(cname) = matches.value_of("CONFIG") {
+  if let Some(cname) = matches.value_of("config") {
     config = cname.to_string();
   }
 

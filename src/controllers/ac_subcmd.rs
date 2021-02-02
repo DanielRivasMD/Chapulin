@@ -63,7 +63,7 @@ pub fn ac_subcmd(
   pretty_env_logger::init();
 
   let shell = matches
-    .value_of("SHELL")
+    .value_of("shell")
     .context(ChapulinConfigError::TODO)?;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////

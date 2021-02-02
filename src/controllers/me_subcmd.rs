@@ -39,10 +39,10 @@ pub fn me_subcmd(
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // logging
-  if matches.is_present("LOGGING") {
+  if matches.is_present("logging") {
 
     let logging = matches
-      .value_of("LOGGING")
+      .value_of("logging")
       .context(ChapulinConfigError::TODO)?;
 
     match logging {
@@ -60,15 +60,15 @@ pub fn me_subcmd(
   // collect settings
   let verbose = matches.is_present("verbose");
 
-  let dry_run = matches.is_present("DRY");
+  let dry_run = matches.is_present("dry");
 
   let now = SystemTime::now();
   pretty_env_logger::init();
 
-  let config = matches.value_of("CONFIG")
+  let config = matches.value_of("config")
     .context(ChapulinConfigError::EmptyConfigOption)?;
 
-  let chr_align = matches.value_of("CHRALIGN")
+  let chr_align = matches.value_of("chralign")
     .unwrap();
 
   if verbose {
