@@ -5,6 +5,7 @@ use clap::{App, Arg, crate_authors, crate_version};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 pub fn cli_chapulin() -> App<'static> {
 
   App::new("chapulin")
@@ -16,14 +17,10 @@ pub fn cli_chapulin() -> App<'static> {
       \n\n\tAvailable subcommands are:
       \nMobile Element (ME): performs sequence similarity search to a customized mobile element library and insertion calls by probability or a set threshold.
       \nStructural Variant (SV): performs read selection based on alignment data and variant calls by probability or a set threshold.
-      \nCache Registering (CR): checks for reference genome and mobile element library cache in configuration directory. In case cahces are not found, reads files and writes cache.
+      \nCache Registering (CR): checks for reference genome and mobile element library cache in configuration directory. In case caches are not found, reads files and writes cache.
+      \nGenerate Configuration (GC): generates a configuration template. Observe that not all values from config file are used at all times.
+      \nAutoCompletion (AC): generates autocompletions to stdout for your shell. Pipe into a file and install to get help when using Chapulin. See `chapulin AC --manual` for details.
     ")
-    .arg(
-      Arg::new("verbose")
-      .short('v')
-      .long("verbose")
-      .about("Prints verbosely")
-    )
 
     .subcommand(App::new("ME")
       .version(crate_version!())
@@ -41,6 +38,7 @@ pub fn cli_chapulin() -> App<'static> {
         .long("log")
         .about("Prints log")
         .takes_value(true)
+        .possible_values(&["debug", "info", "warn", "error"])
       )
       .arg(
         Arg::new("config")
@@ -50,10 +48,15 @@ pub fn cli_chapulin() -> App<'static> {
         .takes_value(true)
       )
       .arg(
+        Arg::new("dry")
+        .long("dry-run")
+        .about("Display settings without running command")
+      )
+      .arg(
         Arg::new("chralign")
         .short('a')
         .long("alignment")
-        .about("Selects chromosomal alignment")
+        .about("Selects chromosomal alignment (default: paired)")
         .required(true)
         .takes_value(true)
         .default_value("paired")
@@ -77,6 +80,7 @@ pub fn cli_chapulin() -> App<'static> {
         .long("log")
         .about("Prints log")
         .takes_value(true)
+        .possible_values(&["debug", "info", "warn", "error"])
       )
       .arg(
         Arg::new("config")
@@ -84,6 +88,11 @@ pub fn cli_chapulin() -> App<'static> {
         .long("config")
         .about("Selects config file")
         .takes_value(true)
+      )
+      .arg(
+        Arg::new("dry")
+        .long("dry-run")
+        .about("Display settings without running command")
       )
     )
 
@@ -103,6 +112,7 @@ pub fn cli_chapulin() -> App<'static> {
         .long("log")
         .about("Prints log")
         .takes_value(true)
+        .possible_values(&["debug", "info", "warn", "error"])
       )
       .arg(
         Arg::new("config")
@@ -110,6 +120,11 @@ pub fn cli_chapulin() -> App<'static> {
         .long("config")
         .about("Selects config file")
         .takes_value(true)
+      )
+      .arg(
+        Arg::new("dry")
+        .long("dry-run")
+        .about("Display settings without running command")
       )
     )
 
@@ -129,6 +144,7 @@ pub fn cli_chapulin() -> App<'static> {
         .long("log")
         .about("Prints log")
         .takes_value(true)
+        .possible_values(&["debug", "info", "warn", "error"])
       )
       .arg(
         Arg::new("config")
@@ -141,7 +157,12 @@ pub fn cli_chapulin() -> App<'static> {
         Arg::new("force")
         .short('f')
         .long("force")
-        .about("Overwrite configuration")
+        .about("Use excesive force! Overwrite configuration")
+      )
+      .arg(
+        Arg::new("dry")
+        .long("dry-run")
+        .about("Display settings without running command")
       )
     )
 

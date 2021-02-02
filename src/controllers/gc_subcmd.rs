@@ -102,7 +102,7 @@ pub fn gc_subcmd(
   if Path::new(&fl_conf).exists() {
     print!("\n{}{}\n", "Please observe that path exists: ".blue(), config.cyan());
     if force {
-      print!("\n{}\n", "Excesive force. Overwritting!".blue());
+      print!("\n{}\n", "Overwritting!".blue());
       write_conf(fl_conf)?;
     } else {
       print!("\n{}{}\n", "If you wish to overwrite, run command with option ".blue(), "--force".cyan());
