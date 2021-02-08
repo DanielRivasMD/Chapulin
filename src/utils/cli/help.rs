@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use clap::{App, Arg, crate_authors, crate_version};
+use clap::{crate_authors, crate_version, App, Arg};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -15,17 +15,18 @@ pub fn cli_chapulin() -> App<'static> {
       \nChapulin: Mobile Element Identification
       \nSoftware for mobile element identification in resequenced short-read data with a reference genome.
       \n\n\tAvailable subcommands are:
-      \nMobile Element (ME): performs sequence similarity search to a customized mobile element library and insertion calls by probability or a set threshold.
-      \nStructural Variant (SV): performs read selection based on alignment data and variant calls by probability or a set threshold.
-      \nCache Registering (CR): checks for reference genome and mobile element library cache in configuration directory. In case caches are not found, reads files and writes cache.
-      \nGenerate Configuration (GC): generates a configuration template. Observe that not all values from config file are used at all times.
-      \nAutoCompletion (AC): generates autocompletions to stdout for your shell. Pipe into a file and install to get help when using Chapulin. See `chapulin AC --manual` for details.
+      \nMobile Element (ME): performs sequence similarity search to a customized mobile element library and insertion calls by probability or a set threshold. Aliases: 'me', 'MobileElement'.
+      \nStructural Variant (SV): performs read selection based on alignment data and variant calls by probability or a set threshold. Aliases: 'sv', 'StructuralVariant'.
+      \nCache Registering (CR): checks for reference genome and mobile element library cache in configuration directory. In case caches are not found, reads files and writes cache. Aliases: 'cr', 'CacheRegistering'.
+      \nGenerate Configuration (GC): generates a configuration template. Observe that not all values from config file are used at all times. Aliases: 'gc', 'GenerateConfiguration'.
+      \nAutoCompletion (AC): generates autocompletions to stdout for your shell. Pipe into a file and install to get help when using Chapulin. See `chapulin AC --manual` for details. Aliases: 'ac', AutoCompletion'.
     ")
 
     .subcommand(App::new("ME")
       .version(crate_version!())
       .author(crate_authors!())
       .about("Mobile Element Identification")
+      .aliases(&["me", "MobileElement"])
       .arg(
         Arg::new("verbose")
         .short('v')
@@ -69,6 +70,7 @@ pub fn cli_chapulin() -> App<'static> {
       .version(crate_version!())
       .author(crate_authors!())
       .about("Structural Variant Identification")
+      .aliases(&["sv", "StructuralVariant"])
       .arg(
         Arg::new("verbose")
         .short('v')
@@ -102,6 +104,7 @@ pub fn cli_chapulin() -> App<'static> {
       .version(crate_version!())
       .author(crate_authors!())
       .about("Cache Registering")
+      .aliases(&["cr", "CacheRegistering"])
       .arg(
         Arg::new("verbose")
         .short('v')
@@ -135,6 +138,7 @@ pub fn cli_chapulin() -> App<'static> {
       .version(crate_version!())
       .author(crate_authors!())
       .about("Generate Configuration")
+      .aliases(&["gc", "GenerateConfiguration"])
       .arg(
         Arg::new("verbose")
         .short('v')
@@ -174,6 +178,7 @@ pub fn cli_chapulin() -> App<'static> {
       .version(crate_version!())
       .author(crate_authors!())
       .about("AutoCompletion")
+      .aliases(&["ac", "AutoCompletion"])
       .arg(
         Arg::new("logging")
         .short('l')
