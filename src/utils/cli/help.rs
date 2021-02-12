@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use clap::{crate_authors, crate_version, App, Arg};
+use clap::{crate_authors, crate_version, App, AppSettings, Arg};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -11,6 +11,8 @@ pub fn cli_chapulin() -> App<'static> {
   App::new("chapulin")
     .version(crate_version!())
     .author(crate_authors!())
+    .setting(AppSettings::ArgRequiredElseHelp)
+    .setting(AppSettings::ColoredHelp)
     .about("
       \nChapulin: Mobile Element Identification
       \nSoftware for mobile element identification in resequenced short-read data with a reference genome.
