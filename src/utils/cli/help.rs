@@ -28,7 +28,7 @@ pub fn cli_chapulin() -> App<'static> {
       .version(crate_version!())
       .author(crate_authors!())
       .about("Mobile Element Identification")
-      .aliases(&["me", "MobileElement"])
+      .visible_aliases(&["me", "MobileElement"])
       .arg(
         Arg::new("verbose")
         .short('v')
@@ -72,7 +72,7 @@ pub fn cli_chapulin() -> App<'static> {
       .version(crate_version!())
       .author(crate_authors!())
       .about("Structural Variant Identification")
-      .aliases(&["sv", "StructuralVariant"])
+      .visible_aliases(&["sv", "StructuralVariant"])
       .arg(
         Arg::new("verbose")
         .short('v')
@@ -106,7 +106,7 @@ pub fn cli_chapulin() -> App<'static> {
       .version(crate_version!())
       .author(crate_authors!())
       .about("Cache Registering")
-      .aliases(&["cr", "CacheRegistering"])
+      .visible_aliases(&["cr", "CacheRegistering"])
       .arg(
         Arg::new("verbose")
         .short('v')
@@ -140,7 +140,7 @@ pub fn cli_chapulin() -> App<'static> {
       .version(crate_version!())
       .author(crate_authors!())
       .about("Generate Configuration")
-      .aliases(&["gc", "GenerateConfiguration"])
+      .visible_aliases(&["gc", "GenerateConfiguration"])
       .arg(
         Arg::new("verbose")
         .short('v')
@@ -180,7 +180,7 @@ pub fn cli_chapulin() -> App<'static> {
       .version(crate_version!())
       .author(crate_authors!())
       .about("AutoCompletion")
-      .aliases(&["ac", "AutoCompletion"])
+      .visible_aliases(&["ac", "AutoCompletion"])
       .arg(
         Arg::new("logging")
         .short('l')
