@@ -5,9 +5,8 @@ use clap::{crate_authors, crate_version, App, AppSettings, Arg};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+// TODO: set up cmd aliases
 pub fn cli_chapulin() -> App<'static> {
-
   App::new("chapulin")
     .version(crate_version!())
     .author(crate_authors!())
@@ -205,6 +204,11 @@ pub fn cli_chapulin() -> App<'static> {
         .about("Display instructions on how to install autocompletions")
       )
     )
+
+    .subcommand(App::new("T")
+      .version(crate_version!())
+      .author(crate_authors!())
+      .about("Testing")
       .arg(
         Arg::new("verbose")
         .short('v')
@@ -217,18 +221,17 @@ pub fn cli_chapulin() -> App<'static> {
         .long("log")
         .about("Prints log")
         .takes_value(true)
+        .possible_values(&["debug", "info", "warn", "error"])
       )
       .arg(
-        Arg::new("SHELL")
-        .short('s')
-        .long("shell")
-        .about("Selects shell")
+        Arg::new("config")
+        .short('c')
+        .long("config")
+        .about("Selects config file")
         .required(true)
         .takes_value(true)
-        .possible_values(&["bash", "elvish", "fish", "powershell", "zsh"])
       )
     )
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
