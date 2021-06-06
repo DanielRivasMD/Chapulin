@@ -55,3 +55,28 @@ impl MEChimericRead {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+use std::fmt;
+
+impl fmt::Display for MEChimericRead {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+
+    writeln!(
+      f,
+      "Chromosome: {}, Position: {}",
+      self.chr_read[0].chr,
+      self.chr_read[0].pos,
+    )
+  }
+}
+
+  // #[new(default)]
+  // pub sequence: String,
+  // #[new(default)]
+  // pub me_read: Vec<MEAnchor>,
+  // #[new(default)]
+  // pub chr_read: Vec<ChrAnchor>,
+  // #[new(default)]
+  // pub breakpoint: BreakPoint,
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
