@@ -18,7 +18,7 @@ use crate::{
   },
   utils::structures::{
     me_chimeric_pair::MEChimericPair,
-    me_library::MElibrary,
+    // me_library::MElibrary,
     me_anchor::MEAnchor,
     cigar::CIGAR,
     chr_anchor_enum::ChrAnchorEnum,
@@ -38,9 +38,11 @@ use crate::error::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+// TODO: extract features from fasta other than sequence length
 pub fn me_identificator(
   me_bam_file: &str,
   hm_me_collection: Arc<Mutex<HashMap<String, f64>>>,
+  // hm_me_collection: Arc<Mutex<HashMap<String, MElibrary>>>,
   hm_record_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
 ) -> anyResult<()> {
 
@@ -89,6 +91,7 @@ pub fn me_identificator(
       .lock().unwrap()
       .get(&mobel) {
         me_size = *me_record;
+        // me_size = me_record.me_size;
     }
 
     // purge read pairs
