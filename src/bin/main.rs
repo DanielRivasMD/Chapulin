@@ -1,8 +1,8 @@
-
+// TODO: add one chromosome from reference NA to example
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// Chapulin wrapper
-use chapulin::{*};
+use chapulin::*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -12,11 +12,7 @@ use anyhow::Result as anyResult;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate utilities
-use crate::{
-  utils::cli::help::{
-    cli_chapulin,
-  },
-};
+use crate::utils::cli::help::cli_chapulin;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,12 +34,9 @@ use crate::{
 /// create a safe escape in case of memory failures
 /// create unit tests
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-fn main () -> anyResult<()> {
-
+fn main() -> anyResult<()> {
   let matches = cli_chapulin().get_matches();
 
   // ME controller
@@ -52,6 +45,7 @@ fn main () -> anyResult<()> {
   }
 
   // TODO: add single-end reference read support by interpreting CIGAR
+  //  TODO: replace if statements for match / switch
 
   // SV controller
   if let Some(matches) = matches.subcommand_matches("SV") {
@@ -73,7 +67,14 @@ fn main () -> anyResult<()> {
     controllers::ac_subcmd::ac_subcmd(matches)?;
   }
 
+  // T controller
+  if let Some(matches) = matches.subcommand_matches("T") {
+    controllers::t_subcmd::t_subcmd(matches)?;
+  }
+
   Ok(())
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// error handling: what went wrong, why it went wrong & how to fix it
