@@ -3,6 +3,13 @@
 
 ![The Man in the Chapulin Hill](assets/ChapulinLogo.png)
 
+# MindReader
+
+<!-- [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://DanielRivasMD.github.io/Chapulin/stable) -->
+<!-- [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://DanielRivasMD.github.io/Chapulin/dev) -->
+<!-- [![Build Status](https://travis-ci.com/DanielRivasMD/Chapulin.svg?branch=master)](https://travis-ci.com/DanielRivasMD/Chapulin) -->
+<!-- [![Coverage](https://codecov.io/gh/DanielRivasMD/Chapulin/branch/master/graph/badge.svg)](https://codecov.io/gh/DanielRivasMD/Chapulin) -->
+
 ## Table of contents
 
 - [Overview](#overview)
