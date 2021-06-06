@@ -97,6 +97,7 @@ pub fn gc_subcmd(
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  // TODO: toml or not toml
   let fl_conf = format!("{}.toml", config);
 
   if Path::new(&fl_conf).exists() {

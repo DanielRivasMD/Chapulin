@@ -31,7 +31,7 @@ use crate::error::{
 
 
 pub fn me_subcmd(
-  matches: &ArgMatches
+  matches: &ArgMatches,
 ) -> anyResult<()> {
 
   let subcmd = "ME";
@@ -75,6 +75,8 @@ pub fn me_subcmd(
     println!("\n{}\n{}{}", "Setting up configuration...".green(), "Configuration file read: ".blue(), config.cyan());
   }
 
+  // TODO: parse RepeatModeler fasta names
+
   let mut settings = Config::default();
   settings
     .merge(File::with_name(config))
@@ -111,8 +113,8 @@ pub fn me_subcmd(
 
   if dry_run {
 
-    println!(
-      "\n{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}",
+    print!(
+      "\n{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n",
       "Displaying settings".green(),
       "Configuration file: ".blue(), config.cyan(),
       "Directory: ".blue(), directory.cyan(),
@@ -177,8 +179,9 @@ pub fn me_subcmd(
   let cme_record_collection = Arc::clone(&mutex_record_collection);
   let cme_library = Arc::clone(&mutex_me_library);
 
+  // TODO: commit these formating changes all together when update config
   if verbose {
-    println!("\n{}\n{}{}", "Running Mobile Element module...".green(), "ME alignment file read: ".blue(), me_align.cyan());
+    println!("\n{}\n{}{}\n{}{}", "Running Mobile Element module...".green(), "Mobile element lirabry read: ".blue(), me_library_file.cyan(), "ME alignment file read: ".blue(), me_align.cyan());
   }
 
   modules::fasta_read::cache_controller::cache_controller(
