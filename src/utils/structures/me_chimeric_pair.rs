@@ -47,4 +47,17 @@ impl MEChimericPair {
   }
 }
 
+use std::fmt;
+
+impl fmt::Display for MEChimericPair {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    writeln!(
+      f,
+      "Read 1: {}\n=====\nRead 2: {}",
+      self.read1,
+      self.read2,
+    )
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
