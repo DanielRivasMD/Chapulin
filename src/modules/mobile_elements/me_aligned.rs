@@ -10,6 +10,11 @@ use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// development libraries
+use genomic_strcutures::CIGAR;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // crate utilities
 use crate::{
   utils::functions::{
@@ -20,7 +25,7 @@ use crate::{
     me_chimeric_pair::MEChimericPair,
     // me_library::MElibrary,
     me_anchor::MEAnchor,
-    cigar::CIGAR,
+    // cigar::CIGAR,
     chr_anchor_enum::ChrAnchorEnum,
   },
   settings::{
@@ -81,8 +86,7 @@ pub fn me_identificator(
     let pv_position = record_line[3].parse::<i32>().context(ChapulinCommonError::Parsing)?;
     let pv_cigar = record_line[5].to_string();
     let dc_cigar = CIGAR::loader(&pv_cigar);
-    let adj_left_pos = dc_cigar.left_boundry(pv_position);
-    let adj_right_pos = dc_cigar.right_boundry(pv_position);
+    let (adj_left_pos, adj_right_pos) = dc_cigar.boundries(pv_position);
 
     // TODO: describe break point signature
 

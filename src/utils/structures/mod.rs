@@ -14,8 +14,6 @@ pub mod sv_chimeric_pair;
 
 pub mod chr_anchor;
 
-pub mod cigar;
-
 pub mod me_library;
   pub mod erv_annotations;
 
