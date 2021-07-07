@@ -3,12 +3,12 @@
 
 ![The Man in the Chapulin Hill](assets/ChapulinLogo.png)
 
-# MindReader
+<!--[![Latest Release](https://img.shields.io/github/release/DanielRivasMD/Chapulin.svg]]-->
 
-<!-- [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://DanielRivasMD.github.io/Chapulin/stable) -->
-<!-- [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://DanielRivasMD.github.io/Chapulin/dev) -->
-<!-- [![Build Status](https://travis-ci.com/DanielRivasMD/Chapulin.svg?branch=master)](https://travis-ci.com/DanielRivasMD/Chapulin) -->
-<!-- [![Coverage](https://codecov.io/gh/DanielRivasMD/Chapulin/branch/master/graph/badge.svg)](https://codecov.io/gh/DanielRivasMD/Chapulin) -->
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://DanielRivasMD.github.io/Chapulin/stable)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://DanielRivasMD.github.io/Chapulin/dev)
 
 ## Table of contents
 
@@ -235,7 +235,7 @@ Below you can find a config example. Please observe that you can also obtain a c
 ```
 
 
-<!-- TODO: 
+<!-- TODO:
 finish examples
 -->
 
