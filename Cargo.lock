@@ -13,7 +13,7 @@ dependencies = [
  "data-test",
  "derive-new",
  "fuzzy_logic",
- "genomic_strcutures",
+ "genomic_structures",
  "icecream",
  "indicatif",
  "lazy_static",
@@ -235,7 +235,7 @@ dependencies = [
 
 [[package]]
 name = "fuzzy_logic"
-name = "genomic_strcutures"
+name = "genomic_structures"
 version = "0.1.0"
 dependencies = [
  "data-test",

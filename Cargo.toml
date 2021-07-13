@@ -39,7 +39,7 @@ pretty_env_logger = "0.4"
 indicatif = "0.15.0"
 
 fuzzy_logic = {path = "../fuzzy_logic"}
-genomic_strcutures = {path = "../genomic_strcutures"}
+genomic_structures = {path = "../genomic_structures"}
 
 # NOTE: this import bugs `convert` implementation
 # anyhow = { version = "1.0", default-features = false }
