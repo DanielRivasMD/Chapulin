@@ -1,4 +1,3 @@
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO: change to defaults
@@ -9,7 +8,7 @@ pub const BIN_SIZE: i32 = 100;
 pub const TRANSLOCATION_DISTANCE: i32 = 1_000_000;
 
 // constants
-pub const STRAND_VEC: [&str; 4] = ["F5","F3", "R5", "R3"];
+pub const STRAND_VEC: [&str; 4] = ["F5", "F3", "R5", "R3"];
 pub const NO_FDR: usize = 25;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

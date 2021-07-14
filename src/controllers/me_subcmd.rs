@@ -1,19 +1,21 @@
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use config::{Config};
-use std::collections::{HashMap};
-use std::process::{exit};
-use std::sync::{Arc, Mutex};
-use std::time::{SystemTime};
-use clap::{ArgMatches};
-use config::{File};
-use std::path::{Path};
-use std::fs::{create_dir_all};
-use anyhow::{Context};
+use anyhow::Context;
 use anyhow::Result as anyResult;
+use clap::ArgMatches;
 use colored::*;
+use config::Config;
+use config::File;
+use std::collections::HashMap;
+use std::fs::create_dir_all;
+use std::path::Path;
+use std::process::exit;
+use std::sync::{
+  Arc,
+  Mutex,
+};
+use std::time::SystemTime;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -23,24 +25,17 @@ use crate::modules;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // error handler
-use crate::error::{
-  config_error::ChapulinConfigError,
-};
+use crate::error::config_error::ChapulinConfigError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-pub fn me_subcmd(
-  matches: &ArgMatches,
-) -> anyResult<()> {
-
+pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
   let subcmd = "ME";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // logging
   if matches.is_present("logging") {
-
     let logging = matches
       .value_of("logging")
       .context(ChapulinConfigError::TODO)?;
@@ -52,7 +47,6 @@ pub fn me_subcmd(
       "debug" => std::env::set_var("RUST_LOG", "debug"),
       _ => (),
     }
-
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,14 +59,19 @@ pub fn me_subcmd(
   let now = SystemTime::now();
   pretty_env_logger::init();
 
-  let config = matches.value_of("config")
+  let config = matches
+    .value_of("config")
     .context(ChapulinConfigError::EmptyConfigOption)?;
 
-  let chr_align = matches.value_of("chralign")
-    .unwrap();
+  let chr_align = matches.value_of("chralign").unwrap();
 
   if verbose {
-    println!("\n{}\n{}{}", "Setting up configuration...".green(), "Configuration file read: ".blue(), config.cyan());
+    println!(
+      "\n{}\n{}{}",
+      "Setting up configuration...".green(),
+      "Configuration file read: ".blue(),
+      config.cyan()
+    );
   }
 
   // TODO: parse RepeatModeler fasta names
@@ -82,37 +81,48 @@ pub fn me_subcmd(
     .merge(File::with_name(config))
     .context(ChapulinConfigError::NoConfigFile)?;
 
-  let settings_hm = settings.try_into::<HashMap<String, String>>()
-    .context(ChapulinConfigError::ConfigHashMap{ f: config.to_string() })?;
+  let settings_hm =
+    settings
+      .try_into::<HashMap<String, String>>()
+      .context(ChapulinConfigError::ConfigHashMap {
+        f: config.to_string(),
+      })?;
 
-  let directory = settings_hm.get("directory")
+  let directory = settings_hm
+    .get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
 
-  let output = settings_hm.get("output")
+  let output = settings_hm
+    .get("output")
     .context(ChapulinConfigError::BadOutput)?;
 
-  let errata = settings_hm.get("error")
+  let errata = settings_hm
+    .get("error")
     .context(ChapulinConfigError::BadError)?;
 
-  let reference_file = settings_hm.get("reference")
+  let reference_file = settings_hm
+    .get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
 
-  let me_library_file = settings_hm.get("mobile_element_library")
+  let me_library_file = settings_hm
+    .get("mobile_element_library")
     .context(ChapulinConfigError::BadMELibVar)?;
 
-  let me_align = settings_hm.get("mobile_element_alignment")
+  let me_align = settings_hm
+    .get("mobile_element_alignment")
     .context(ChapulinConfigError::BadMEAlignVar)?;
 
-  let ref_align = settings_hm.get("reference_genome_alignment")
+  let ref_align = settings_hm
+    .get("reference_genome_alignment")
     .context(ChapulinConfigError::BadSingleReferenceGenomeVar)?;
 
-  let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment")
+  let pair_end_reference_alignment = settings_hm
+    .get("pair_end_reference_alignment")
     .context(ChapulinConfigError::BadPairedReferenceGenomeVar)?;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   if dry_run {
-
     print!(
       "\n{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n",
       "Displaying settings".green(),
@@ -128,20 +138,19 @@ pub fn me_subcmd(
     );
 
     exit(0);
-
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // create output path
   let out_dir = format!("{}{}", directory, output);
-  if ! Path::new(&out_dir).exists() {
+  if !Path::new(&out_dir).exists() {
     create_dir_all(&out_dir)?;
   }
 
   // create error path
   let err_dir = format!("{}{}", directory, errata);
-  if ! Path::new(&err_dir).exists() {
+  if !Path::new(&err_dir).exists() {
     create_dir_all(&err_dir)?;
   }
 
@@ -160,7 +169,12 @@ pub fn me_subcmd(
   let crg_chr_assembly = Arc::clone(&mutex_chr_assembly);
 
   if verbose {
-    println!("\n{}\n{}{}", "Running Reference Genome module...".green(), "Reference file read: ".blue(), reference_file.cyan());
+    println!(
+      "\n{}\n{}{}",
+      "Running Reference Genome module...".green(),
+      "Reference file read: ".blue(),
+      reference_file.cyan()
+    );
   }
 
   modules::fasta_read::cache_controller::cache_controller(
@@ -181,7 +195,14 @@ pub fn me_subcmd(
 
   // TODO: commit these formating changes all together when update config
   if verbose {
-    println!("\n{}\n{}{}\n{}{}", "Running Mobile Element module...".green(), "Mobile element lirabry read: ".blue(), me_library_file.cyan(), "ME alignment file read: ".blue(), me_align.cyan());
+    println!(
+      "\n{}\n{}{}\n{}{}",
+      "Running Mobile Element module...".green(),
+      "Mobile element lirabry read: ".blue(),
+      me_library_file.cyan(),
+      "ME alignment file read: ".blue(),
+      me_align.cyan()
+    );
   }
 
   modules::fasta_read::cache_controller::cache_controller(
@@ -191,12 +212,7 @@ pub fn me_subcmd(
     cref_library,
   )?;
 
-  modules::mobile_elements::me_controller(
-    directory,
-    me_align,
-    cme_library,
-    cme_record_collection,
-  )?;
+  modules::mobile_elements::me_controller(directory, me_align, cme_library, cme_record_collection)?;
 
   info!("{:?}", now.elapsed().unwrap());
 
@@ -207,10 +223,14 @@ pub fn me_subcmd(
   let ccl_anchor_registry = Arc::clone(&mutex_anchor_registry);
 
   match chr_align {
-
     "single" => {
       if verbose {
-        println!("\n{}\n{}{}", "Running Chromosomal Loci module...".green(), "Chromosomal alignment file read: ".blue(), ref_align.cyan());
+        println!(
+          "\n{}\n{}{}",
+          "Running Chromosomal Loci module...".green(),
+          "Chromosomal alignment file read: ".blue(),
+          ref_align.cyan()
+        );
       }
 
       modules::chromosomal_loci::cl_single_controller(
@@ -220,11 +240,16 @@ pub fn me_subcmd(
         ccl_record_collection,
         ccl_anchor_registry,
       )?;
-    },
+    }
 
     "paired" => {
       if verbose {
-        println!("\n{}\n{}{}", "Running Chromosomal Loci module...".green(), "Chromosomal alignment file read: ".blue(), pair_end_reference_alignment.cyan());
+        println!(
+          "\n{}\n{}{}",
+          "Running Chromosomal Loci module...".green(),
+          "Chromosomal alignment file read: ".blue(),
+          pair_end_reference_alignment.cyan()
+        );
       }
 
       modules::chromosomal_loci::cl_paired_controller(
@@ -234,10 +259,9 @@ pub fn me_subcmd(
         ccl_record_collection,
         ccl_anchor_registry,
       )?;
-    },
+    }
 
-    _ => ()
-
+    _ => (),
   }
 
   info!("{:?}", now.elapsed().unwrap());

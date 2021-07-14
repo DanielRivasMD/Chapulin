@@ -1,9 +1,20 @@
-use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
+use indicatif::{
+  MultiProgress,
+  ProgressBar,
+  ProgressStyle,
+};
 use lazy_static::lazy_static;
 use std::fmt::Debug;
-use std::sync::{Arc, Mutex};
+use std::sync::{
+  Arc,
+  Mutex,
+};
 use std::thread;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{
+  Duration,
+  SystemTime,
+  UNIX_EPOCH,
+};
 
 #[derive(Clone, Debug)]
 struct Rng(u64);
@@ -18,7 +29,10 @@ impl Rng {
     Self(since_the_epoch)
   }
 
-  fn gen_range(&mut self, n: u64) -> u64 {
+  fn gen_range(
+    &mut self,
+    n: u64,
+  ) -> u64 {
     let mut state = self.0;
     state ^= state >> 12;
     state ^= state << 25;
@@ -37,67 +51,67 @@ enum Action {
 
 #[derive(Clone, Debug)]
 struct Elem {
-  key: String,
-  index: usize,
-  indent: usize,
+  key:          String,
+  index:        usize,
+  indent:       usize,
   progress_bar: ProgressBar,
 }
 
 lazy_static! {
   static ref ELEMENTS: [Elem; 9] = [
     Elem {
-      indent: 1,
-      index: 0,
+      indent:       1,
+      index:        0,
       progress_bar: ProgressBar::new(32),
-      key: "jumps".to_string()
+      key:          "jumps".to_string(),
     },
     Elem {
-      indent: 2,
-      index: 1,
+      indent:       2,
+      index:        1,
       progress_bar: ProgressBar::new(32),
-      key: "lazy".to_string()
+      key:          "lazy".to_string(),
     },
     Elem {
-      indent: 0,
-      index: 0,
+      indent:       0,
+      index:        0,
       progress_bar: ProgressBar::new(32),
-      key: "the".to_string()
+      key:          "the".to_string(),
     },
     Elem {
-      indent: 3,
-      index: 3,
+      indent:       3,
+      index:        3,
       progress_bar: ProgressBar::new(32),
-      key: "dog".to_string()
+      key:          "dog".to_string(),
     },
     Elem {
-      indent: 2,
-      index: 2,
+      indent:       2,
+      index:        2,
       progress_bar: ProgressBar::new(32),
-      key: "over".to_string()
+      key:          "over".to_string(),
     },
     Elem {
-      indent: 2,
-      index: 1,
+      indent:       2,
+      index:        1,
       progress_bar: ProgressBar::new(32),
-      key: "brown".to_string()
+      key:          "brown".to_string(),
     },
     Elem {
-      indent: 1,
-      index: 1,
+      indent:       1,
+      index:        1,
       progress_bar: ProgressBar::new(32),
-      key: "quick".to_string()
+      key:          "quick".to_string(),
     },
     Elem {
-      indent: 3,
-      index: 5,
+      indent:       3,
+      index:        5,
       progress_bar: ProgressBar::new(32),
-      key: "a".to_string()
+      key:          "a".to_string(),
     },
     Elem {
-      indent: 3,
-      index: 3,
+      indent:       3,
+      index:        3,
       progress_bar: ProgressBar::new(32),
-      key: "fox".to_string()
+      key:          "fox".to_string(),
     },
   ];
 }
@@ -164,7 +178,10 @@ fn main() {
   }
 }
 
-fn get_action<'a>(rng: &'a mut Rng, tree: &Mutex<Vec<&Elem>>) -> Option<Action> {
+fn get_action<'a>(
+  rng: &'a mut Rng,
+  tree: &Mutex<Vec<&Elem>>,
+) -> Option<Action> {
   let elem_len = ELEMENTS.len() as u64;
   let list_len = tree.lock().unwrap().len() as u64;
   let sum_free = tree

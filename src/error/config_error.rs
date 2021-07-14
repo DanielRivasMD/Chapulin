@@ -1,20 +1,15 @@
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use thiserror::Error;
 use colored::*;
+use thiserror::Error;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 #[derive(Debug, Error)]
 pub enum ChapulinConfigError {
-
   #[error("\n{}: {f:?}\n", "Fail to read configuration".red())]
-  ConfigHashMap {
-    f: String,
-  },
+  ConfigHashMap { f: String },
 
   #[error("\n{}\n{}{}\n\n", "Configuration file was not set:".red(), "Set configuration file with option ", "'-c --config'".cyan(), )]
   EmptyConfigOption,
@@ -48,7 +43,6 @@ pub enum ChapulinConfigError {
 
   #[error("Error TODO")]
   TODO,
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

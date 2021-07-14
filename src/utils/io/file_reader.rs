@@ -1,29 +1,26 @@
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use std::fs::{File};
-use std::io::{BufReader};
-use bytelines::{ByteLines, ByteLinesReader};
-use anyhow::{Context};
+use anyhow::Context;
 use anyhow::Result as anyResult;
+use bytelines::{
+  ByteLines,
+  ByteLinesReader,
+};
+use std::fs::File;
+use std::io::BufReader;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // error handler
-use crate::error::{
-  common_error::ChapulinCommonError,
-};
+use crate::error::common_error::ChapulinCommonError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-pub fn byte_file_reader(
-  input_file: &str,
-) -> anyResult<ByteLines<BufReader<File>>> {
-
-  let file = File::open(&input_file)
-    .context(ChapulinCommonError::ReadFile{ f: input_file.to_string() })?;
+pub fn byte_file_reader(input_file: &str) -> anyResult<ByteLines<BufReader<File>>> {
+  let file = File::open(&input_file).context(ChapulinCommonError::ReadFile {
+    f: input_file.to_string(),
+  })?;
 
   let reader = BufReader::new(file);
 

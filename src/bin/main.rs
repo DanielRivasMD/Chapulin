@@ -18,13 +18,16 @@ use crate::utils::cli::help::cli_chapulin;
 
 // TODO: update tool information
 
-/// the general idea is to create a modulerize, fast & reliable tool for mobile element identification in re sequence projects
+/// the general idea is to create a modulerize, fast & reliable tool for mobile element
+/// identification in re sequence projects
 ///
 /// hold all configuration variables in one file
-/// read bam files, one from mobile element alignment & two from chromosomal reference alingment, once from disk
-/// load all neccesary data into memory (hashmap) for efficiency. to optimize this process, use two methods:
+/// read bam files, one from mobile element alignment & two from chromosomal reference alingment,
+/// once from disk load all neccesary data into memory (hashmap) for efficiency. to optimize this
+/// process, use two methods:
 ///   1) prefilter read to load, therefore minimizing size of hashmap to hold
-///   2) load all neccesary data into each struct record and use traits to hold virtual information
+///   2) load all neccesary data into each struct record and use traits to hold virtual
+/// information
 ///
 /// collect both, mobile element & chromosomal reference, versions of insert pairs
 /// filter according to quality criteria

@@ -1,17 +1,19 @@
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use config::{Config};
-use std::collections::{HashMap};
-use std::process::{exit};
-use std::sync::{Arc, Mutex};
-use std::time::{SystemTime};
-use clap::{ArgMatches};
-use config::{File};
-use anyhow::{Context};
+use anyhow::Context;
 use anyhow::Result as anyResult;
+use clap::ArgMatches;
 use colored::*;
+use config::Config;
+use config::File;
+use std::collections::HashMap;
+use std::process::exit;
+use std::sync::{
+  Arc,
+  Mutex,
+};
+use std::time::SystemTime;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -21,24 +23,17 @@ use crate::modules;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // error handler
-use crate::error::{
-  config_error::ChapulinConfigError,
-};
+use crate::error::config_error::ChapulinConfigError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-pub fn cr_subcmd(
-  matches: &ArgMatches
-) -> anyResult<()> {
-
+pub fn cr_subcmd(matches: &ArgMatches) -> anyResult<()> {
   let subcmd = "CR";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // logging
   if matches.is_present("logging") {
-
     let logging = matches
       .value_of("logging")
       .context(ChapulinConfigError::TODO)?;
@@ -50,7 +45,6 @@ pub fn cr_subcmd(
       "debug" => std::env::set_var("RUST_LOG", "debug"),
       _ => (),
     }
-
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,11 +57,17 @@ pub fn cr_subcmd(
   let now = SystemTime::now();
   pretty_env_logger::init();
 
-  let config = matches.value_of("config")
+  let config = matches
+    .value_of("config")
     .context(ChapulinConfigError::EmptyConfigOption)?;
 
   if verbose {
-    println!("\n{}\n{}{}", "Setting up configuration...".green(), "Configuration file read: ".blue(), config.cyan());
+    println!(
+      "\n{}\n{}{}",
+      "Setting up configuration...".green(),
+      "Configuration file read: ".blue(),
+      config.cyan()
+    );
   }
 
   let mut settings = Config::default();
@@ -75,41 +75,54 @@ pub fn cr_subcmd(
     .merge(File::with_name(config))
     .context(ChapulinConfigError::NoConfigFile)?;
 
-  let settings_hm = settings.try_into::<HashMap<String, String>>()
-    .context(ChapulinConfigError::ConfigHashMap{ f: config.to_string() })?;
+  let settings_hm =
+    settings
+      .try_into::<HashMap<String, String>>()
+      .context(ChapulinConfigError::ConfigHashMap {
+        f: config.to_string(),
+      })?;
 
-  let directory = settings_hm.get("directory")
+  let directory = settings_hm
+    .get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
 
-  let output = settings_hm.get("output")
+  let output = settings_hm
+    .get("output")
     .context(ChapulinConfigError::BadOutput)?;
 
-  let errata = settings_hm.get("error")
+  let errata = settings_hm
+    .get("error")
     .context(ChapulinConfigError::BadError)?;
 
-  let reference_file = settings_hm.get("reference")
+  let reference_file = settings_hm
+    .get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
 
-  let me_library_file = settings_hm.get("mobile_element_library")
+  let me_library_file = settings_hm
+    .get("mobile_element_library")
     .context(ChapulinConfigError::BadMELibVar)?;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   if dry_run {
-
     print!(
       "\n{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n",
       "Displaying settings".green(),
-      "Configuration file: ".blue(), config.cyan(),
-      "Directory: ".blue(), directory.cyan(),
-      "Output: ".blue(), output.cyan(),
-      "Error: ".blue(), errata.cyan(),
-      "Reference file: ".blue(), reference_file.cyan(),
-      "Mobile element library: ".blue(), me_library_file.cyan(),
+      "Configuration file: ".blue(),
+      config.cyan(),
+      "Directory: ".blue(),
+      directory.cyan(),
+      "Output: ".blue(),
+      output.cyan(),
+      "Error: ".blue(),
+      errata.cyan(),
+      "Reference file: ".blue(),
+      reference_file.cyan(),
+      "Mobile element library: ".blue(),
+      me_library_file.cyan(),
     );
 
     exit(0);
-
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,7 +136,12 @@ pub fn cr_subcmd(
   let crg_chr_assembly = Arc::clone(&mutex_chr_assembly);
 
   if verbose {
-    println!("\n{}\n{}{}", "Registering Reference Genome module...".green(), "Reference file read: ".blue(), reference_file.cyan());
+    println!(
+      "\n{}\n{}{}",
+      "Registering Reference Genome module...".green(),
+      "Reference file read: ".blue(),
+      reference_file.cyan()
+    );
   }
 
   modules::fasta_read::cache_controller::cache_controller(
@@ -141,7 +159,12 @@ pub fn cr_subcmd(
   let cref_library = Arc::clone(&mutex_me_library);
 
   if verbose {
-    println!("\n{}\n{}{}", "Registering Mobile Element module...".green(), "Mobile element lirabry read: ".blue(), me_library_file.cyan());
+    println!(
+      "\n{}\n{}{}",
+      "Registering Mobile Element module...".green(),
+      "Mobile element lirabry read: ".blue(),
+      me_library_file.cyan()
+    );
   }
 
   modules::fasta_read::cache_controller::cache_controller(

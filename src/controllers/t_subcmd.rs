@@ -13,12 +13,11 @@ use std::time::SystemTime;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// modules
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // error handler
-use crate::error::{common_error::ChapulinCommonError, config_error::ChapulinConfigError};
+use crate::error::{
+  common_error::ChapulinCommonError,
+  config_error::ChapulinConfigError,
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -101,20 +100,20 @@ pub fn t_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
   println!("{:?}", settings_hm);
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
   // let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
   // let mutex_chr_assembly = Arc::new(Mutex::new(HashMap::new()));
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // // reference genome module
   // let crg_chr_assembly = Arc::clone(&mutex_chr_assembly);
 
   // if verbose {
-  //   println!("\n{}\n{}{}", "Running Reference Genome module...".green(), "Reference file read: ".blue(), reference_file.cyan());
-  // }
+  //   println!("\n{}\n{}{}", "Running Reference Genome module...".green(), "Reference file read:
+  // ".blue(), reference_file.cyan()); }
 
   // modules::fasta_read::cache_controller::cache_controller(
   //   directory,
@@ -124,15 +123,15 @@ pub fn t_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
   // info!("{:?}", now.elapsed().unwrap());
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // // structural variant module
   // let c_sv_record_collection = mutex_record_collection.clone();
   // let c_sv_anchor_registry = mutex_anchor_registry.clone();
 
   // if verbose {
-  //   println!("\n{}\n{}{}", "Running Structural Variant module...".green(), "Alignment file read: ".blue(), pair_end_reference_alignment.cyan());
-  // }
+  //   println!("\n{}\n{}{}", "Running Structural Variant module...".green(), "Alignment file read:
+  // ".blue(), pair_end_reference_alignment.cyan()); }
 
   // modules::structural_variant::sv_controller(
   //   directory,
@@ -144,7 +143,7 @@ pub fn t_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
   // info!("{:?}", now.elapsed().unwrap());
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // // peak identification module
   // if verbose {

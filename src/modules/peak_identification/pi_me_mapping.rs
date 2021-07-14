@@ -1,37 +1,38 @@
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use std::collections::{HashMap};
-use std::sync::{Arc, Mutex};
-use std::fs::{File};
-use std::io::{Write};
-use anyhow::{Context};
+use anyhow::Context;
 use anyhow::Result as anyResult;
-use genomic_structures::{strand_counter, thresholder, ChrAnchorEnum, MEChimericPair};
+use genomic_structures::{
+  strand_counter,
+  thresholder,
+  ChrAnchorEnum,
+  MEChimericPair,
+};
+use std::collections::HashMap;
+use std::fs::File;
+use std::io::Write;
+use std::sync::{
+  Arc,
+  Mutex,
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate utilities
-  settings::{
-    constants::{
-      STRAND_VEC,
-      NO_FDR,
-    },
-  },
+use crate::settings::constants::{
+  NO_FDR,
+  STRAND_VEC,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // error handler
-use crate::error::{
-  common_error::ChapulinCommonError,
-};
+use crate::error::common_error::ChapulinCommonError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-pub fn pi_me_identifier (
+pub fn pi_me_identifier(
   ikey: &str,
   output: &str,
   _errata: &str,
@@ -39,20 +40,17 @@ pub fn pi_me_identifier (
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
-
   let mut chr_position_hm = HashMap::new();
-  let chr_size = *chr_assembly
-    .lock().unwrap()
-    .get(ikey)
-    .unwrap();
+  let chr_size = *chr_assembly.lock().unwrap().get(ikey).unwrap();
 
   // TODO: implement parallel iteration here
 
   let fl_write = format!("{}{}.csv", output, ikey);
-  let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile{ f: fl_write })?;
+  let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile {
+    f: fl_write
+  })?;
 
   for strand in STRAND_VEC.iter() {
-
     chr_position_hm.insert(strand, HashMap::new());
     let tmp_position_hm = chr_position_hm.get_mut(strand).unwrap();
 
@@ -62,54 +60,41 @@ pub fn pi_me_identifier (
 
     let mut read_count = 0;
 
-    let ids_read = an_registry
-      .lock().unwrap()
-      .get(ikey)
-      .unwrap()
-      .clone();
+    let ids_read = an_registry.lock().unwrap().get(ikey).unwrap().clone();
 
     for id_read in ids_read {
-
-      if let Some(me_pair) = hm_collection
-        .lock().unwrap()
-        .get(&id_read) {
+      if let Some(me_pair) = hm_collection.lock().unwrap().get(&id_read) {
         match &me_pair.chranch {
           ChrAnchorEnum::Read1 => {
-            read_count = strander(
+            read_count = strand_counter(
               id_read,
               strand,
               read_count,
               &me_pair.read1.chr_read[0],
               &me_pair.read2.me_read,
-              tmp_position_hm
+              tmp_position_hm,
             );
-          },
+          }
 
           ChrAnchorEnum::Read2 => {
-            read_count = strander(
+            read_count = strand_counter(
               id_read,
               strand,
               read_count,
               &me_pair.read2.chr_read[0],
               &me_pair.read1.me_read,
-              tmp_position_hm
+              tmp_position_hm,
             );
-          },
+          }
 
           ChrAnchorEnum::None => (),
         }
       }
     }
 
-// TODO: memotization
+    // TODO: memotization
     if read_count != 0 {
-      let pois_threshold = thresholder(
-        read_count as f64,
-        chr_size,
-        0.001,
-        tmp_position_hm,
-        NO_FDR,
-      );
+      let pois_threshold = thresholder(read_count as f64, chr_size, 0.001, tmp_position_hm, NO_FDR);
 
       // TODO: verify read pairs some are empty
       // TODO: verify read passing map quality
@@ -117,7 +102,6 @@ pub fn pi_me_identifier (
       // TODO: format output => possibly 1) raw 2) postgreSQL
 
       for (chr_pos, id_vec) in tmp_position_hm.iter() {
-
         if id_vec.len() > pois_threshold {
           // println!();
           // println!("Position: {} @ strand: {} => {}", chr_pos, strand, id_vec.len());
@@ -126,7 +110,10 @@ pub fn pi_me_identifier (
           // println!("{}, {}, {}, {}", ikey, chr_pos, strand, id_vec.len());
           let to_write = format!("{}, {}, {}, {}\n", ikey, chr_pos, strand, id_vec.len());
 
-          fl.write_all(to_write.as_bytes()).context(ChapulinCommonError::WriteFile{ f: to_write })?;
+          fl.write_all(to_write.as_bytes())
+            .context(ChapulinCommonError::WriteFile {
+              f: to_write
+            })?;
 
           // for id_read in id_vec.iter() {
           //   if let Some((id, read)) = hm_collection
@@ -145,11 +132,9 @@ pub fn pi_me_identifier (
 
           //   }
           // }
-
         }
       }
     }
-
   }
   Ok(())
 }

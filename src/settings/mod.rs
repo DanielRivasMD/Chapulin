@@ -1,5 +1,4 @@
-
 // modules
+pub mod config;
 pub mod constants;
 pub mod defaults;
-pub mod config;

@@ -1,43 +1,33 @@
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use std::process::{exit};
-use std::time::{SystemTime};
-use clap::{ArgMatches};
-use std::fs::{File};
-use std::io::{Write};
-use std::path::{Path};
-use anyhow::{Context};
+use anyhow::Context;
 use anyhow::Result as anyResult;
+use clap::ArgMatches;
 use colored::*;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// modules
+use std::fs::File;
+use std::io::Write;
+use std::path::Path;
+use std::process::exit;
+use std::time::SystemTime;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // error handler
 use crate::error::{
-  config_error::ChapulinConfigError,
   common_error::ChapulinCommonError,
+  config_error::ChapulinConfigError,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-pub fn gc_subcmd(
-  matches: &ArgMatches
-) -> anyResult<()> {
-
+pub fn gc_subcmd(matches: &ArgMatches) -> anyResult<()> {
   let _subcmd = "GC";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // logging
   if matches.is_present("logging") {
-
     let logging = matches
       .value_of("logging")
       .context(ChapulinConfigError::TODO)?;
@@ -49,7 +39,6 @@ pub fn gc_subcmd(
       "debug" => std::env::set_var("RUST_LOG", "debug"),
       _ => (),
     }
-
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,13 +59,17 @@ pub fn gc_subcmd(
   }
 
   if verbose {
-    println!("\n{}\n{}{}", "Writting configuration...".green(), "Configuration file read: ".blue(), config.cyan());
+    println!(
+      "\n{}\n{}{}",
+      "Writting configuration...".green(),
+      "Configuration file read: ".blue(),
+      config.cyan()
+    );
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   if dry_run {
-
     print!(
       "\n{}\n{:<30}{}\n",
       "Displaying settings".green(),
@@ -92,7 +85,6 @@ pub fn gc_subcmd(
     );
 
     exit(0);
-
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,12 +93,20 @@ pub fn gc_subcmd(
   let fl_conf = format!("{}.toml", config);
 
   if Path::new(&fl_conf).exists() {
-    print!("\n{}{}\n", "Please observe that path exists: ".blue(), config.cyan());
+    print!(
+      "\n{}{}\n",
+      "Please observe that path exists: ".blue(),
+      config.cyan()
+    );
     if force {
       print!("\n{}\n", "Overwritting!".blue());
       write_conf(fl_conf)?;
     } else {
-      print!("\n{}{}\n", "If you wish to overwrite, run command with option ".blue(), "--force".cyan());
+      print!(
+        "\n{}{}\n",
+        "If you wish to overwrite, run command with option ".blue(),
+        "--force".cyan()
+      );
     }
   } else {
     write_conf(fl_conf)?;
@@ -121,13 +121,12 @@ pub fn gc_subcmd(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+fn write_conf(fl_write: String) -> anyResult<()> {
+  info!("Writting...",);
 
-fn write_conf(
-  fl_write: String,
-) -> anyResult<()> {
-  info!("Writting...", );
-
-  let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile{ f: fl_write })?;
+  let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile {
+    f: fl_write
+  })?;
 
   // ("directory", "")
   // ("output", "")
@@ -139,12 +138,12 @@ fn write_conf(
   // ("pair_end_reference_alignment", "")
 
   let to_write = format!("{} = {}\n", "key", "value");
-  fl.write_all(to_write.as_bytes()).context(ChapulinCommonError::WriteFile{ f: to_write })?;
+  fl.write_all(to_write.as_bytes())
+    .context(ChapulinCommonError::WriteFile {
+      f: to_write
+    })?;
 
   Ok(())
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-

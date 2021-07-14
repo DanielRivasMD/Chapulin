@@ -3,12 +3,19 @@
 // standard libraries
 use anyhow::Context;
 use anyhow::Result as anyResult;
-use genomic_structures::{ChrAnchor, ChrAnchorEnum, MEChimericPair};
+use genomic_structures::{
+  ChrAnchor,
+  ChrAnchorEnum,
+  MEChimericPair,
+};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 use std::str::from_utf8;
-use std::sync::{Arc, Mutex};
+use std::sync::{
+  Arc,
+  Mutex,
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +39,9 @@ pub fn cl_mapper(
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> anyResult<()> {
   let fl_write = format!("{}.err", errata);
-  let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile { f: fl_write })?;
+  let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile {
+    f: fl_write
+  })?;
 
   // load file
   let mut lines = byte_file_reader(&cl_bam_file)?;
@@ -87,7 +96,8 @@ pub fn cl_mapper(
     } else {
       // TODO: all records are going here. investigate the reason
       // ic!(record_line);
-      // fl.write_all(record_line[0].to_string().as_bytes()).context(ChapulinCommonError::WriteFile{ f: record_line[0].to_string() })?;
+      // fl.write_all(record_line[0].to_string().as_bytes()).context(ChapulinCommonError::WriteFile{
+      // f: record_line[0].to_string() })?;
     }
   }
 

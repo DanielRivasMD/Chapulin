@@ -1,11 +1,13 @@
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use std::collections::{HashMap};
-use std::sync::{Arc, Mutex};
 use anyhow::Result as anyResult;
 use genomic_structures::MEChimericPair;
+use std::collections::HashMap;
+use std::sync::{
+  Arc,
+  Mutex,
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -14,19 +16,12 @@ mod me_aligned;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// crate utilities
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-pub fn me_controller (
+pub fn me_controller(
   directory: &str,
   me_aligned_file: &str,
   hash_map_me_library: Arc<Mutex<HashMap<String, f64>>>,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
 ) -> anyResult<()> {
-
-
   // load mobile element aligned reads
   let me_aligned_file_full = format!("{}{}", directory, me_aligned_file);
 

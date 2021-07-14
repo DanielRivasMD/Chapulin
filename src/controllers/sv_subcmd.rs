@@ -1,16 +1,18 @@
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use config::{Config};
-use std::collections::{HashMap};
-use std::sync::{Arc, Mutex};
-use std::time::{SystemTime};
-use clap::{ArgMatches};
-use config::{File};
-use anyhow::{Context};
+use anyhow::Context;
 use anyhow::Result as anyResult;
+use clap::ArgMatches;
 use colored::*;
+use config::Config;
+use config::File;
+use std::collections::HashMap;
+use std::sync::{
+  Arc,
+  Mutex,
+};
+use std::time::SystemTime;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -21,25 +23,21 @@ use crate::modules;
 
 // error handler
 use crate::error::{
-  config_error::ChapulinConfigError,
   common_error::ChapulinCommonError,
+  config_error::ChapulinConfigError,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO: add compatibility for known coordinates
 
-pub fn sv_subcmd(
-  matches: &ArgMatches
-) -> anyResult<()> {
-
+pub fn sv_subcmd(matches: &ArgMatches) -> anyResult<()> {
   let subcmd = "SV";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // logging
   if matches.is_present("logging") {
-
     let logging = matches
       .value_of("logging")
       .context(ChapulinConfigError::TODO)?;
@@ -51,7 +49,6 @@ pub fn sv_subcmd(
       "debug" => std::env::set_var("RUST_LOG", "debug"),
       _ => (),
     }
-
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,11 +59,17 @@ pub fn sv_subcmd(
   let now = SystemTime::now();
   pretty_env_logger::init();
 
-  let config = matches.value_of("config")
+  let config = matches
+    .value_of("config")
     .context(ChapulinConfigError::EmptyConfigOption)?;
 
   if verbose {
-    println!("\n{}\n{}{}", "Setting up configuration...".green(), "Configuration file read: ".blue(), config.cyan());
+    println!(
+      "\n{}\n{}{}",
+      "Setting up configuration...".green(),
+      "Configuration file read: ".blue(),
+      config.cyan()
+    );
   }
 
   let mut settings = Config::default();
@@ -74,22 +77,31 @@ pub fn sv_subcmd(
     .merge(File::with_name(config))
     .context(ChapulinConfigError::NoConfigFile)?;
 
-  let settings_hm = settings.try_into::<HashMap<String, String>>()
-    .context(ChapulinConfigError::ConfigHashMap{ f: config.to_string() })?;
+  let settings_hm =
+    settings
+      .try_into::<HashMap<String, String>>()
+      .context(ChapulinConfigError::ConfigHashMap {
+        f: config.to_string(),
+      })?;
 
-  let directory = settings_hm.get("directory")
+  let directory = settings_hm
+    .get("directory")
     .context(ChapulinConfigError::BadDirectoryVar)?;
 
-  let output = settings_hm.get("output")
+  let output = settings_hm
+    .get("output")
     .context(ChapulinConfigError::BadOutput)?;
 
-  let reference_file = settings_hm.get("reference")
+  let reference_file = settings_hm
+    .get("reference")
     .context(ChapulinConfigError::BadReferenceVar)?;
 
-  let pair_end_reference_alignment = settings_hm.get("pair_end_reference_alignment")
+  let pair_end_reference_alignment = settings_hm
+    .get("pair_end_reference_alignment")
     .context(ChapulinConfigError::BadPairedReferenceGenomeVar)?;
 
-  let expected_tlen = settings_hm.get("expected_tlen")
+  let expected_tlen = settings_hm
+    .get("expected_tlen")
     .context(ChapulinConfigError::TODO)?
     .parse::<i32>()
     .context(ChapulinCommonError::Parsing)?;
@@ -106,7 +118,12 @@ pub fn sv_subcmd(
   let crg_chr_assembly = Arc::clone(&mutex_chr_assembly);
 
   if verbose {
-    println!("\n{}\n{}{}", "Running Reference Genome module...".green(), "Reference file read: ".blue(), reference_file.cyan());
+    println!(
+      "\n{}\n{}{}",
+      "Running Reference Genome module...".green(),
+      "Reference file read: ".blue(),
+      reference_file.cyan()
+    );
   }
 
   modules::fasta_read::cache_controller::cache_controller(
@@ -125,7 +142,12 @@ pub fn sv_subcmd(
   let c_sv_anchor_registry = mutex_anchor_registry.clone();
 
   if verbose {
-    println!("\n{}\n{}{}", "Running Structural Variant module...".green(), "Alignment file read: ".blue(), pair_end_reference_alignment.cyan());
+    println!(
+      "\n{}\n{}{}",
+      "Running Structural Variant module...".green(),
+      "Alignment file read: ".blue(),
+      pair_end_reference_alignment.cyan()
+    );
   }
 
   modules::structural_variant::sv_controller(
