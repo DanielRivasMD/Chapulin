@@ -8,19 +8,11 @@ use std::fs::{File};
 use std::io::{Write};
 use anyhow::{Context};
 use anyhow::Result as anyResult;
+use genomic_structures::{strand_counter, thresholder, ChrAnchorEnum, MEChimericPair};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate utilities
-use crate::{
-  utils::functions::{
-    strander::strander,
-    thresholder::thresholder,
-  },
-  utils::structures::{
-    me_chimeric_pair::MEChimericPair,
-    chr_anchor_enum::ChrAnchorEnum,
-  },
   settings::{
     constants::{
       STRAND_VEC,

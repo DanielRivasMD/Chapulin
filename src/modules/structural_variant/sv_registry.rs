@@ -7,20 +7,12 @@ use std::sync::{Arc, Mutex};
 use std::str::{from_utf8};
 use anyhow::{Context};
 use anyhow::Result as anyResult;
+use genomic_structures::{ChrAnchor, SVChimericPair, SVType};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate utilities
-use crate::{
-  utils::functions::{
-    file_reader::byte_file_reader,
-  },
-  utils::structures::{
-    sv_chimeric_pair::SVChimericPair,
-    chr_anchor::ChrAnchor,
-    sv_type::SVType,
-  },
-};
+use crate::utils::io::file_reader::byte_file_reader;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

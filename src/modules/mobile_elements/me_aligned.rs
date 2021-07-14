@@ -7,6 +7,7 @@ use std::sync::{Arc, Mutex};
 use std::str::{from_utf8};
 use anyhow::{Context};
 use anyhow::Result as anyResult;
+use genomic_structures::{interpretor, ChrAnchorEnum, MEAnchor, MEChimericPair};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,17 +18,6 @@ use genomic_structures::CIGAR;
 
 // crate utilities
 use crate::{
-  utils::functions::{
-    file_reader::byte_file_reader,
-    flag_interpretor::interpretor,
-  },
-  utils::structures::{
-    me_chimeric_pair::MEChimericPair,
-    // me_library::MElibrary,
-    me_anchor::MEAnchor,
-    // cigar::CIGAR,
-    chr_anchor_enum::ChrAnchorEnum,
-  },
   settings::{
     constants::ME_LIMIT,
   },

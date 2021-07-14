@@ -3,6 +3,7 @@
 // standard libraries
 use anyhow::Context;
 use anyhow::Result as anyResult;
+use genomic_structures::{ChrAnchor, ChrAnchorEnum, MEChimericPair};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
@@ -14,10 +15,7 @@ use std::sync::{Arc, Mutex};
 // crate utilities
 use crate::{
   settings::constants::MAPQ,
-  utils::functions::file_reader::byte_file_reader,
-  utils::structures::{
-    chr_anchor::ChrAnchor, chr_anchor_enum::ChrAnchorEnum, me_chimeric_pair::MEChimericPair,
-  },
+  utils::io::file_reader::byte_file_reader,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

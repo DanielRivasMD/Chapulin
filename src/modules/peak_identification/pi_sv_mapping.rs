@@ -4,19 +4,13 @@
 // standard libraries
 use std::collections::{HashMap};
 use std::sync::{Arc, Mutex};
+use genomic_structures::{SVChimericPair, thresholder};
 use anyhow::Result as anyResult;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate utilities
 use crate::{
-  utils::functions::{
-    thresholder::thresholder,
-    chr_counter::chr_counter,
-  },
-  utils::structures::{
-    sv_chimeric_pair::SVChimericPair,
-  },
   settings::{
     constants::{
       NO_FDR,
