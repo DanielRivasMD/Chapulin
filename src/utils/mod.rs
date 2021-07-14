@@ -4,8 +4,6 @@
 // cli
 pub mod cli;
 
-// data structures
-pub mod structures;
 // IO
 pub mod io;
 
