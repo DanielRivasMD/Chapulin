@@ -2,24 +2,19 @@
 // macros                                                                                         //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// imported
-#[macro_use]
-extern crate derive_new;
-
+// logging
 #[macro_use]
 extern crate log;
 
+// lazy static
 #[macro_use]
 extern crate lazy_static;
-
-// local
-#[macro_use]
-mod macros;
 
 // debug
 #[macro_use]
 extern crate icecream;
 
+// genomic structures
 #[macro_use]
 extern crate genomic_structures;
 
