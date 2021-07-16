@@ -238,7 +238,7 @@ dependencies = [
 
 [[package]]
 name = "genomic_structures"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "data-test",
  "derive-new",
