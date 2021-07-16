@@ -130,7 +130,8 @@ pub fn me_identificator(
               read1,
               record_line,
               me_size,
-              mobel_orientation
+              mobel_orientation,
+              ChapulinCommonError::Parsing
             );
             if mobel_anchor {
               current_record.chranch = ChrAnchorEnum::Read2;
@@ -143,7 +144,8 @@ pub fn me_identificator(
             read2,
             record_line,
             me_size,
-            mobel_orientation
+            mobel_orientation,
+            ChapulinCommonError::Parsing
           );
           if mobel_anchor {
             current_record.chranch = ChrAnchorEnum::Read1;
@@ -160,7 +162,8 @@ pub fn me_identificator(
               read1,
               record_line,
               me_size,
-              mobel_orientation
+              mobel_orientation,
+            ChapulinCommonError::Parsing
             );
             if mobel_anchor {
               current_record.chranch = ChrAnchorEnum::Read2;
@@ -171,7 +174,8 @@ pub fn me_identificator(
               read2,
               record_line,
               me_size,
-              mobel_orientation
+              mobel_orientation,
+              ChapulinCommonError::Parsing
             );
             if mobel_anchor {
               current_record.chranch = ChrAnchorEnum::Read1;
