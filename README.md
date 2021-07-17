@@ -1,18 +1,45 @@
+<!-- Title -->
+<h1 align="center">
+  Chapulin
+</h1>
 
-## _Chapulin_ : Next-generation genomic mobile element and structural variant identification tool
+<!-- description -->
+<p align="center">
+  <strong>Next-generation genomic mobile element and structural variant identification tool.</strong>
+</p>
+
+<!-- Information badges -->
+<p align="center">
+  <a href="https://www.repostatus.org/#active">
+    <img alt="Repo status" src="https://www.repostatus.org/badges/latest/active.svg?style=flat-square" />
+  </a>
+  <a href="http://www.gnu.org/licenses/gpl-3.0">
+    <img alt="GPL v3" src="https://img.shields.io/badge/License-GPL%20v3-blue.svg">
+  </a>
+</p>
+
+<!-- Community -->
+<p align="center">
+  <a href="https://github.com/DanielRivasMD/Chapulin/discussions">
+    <img alt="Ask us anything" src="https://img.shields.io/badge/Ask%20us-anything-1abc9c.svg?style=flat-square">
+  </a>
+  <a href="https://github.com/SciML/ColPrac">
+    <img alt="ColPrac: Contributor's Guide on Collaborative Practices for Community Packages" src="https://img.shields.io/badge/ColPrac-Contributor's%20Guide-blueviolet?style=flat-square">
+  </a>
+</p>
+
+<!-- Version and documentation badges -->
+<p align="center">
+  <a href="https://github.com/DanielRivasMD/Chapulin/releases">
+    <img alt="GitHub tag" src="https://img.shields.io/github/v/tag/DanielRivasMD/Chapulin?label=latest%20version&logo=github&sort=semver&style=flat-square">
+  </a>
+</p>
 
 ![The Man in the Chapulin Hill](assets/ChapulinLogo.png)
 
-<!--[![Latest Release](https://img.shields.io/github/release/DanielRivasMD/Chapulin.svg]]-->
-
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
-
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://DanielRivasMD.github.io/Chapulin/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://DanielRivasMD.github.io/Chapulin/dev)
-
 ## Table of contents
 
-- [Overview](#overview)
+- [Description](#description)
 - [Installation](#installation)
   - [Homebrew](#via-homebrew-for-macos)
   - [APT](#via-apt-for-debian-based-linux-distros)
@@ -42,20 +69,20 @@
 - [License](#license)
 
 
-## Overview
+## Description
 
-_**Chapulin**_ is a robust, portable and blazing fast tool to identify mobile element insertions as well as structural variants in resequenced population data with a reference assembly.
-_**Chapulin**_ uses alignment files (SAM) to scan putative mobile element / structural variant associated reads and then perform calls based on a select arbitrary threshold or a calculate probability threshold.
-_**Chapulin**_ 's input and output formats are fully compatible with commonly used software, e.g. RepeatModeler.
+**Chapulin** is a robust, portable and blazing fast tool to identify mobile element insertions as well as structural variants in resequenced population data with a reference assembly.
+**Chapulin** uses alignment files (SAM) to scan putative mobile element / structural variant associated reads and then perform calls based on a select arbitrary threshold or a calculate probability threshold.
+**Chapulin** 's input and output formats are fully compatible with commonly used software, e.g. RepeatModeler.
 
 
-_**Chapulin**_ offers two different scanning modes:
+**Chapulin** offers two different scanning modes:
 
   - [Mobile Element identification (ME)](#me-subcommand).
 
   - [Structural Variant identification (SV)](#sv-subcommand).
 
-Additionally, to improve user experience, _**Chapulin**_ offers [Cache Registering (CR)](#cr-subcommand), [Generate Configuration (GC)](#gc-subcommand) and [AutoCompletion (AC)](#ac-subcommand).
+Additionally, to improve user experience, **Chapulin** offers [Cache Registering (CR)](#cr-subcommand), [Generate Configuration (GC)](#gc-subcommand) and [AutoCompletion (AC)](#ac-subcommand).
 
 
 ## Installation
@@ -110,15 +137,15 @@ cargo install chapulin
 
 ### From Github release
 
-Simply download the release binary for your operating system. _**Chapulin**_ is self-contained so it does not need dependencies.
+Simply download the release binary for your operating system. **Chapulin** is self-contained so it does not need dependencies.
 
 
 
 ### Building from source
 
-_**Chapulin**_ is written in Rust, so you'll need to grab a [Rust installation](https://rustup.rs/) in order to compile it.
+**Chapulin** is written in Rust, so you'll need to grab a [Rust installation](https://rustup.rs/) in order to compile it.
 
-To build _**Chapulin**_ :
+To build **Chapulin** :
 
 ```
 git clone https://github.com/DanielRivasMD/Chapulin
@@ -127,6 +154,7 @@ cargo build --release
 ./target/release/chapulin --version
 Chapulin 0.1.0
 ```
+
 
 ## Testing
 
@@ -140,6 +168,19 @@ cargo test
 
 
 ## Documentation
+
+To view the documentation, run:
+
+```
+cargo doc
+```
+
+To open the documentation in your browser, run:
+
+```
+cargo doc --open
+```
+
 
 ### Usage
 
@@ -195,7 +236,7 @@ SUBCOMMANDS:
 
 ### ME subcommand
 
-Mobile Element mode is meant for scanning mobile elements in a host genome, such as LTR-elements. This mode depends on an alignment file to the desire reference, for the purpose of locating putative insertions on chromosomal coordinates, and a mobile element library, which can be produced by using RepeatModeler on a reference genome. Alternatively, a customized library can be used, which makes it ideal to adapt _**Chapulin**_ 's search algorithm for other purposes, such as orphan gene discovery. [Example Mobile Element subcommand](#example-chapulin-me-subcommand).
+Mobile Element mode is meant for scanning mobile elements in a host genome, such as LTR-elements. This mode depends on an alignment file to the desire reference, for the purpose of locating putative insertions on chromosomal coordinates, and a mobile element library, which can be produced by using RepeatModeler on a reference genome. Alternatively, a customized library can be used, which makes it ideal to adapt **Chapulin** 's search algorithm for other purposes, such as orphan gene discovery. [Example Mobile Element subcommand](#example-chapulin-me-subcommand).
 
 
 
@@ -213,13 +254,13 @@ Cache Registering mode can write cache files to read from, which will improve ru
 
 ### GC subcommand
 
-_**Chapulin**_ does not come with a configuration file by default. However by using Generate Configuration (GC) you can generate a editable `toml` file with preloaded defaults. In case you make a mistake editing the configuration, _**Chapulin**_ 's error handling will let you know exactly what failed and display examples to help you fix it. [Example Generate Configuration subcommand](#example-chapulin-gc-subcommand).
+**Chapulin** does not come with a configuration file by default. However by using Generate Configuration (GC) you can generate a editable `toml` file with preloaded defaults. In case you make a mistake editing the configuration, **Chapulin** 's error handling will let you know exactly what failed and display examples to help you fix it. [Example Generate Configuration subcommand](#example-chapulin-gc-subcommand).
 
 
 
 ### AC subcommand
 
-In case you want to explore _**Chapulin**_ interactively, you might want to install autocompletion for your shell by running AutoCompletion (AC). Specific instructions on how to install these autocompletions for your shell can be found with the flag `--manual`. You can also preview your run by running any command with the flag `--dry-run`. [Example AutoCompletion subcommand](#example-chapulin-ac-subcommand).
+In case you want to explore **Chapulin** interactively, you might want to install autocompletion for your shell by running AutoCompletion (AC). Specific instructions on how to install these autocompletions for your shell can be found with the flag `--manual`. You can also preview your run by running any command with the flag `--dry-run`. [Example AutoCompletion subcommand](#example-chapulin-ac-subcommand).
 
 
 ## Examples
@@ -229,7 +270,7 @@ In case you want to explore _**Chapulin**_ interactively, you might want to inst
 
 ### Example `chapulin` config
 
-Below you can find a config example. Please observe that you can also obtain a config template by using `Generate Configuration` or `GC` command from _**Chapulin**_.
+Below you can find a config example. Please observe that you can also obtain a config template by using `Generate Configuration` or `GC` command from **Chapulin**.
 
 ```toml
 ```
@@ -277,6 +318,7 @@ chapulin GC
 chapulin AC
 ```
 
+
 ## _Chapulín_ for the curious
 
 ### Etimology
@@ -296,6 +338,10 @@ Inhabitants and visitors of Mexico City will be familiar to the 'Chapulín' imag
 
 ## License
 
-_**Chapulin**_ is distributed under the terms of the GNU GENERAL PUBLIC LICENSE.
+**Chapulin** is distributed under the terms of the GNU GENERAL PUBLIC LICENSE.
 
 See [LICENSE](LICENSE) for details.
+
+---
+
+**Author's Note**: This package is still under active development and is subject to change.
