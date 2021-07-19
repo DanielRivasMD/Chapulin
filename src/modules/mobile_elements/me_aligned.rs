@@ -59,36 +59,41 @@ pub fn me_identificator(
       .collect();
 
     // update read id
-    let read_id = record_line[0].to_string();
+    read_values.read_id = record_line[0].to_string();
 
     // calculate current values
-    let mobel = record_line[2].to_string();
+    read_values.mobel = record_line[2].to_string();
     // let read_seq = record_line[9].to_string();
 
     // flag & read orientation
-    let pv_flag = record_line[1]
+    read_values.pv_flag = record_line[1]
       .parse::<i32>()
       .context(ChapulinCommonError::Parsing)?;
-    let read_orientation = interpretor(pv_flag, 5);
+    read_values.read_orientation = interpretor(read_values.pv_flag, 5);
 
     // alignment interpretation
-    let pv_position = record_line[3]
+    read_values.pv_position = record_line[3]
       .parse::<i32>()
       .context(ChapulinCommonError::Parsing)?;
-    let pv_cigar = record_line[5].to_string();
-    let dc_cigar = CIGAR::loader(&pv_cigar);
-    let (adj_left_pos, adj_right_pos) = dc_cigar.boundries(pv_position);
+    read_values.pv_cigar = record_line[5].to_string();
+    let dc_cigar = CIGAR::loader(&read_values.pv_cigar);
+
+    // TODO: perhaps bound adjusted boundries into struct
+    let (adj_left_pos, adj_right_pos) =
+      dc_cigar.boundries(read_values.pv_position);
 
     // TODO: describe break point signature
 
     // retrieve mobile element library records
-    if let Some(me_record) = hm_me_collection.lock().unwrap().get(&mobel) {
+    if let Some(me_record) =
+      hm_me_collection.lock().unwrap().get(&read_values.mobel)
+    {
       read_values.me_size = *me_record;
       // me_size = me_record.me_size;
     }
 
     // purge read pairs
-    if !(read_values.prev_read_id == read_id
+    if !(read_values.prev_read_id == read_values.read_id
       || read_values.prev_read_id.is_empty())
     {
       // evaluate read batch
@@ -104,12 +109,12 @@ pub fn me_identificator(
     }
 
     // tagging
-    if adj_left_pos <= ME_LIMIT && read_orientation {
+    if adj_left_pos <= ME_LIMIT && read_values.read_orientation {
       read_values.purge_switch = false;
       read_values.mobel_anchor = true;
       read_values.mobel_orientation = "upstream".to_string();
     } else if read_values.me_size - adj_right_pos as f64 <= ME_LIMIT.into()
-      && !read_orientation
+      && !read_values.read_orientation
     {
       read_values.purge_switch = false;
       read_values.mobel_anchor = true;
@@ -118,17 +123,23 @@ pub fn me_identificator(
 
     // match on proviral flag
     // this check is much faster than using binary interpretor
-    match pv_flag {
+    match read_values.pv_flag {
       // primary alignment
       pf if pf <= 255 => {
-        if !hm_record_collection.lock().unwrap().contains_key(&read_id) {
+        if !hm_record_collection
+          .lock()
+          .unwrap()
+          .contains_key(&read_values.read_id)
+        {
           hm_record_collection.lock().unwrap().insert(
-            (&read_id).to_string(),
+            (&read_values.read_id).to_string(),
             MEChimericPair::new(ChrAnchorEnum::None),
           );
 
-          if let Some(current_record) =
-            hm_record_collection.lock().unwrap().get_mut(&read_id)
+          if let Some(current_record) = hm_record_collection
+            .lock()
+            .unwrap()
+            .get_mut(&read_values.read_id)
           {
             load!(
               current_record,
@@ -142,8 +153,10 @@ pub fn me_identificator(
               current_record.chranch = ChrAnchorEnum::Read2;
             }
           }
-        } else if let Some(current_record) =
-          hm_record_collection.lock().unwrap().get_mut(&read_id)
+        } else if let Some(current_record) = hm_record_collection
+          .lock()
+          .unwrap()
+          .get_mut(&read_values.read_id)
         {
           load!(
             current_record,
@@ -161,8 +174,10 @@ pub fn me_identificator(
 
       // secondary alignment
       pf if pf >= 256 => {
-        if let Some(current_record) =
-          hm_record_collection.lock().unwrap().get_mut(&read_id)
+        if let Some(current_record) = hm_record_collection
+          .lock()
+          .unwrap()
+          .get_mut(&read_values.read_id)
         {
           if current_record.read2.sequence.is_empty() {
             load!(
@@ -197,7 +212,7 @@ pub fn me_identificator(
 
     // reset anchor switch
     read_values.mobel_anchor = false;
-    read_values.prev_read_id = read_id;
+    read_values.prev_read_id = read_values.read_id;
   }
 
   // evaluate at end of file
@@ -215,16 +230,28 @@ pub fn me_identificator(
 
 #[derive(Debug, new)]
 struct ReadValues {
+  #[new(value = "0.")]
+  me_size:           f64,
+  #[new(default)]
+  mobel:             String,
+  #[new(value = "false")]
+  mobel_anchor:      bool,
+  #[new(default)]
+  mobel_orientation: String,
   #[new(default)]
   prev_read_id:      String,
   #[new(value = "true")]
   purge_switch:      bool,
-  #[new(value = "false")]
-  mobel_anchor:      bool,
-  #[new(value = "0.")]
-  me_size:           f64,
   #[new(default)]
-  mobel_orientation: String,
+  pv_cigar:          String,
+  #[new(default)]
+  pv_flag:           i32,
+  #[new(default)]
+  pv_position:       i32,
+  #[new(default)]
+  read_id:           String,
+  #[new(default)]
+  read_orientation:  bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
