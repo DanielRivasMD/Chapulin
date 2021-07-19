@@ -124,9 +124,10 @@ pub fn gc_subcmd(matches: &ArgMatches) -> anyResult<()> {
 fn write_conf(fl_write: String) -> anyResult<()> {
   info!("Writting...",);
 
-  let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile {
-    f: fl_write
-  })?;
+  let mut fl =
+    File::create(&fl_write).context(ChapulinCommonError::CreateFile {
+      f: fl_write,
+    })?;
 
   // ("directory", "")
   // ("output", "")
@@ -138,10 +139,11 @@ fn write_conf(fl_write: String) -> anyResult<()> {
   // ("pair_end_reference_alignment", "")
 
   let to_write = format!("{} = {}\n", "key", "value");
-  fl.write_all(to_write.as_bytes())
-    .context(ChapulinCommonError::WriteFile {
+  fl.write_all(to_write.as_bytes()).context(
+    ChapulinCommonError::WriteFile {
       f: to_write
-    })?;
+    },
+  )?;
 
   Ok(())
 }

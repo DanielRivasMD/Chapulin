@@ -31,7 +31,8 @@ pub fn fasta_reader(
 
   let mut lines = byte_file_reader(&ref_seq)?;
   while let Some(line) = lines.next() {
-    let record_line = from_utf8(&line?).context(ChapulinCommonError::RegistryLine)?;
+    let record_line =
+      from_utf8(&line?).context(ChapulinCommonError::RegistryLine)?;
 
     if record_line.starts_with('>') {
       if !current_chr.is_empty() {

@@ -2,16 +2,20 @@
 
 // standard libraries
 use anyhow::Result as anyResult;
-use genomic_structures::{
-  MEChimericPair,
-  SVChimericPair,
-};
 use std::collections::HashMap;
 use std::sync::{
   Arc,
   Mutex,
 };
 use std::thread;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// development libraries
+use genomic_structures::{
+  MEChimericPair,
+  SVChimericPair,
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +32,8 @@ pub fn pi_me_controller(
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
-  let chromosome_vec = chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
+  let chromosome_vec =
+    chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 
   for okey in chromosome_vec {
     let coutput = output.clone();
@@ -64,7 +69,8 @@ pub fn pi_sv_controller(
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
   hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
-  let chromosome_vec = chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
+  let chromosome_vec =
+    chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 
   for okey in chromosome_vec {
     let chash_map_collection = hash_map_collection.clone();

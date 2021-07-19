@@ -12,9 +12,11 @@ use std::sync::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // modules
-use crate::modules::fasta_read::fasta_cache_read;
-use crate::modules::fasta_read::fasta_cache_write;
-use crate::modules::fasta_read::fasta_file_read;
+use crate::modules::fasta_read::{
+  fasta_cache_read,
+  fasta_cache_write,
+  fasta_file_read,
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -2,14 +2,18 @@
 
 // standard libraries
 use anyhow::Result as anyResult;
-use genomic_structures::{
-  thresholder,
-  SVChimericPair,
-};
 use std::collections::HashMap;
 use std::sync::{
   Arc,
   Mutex,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// development libraries
+use genomic_structures::{
+  thresholder,
+  SVChimericPair,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +51,8 @@ pub fn pi_sv_identifier(
 
   // TODO: memotization
   if read_count != 0 {
-    let pois_threshold = thresholder(read_count as f64, chr_size, 0.001, &chr_position_hm, NO_FDR);
+    let pois_threshold =
+      thresholder(read_count as f64, chr_size, 0.001, &chr_position_hm, NO_FDR);
 
     for (chr_pos, id_vec) in chr_position_hm.iter() {
       if id_vec.len() > pois_threshold {

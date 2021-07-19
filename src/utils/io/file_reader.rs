@@ -17,10 +17,13 @@ use crate::error::common_error::ChapulinCommonError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub fn byte_file_reader(input_file: &str) -> anyResult<ByteLines<BufReader<File>>> {
-  let file = File::open(&input_file).context(ChapulinCommonError::ReadFile {
-    f: input_file.to_string(),
-  })?;
+pub fn byte_file_reader(
+  input_file: &str
+) -> anyResult<ByteLines<BufReader<File>>> {
+  let file =
+    File::open(&input_file).context(ChapulinCommonError::ReadFile {
+      f: input_file.to_string(),
+    })?;
 
   let reader = BufReader::new(file);
 

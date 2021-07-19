@@ -3,11 +3,6 @@
 // standard libraries
 use anyhow::Context;
 use anyhow::Result as anyResult;
-use genomic_structures::{
-  ChrAnchor,
-  ChrAnchorEnum,
-  MEChimericPair,
-};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
@@ -15,6 +10,15 @@ use std::str::from_utf8;
 use std::sync::{
   Arc,
   Mutex,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// development libraries
+use genomic_structures::{
+  ChrAnchor,
+  ChrAnchorEnum,
+  MEChimericPair,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,9 +43,10 @@ pub fn cl_mapper(
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> anyResult<()> {
   let fl_write = format!("{}.err", errata);
-  let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile {
-    f: fl_write
-  })?;
+  let _fl =
+    File::create(&fl_write).context(ChapulinCommonError::CreateFile {
+      f: fl_write,
+    })?;
 
   // load file
   let mut lines = byte_file_reader(&cl_bam_file)?;
@@ -58,12 +63,15 @@ pub fn cl_mapper(
     let read_id = record_line[0].to_string();
     let chr = record_line[2].to_string();
 
-    // TODO: read supplementary fields for additional information & load on struct
+    // TODO: read supplementary fields for additional information & load on
+    // struct
 
     if hm_collection.lock().unwrap().contains_key(&read_id) {
       let mut mapq_switch = false;
 
-      if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
+      if let Some(current_record) =
+        hm_collection.lock().unwrap().get_mut(&read_id)
+      {
         reload!(current_record, read1, record_line);
         reload!(current_record, read2, record_line);
 
@@ -96,8 +104,9 @@ pub fn cl_mapper(
     } else {
       // TODO: all records are going here. investigate the reason
       // ic!(record_line);
-      // fl.write_all(record_line[0].to_string().as_bytes()).context(ChapulinCommonError::WriteFile{
-      // f: record_line[0].to_string() })?;
+      // fl.write_all(record_line[0].to_string().as_bytes()).
+      // context(ChapulinCommonError::WriteFile{ f: record_line[0].
+      // to_string() })?;
     }
   }
 

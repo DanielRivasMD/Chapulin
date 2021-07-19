@@ -67,12 +67,11 @@ pub fn t_subcmd(matches: &ArgMatches) -> anyResult<()> {
     .merge(File::with_name(config))
     .context(ChapulinConfigError::NoConfigFile)?;
 
-  let settings_hm =
-    settings
-      .try_into::<HashMap<String, String>>()
-      .context(ChapulinConfigError::ConfigHashMap {
-        f: config.to_string(),
-      })?;
+  let settings_hm = settings.try_into::<HashMap<String, String>>().context(
+    ChapulinConfigError::ConfigHashMap {
+      f: config.to_string(),
+    },
+  )?;
 
   let _directory = settings_hm
     .get("directory")
@@ -112,8 +111,8 @@ pub fn t_subcmd(matches: &ArgMatches) -> anyResult<()> {
   // let crg_chr_assembly = Arc::clone(&mutex_chr_assembly);
 
   // if verbose {
-  //   println!("\n{}\n{}{}", "Running Reference Genome module...".green(), "Reference file read:
-  // ".blue(), reference_file.cyan()); }
+  //   println!("\n{}\n{}{}", "Running Reference Genome module...".green(),
+  // "Reference file read: ".blue(), reference_file.cyan()); }
 
   // modules::fasta_read::cache_controller::cache_controller(
   //   directory,
@@ -130,8 +129,8 @@ pub fn t_subcmd(matches: &ArgMatches) -> anyResult<()> {
   // let c_sv_anchor_registry = mutex_anchor_registry.clone();
 
   // if verbose {
-  //   println!("\n{}\n{}{}", "Running Structural Variant module...".green(), "Alignment file read:
-  // ".blue(), pair_end_reference_alignment.cyan()); }
+  //   println!("\n{}\n{}{}", "Running Structural Variant module...".green(),
+  // "Alignment file read: ".blue(), pair_end_reference_alignment.cyan()); }
 
   // modules::structural_variant::sv_controller(
   //   directory,

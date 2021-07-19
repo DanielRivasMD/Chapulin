@@ -3,18 +3,22 @@
 // standard libraries
 use anyhow::Context;
 use anyhow::Result as anyResult;
-use genomic_structures::{
-  strand_counter,
-  thresholder,
-  ChrAnchorEnum,
-  MEChimericPair,
-};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 use std::sync::{
   Arc,
   Mutex,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// development libraries
+use genomic_structures::{
+  strand_counter,
+  thresholder,
+  ChrAnchorEnum,
+  MEChimericPair,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,9 +50,10 @@ pub fn pi_me_identifier(
   // TODO: implement parallel iteration here
 
   let fl_write = format!("{}{}.csv", output, ikey);
-  let mut fl = File::create(&fl_write).context(ChapulinCommonError::CreateFile {
-    f: fl_write
-  })?;
+  let mut fl =
+    File::create(&fl_write).context(ChapulinCommonError::CreateFile {
+      f: fl_write,
+    })?;
 
   for strand in STRAND_VEC.iter() {
     chr_position_hm.insert(strand, HashMap::new());
@@ -94,7 +99,13 @@ pub fn pi_me_identifier(
 
     // TODO: memotization
     if read_count != 0 {
-      let pois_threshold = thresholder(read_count as f64, chr_size, 0.001, tmp_position_hm, NO_FDR);
+      let pois_threshold = thresholder(
+        read_count as f64,
+        chr_size,
+        0.001,
+        tmp_position_hm,
+        NO_FDR,
+      );
 
       // TODO: verify read pairs some are empty
       // TODO: verify read passing map quality
@@ -104,16 +115,18 @@ pub fn pi_me_identifier(
       for (chr_pos, id_vec) in tmp_position_hm.iter() {
         if id_vec.len() > pois_threshold {
           // println!();
-          // println!("Position: {} @ strand: {} => {}", chr_pos, strand, id_vec.len());
-          // println!("{:?}", id_vec);
+          // println!("Position: {} @ strand: {} => {}", chr_pos, strand,
+          // id_vec.len()); println!("{:?}", id_vec);
 
           // println!("{}, {}, {}, {}", ikey, chr_pos, strand, id_vec.len());
-          let to_write = format!("{}, {}, {}, {}\n", ikey, chr_pos, strand, id_vec.len());
+          let to_write =
+            format!("{}, {}, {}, {}\n", ikey, chr_pos, strand, id_vec.len());
 
-          fl.write_all(to_write.as_bytes())
-            .context(ChapulinCommonError::WriteFile {
+          fl.write_all(to_write.as_bytes()).context(
+            ChapulinCommonError::WriteFile {
               f: to_write
-            })?;
+            },
+          )?;
 
           // for id_read in id_vec.iter() {
           //   if let Some((id, read)) = hm_collection

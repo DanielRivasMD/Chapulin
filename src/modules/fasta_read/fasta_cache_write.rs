@@ -23,17 +23,18 @@ pub fn write_cache(
   chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
   let chr_hm = chr_assembly.lock().unwrap();
-  let mut ref_cache_file = stdFile::create(ref_cache).context(ChapulinCommonError::CreateFile {
-    f: ref_cache.to_string(),
-  })?;
+  let mut ref_cache_file =
+    stdFile::create(ref_cache).context(ChapulinCommonError::CreateFile {
+      f: ref_cache.to_string(),
+    })?;
 
   for (c, l) in chr_hm.iter() {
     let cl_write = format!("{}\t{}\n", c, l);
-    ref_cache_file
-      .write_all(cl_write.as_bytes())
-      .context(ChapulinCommonError::WriteFile {
+    ref_cache_file.write_all(cl_write.as_bytes()).context(
+      ChapulinCommonError::WriteFile {
         f: cl_write
-      })?;
+      },
+    )?;
   }
 
   info!("Writing cache: {}", ref_cache);

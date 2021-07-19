@@ -3,12 +3,6 @@
 // standard libraries
 use anyhow::Context;
 use anyhow::Result as anyResult;
-use genomic_structures::{
-  interpretor,
-  ChrAnchorEnum,
-  MEAnchor,
-  MEChimericPair,
-};
 use std::collections::HashMap;
 use std::str::from_utf8;
 use std::sync::{
@@ -19,7 +13,13 @@ use std::sync::{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // development libraries
-use genomic_structures::CIGAR;
+use genomic_structures::{
+  interpretor,
+  ChrAnchorEnum,
+  MEAnchor,
+  MEChimericPair,
+  CIGAR,
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

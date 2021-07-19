@@ -5,8 +5,10 @@ use anyhow::Context;
 use anyhow::Result as anyResult;
 use clap::ArgMatches;
 use colored::*;
-use config::Config;
-use config::File;
+use config::{
+  Config,
+  File,
+};
 use std::collections::HashMap;
 use std::process::exit;
 use std::sync::{
@@ -75,12 +77,11 @@ pub fn cr_subcmd(matches: &ArgMatches) -> anyResult<()> {
     .merge(File::with_name(config))
     .context(ChapulinConfigError::NoConfigFile)?;
 
-  let settings_hm =
-    settings
-      .try_into::<HashMap<String, String>>()
-      .context(ChapulinConfigError::ConfigHashMap {
-        f: config.to_string(),
-      })?;
+  let settings_hm = settings.try_into::<HashMap<String, String>>().context(
+    ChapulinConfigError::ConfigHashMap {
+      f: config.to_string(),
+    },
+  )?;
 
   let directory = settings_hm
     .get("directory")
