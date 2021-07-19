@@ -25,7 +25,7 @@ pub fn cl_single_controller(
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> anyResult<()> {
   // load reference chromosome aligned reads
-  for i in 1..3 {
+  for i in 1..=2 {
     let cdirectory = directory.clone();
     let cprefix = prefix.clone();
     let cerrata = errata.clone();
