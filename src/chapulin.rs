@@ -2,6 +2,10 @@
 // macros                                                                                         //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// derive new
+#[macro_use]
+extern crate derive_new;
+
 // logging
 #[macro_use]
 extern crate log;
