@@ -47,11 +47,7 @@ pub fn me_identificator(
   let mut lines = byte_file_reader(&me_bam_file)?;
 
   // declare initial values
-  let mut prev_read_id = String::new();
-  let mut purge_switch = true;
-  let mut mobel_anchor = false;
-  let mut me_size = 0.;
-  let mut mobel_orientation = String::new();
+  let mut read_values = ReadValues::new();
 
   // iterate through file
   while let Some(line) = lines.next() {
@@ -87,30 +83,37 @@ pub fn me_identificator(
 
     // retrieve mobile element library records
     if let Some(me_record) = hm_me_collection.lock().unwrap().get(&mobel) {
-      me_size = *me_record;
+      read_values.me_size = *me_record;
       // me_size = me_record.me_size;
     }
 
     // purge read pairs
-    if !(prev_read_id == read_id || prev_read_id.is_empty()) {
+    if !(read_values.prev_read_id == read_id
+      || read_values.prev_read_id.is_empty())
+    {
       // evaluate read batch
-      if purge_switch {
-        hm_record_collection.lock().unwrap().remove(&prev_read_id);
+      if read_values.purge_switch {
+        hm_record_collection
+          .lock()
+          .unwrap()
+          .remove(&read_values.prev_read_id);
       }
 
       // reset purge switch
-      purge_switch = true;
+      read_values.purge_switch = true;
     }
 
     // tagging
     if adj_left_pos <= ME_LIMIT && read_orientation {
-      purge_switch = false;
-      mobel_anchor = true;
-      mobel_orientation = "upstream".to_string();
-    } else if me_size - adj_right_pos as f64 <= ME_LIMIT.into() && !read_orientation {
-      purge_switch = false;
-      mobel_anchor = true;
-      mobel_orientation = "downstream".to_string();
+      read_values.purge_switch = false;
+      read_values.mobel_anchor = true;
+      read_values.mobel_orientation = "upstream".to_string();
+    } else if read_values.me_size - adj_right_pos as f64 <= ME_LIMIT.into()
+      && !read_orientation
+    {
+      read_values.purge_switch = false;
+      read_values.mobel_anchor = true;
+      read_values.mobel_orientation = "downstream".to_string();
     }
 
     // match on proviral flag
@@ -124,30 +127,33 @@ pub fn me_identificator(
             MEChimericPair::new(ChrAnchorEnum::None),
           );
 
-          if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
+          if let Some(current_record) =
+            hm_record_collection.lock().unwrap().get_mut(&read_id)
+          {
             load!(
               current_record,
               read1,
               record_line,
-              me_size,
-              mobel_orientation,
+              read_values.me_size,
+              read_values.mobel_orientation,
               ChapulinCommonError::Parsing
             );
-            if mobel_anchor {
+            if read_values.mobel_anchor {
               current_record.chranch = ChrAnchorEnum::Read2;
             }
           }
-        } else if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id)
+        } else if let Some(current_record) =
+          hm_record_collection.lock().unwrap().get_mut(&read_id)
         {
           load!(
             current_record,
             read2,
             record_line,
-            me_size,
-            mobel_orientation,
+            read_values.me_size,
+            read_values.mobel_orientation,
             ChapulinCommonError::Parsing
           );
-          if mobel_anchor {
+          if read_values.mobel_anchor {
             current_record.chranch = ChrAnchorEnum::Read1;
           }
         }
@@ -155,17 +161,19 @@ pub fn me_identificator(
 
       // secondary alignment
       pf if pf >= 256 => {
-        if let Some(current_record) = hm_record_collection.lock().unwrap().get_mut(&read_id) {
+        if let Some(current_record) =
+          hm_record_collection.lock().unwrap().get_mut(&read_id)
+        {
           if current_record.read2.sequence.is_empty() {
             load!(
               current_record,
               read1,
               record_line,
-              me_size,
-              mobel_orientation,
-            ChapulinCommonError::Parsing
+              read_values.me_size,
+              read_values.mobel_orientation,
+              ChapulinCommonError::Parsing
             );
-            if mobel_anchor {
+            if read_values.mobel_anchor {
               current_record.chranch = ChrAnchorEnum::Read2;
             }
           } else {
@@ -173,11 +181,11 @@ pub fn me_identificator(
               current_record,
               read2,
               record_line,
-              me_size,
-              mobel_orientation,
+              read_values.me_size,
+              read_values.mobel_orientation,
               ChapulinCommonError::Parsing
             );
-            if mobel_anchor {
+            if read_values.mobel_anchor {
               current_record.chranch = ChrAnchorEnum::Read1;
             }
           }
@@ -188,16 +196,35 @@ pub fn me_identificator(
     }
 
     // reset anchor switch
-    mobel_anchor = false;
-    prev_read_id = read_id;
+    read_values.mobel_anchor = false;
+    read_values.prev_read_id = read_id;
   }
 
   // evaluate at end of file
-  if purge_switch {
-    hm_record_collection.lock().unwrap().remove(&prev_read_id);
+  if read_values.purge_switch {
+    hm_record_collection
+      .lock()
+      .unwrap()
+      .remove(&read_values.prev_read_id);
   }
 
   Ok(())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, new)]
+struct ReadValues {
+  #[new(default)]
+  prev_read_id:      String,
+  #[new(value = "true")]
+  purge_switch:      bool,
+  #[new(value = "false")]
+  mobel_anchor:      bool,
+  #[new(value = "0.")]
+  me_size:           f64,
+  #[new(default)]
+  mobel_orientation: String,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
