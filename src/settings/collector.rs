@@ -6,6 +6,7 @@ use anyhow::Result as anyResult;
 use clap::ArgMatches;
 use colored::*;
 use std::collections::HashMap;
+use std::fmt;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -83,6 +84,30 @@ pub fn str_collector(sett_hm: HashMap<String, String>) -> anyResult<ParamSetting
       .context(ChapulinConfigError::BadPairedReferenceGenomeVar)?
       .to_string(),
   })
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// display trait implementation. colorized
+impl fmt::Display for ParamSettings {
+  fn fmt(
+    &self,
+    f: &mut fmt::Formatter,
+  ) -> fmt::Result {
+    writeln!(
+      f,
+      "\n{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}",
+      "Displaying settings".green(),
+      "Directory: ".blue(), self.directory.cyan(),
+      "Output: ".blue(), self.output.cyan(),
+      "Error: ".blue(), self.errata.cyan(),
+      "Reference file: ".blue(), self.reference_file.cyan(),
+      "Mobile element library: ".blue(), self.me_library_file.cyan(),
+      "Mobile element alignment: ".blue(), self.me_align.cyan(),
+      "Reference alignment: ".blue(), self.ref_align.cyan(),
+      "Paired end aligment: ".blue(), self.pair_end_reference_alignment.cyan(),
+    )
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
