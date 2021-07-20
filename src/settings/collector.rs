@@ -1,7 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
+use anyhow::Context;
+use anyhow::Result as anyResult;
 use clap::ArgMatches;
+use colored::*;
+use std::collections::HashMap;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// error handler
+use crate::error::config_error::ChapulinConfigError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,6 +26,63 @@ pub fn bool_collector(matches: &ArgMatches) -> BoolSettings {
     dry_run: matches.is_present("dry"),
     force:   matches.is_present("force"),
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pub struct ParamSettings {
+  pub directory: String,
+  pub output: String,
+  pub errata: String,
+  pub reference_file: String,
+  pub me_library_file: String,
+  pub me_align: String,
+  pub ref_align: String,
+  pub pair_end_reference_alignment: String,
+}
+
+pub fn str_collector(sett_hm: HashMap<String, String>) -> anyResult<ParamSettings> {
+  Ok(ParamSettings {
+    directory: sett_hm
+      .get("directory")
+      .context(ChapulinConfigError::BadDirectoryVar)?
+      .to_string(),
+
+    output: sett_hm
+      .get("output")
+      .context(ChapulinConfigError::BadOutput)?
+      .to_string(),
+
+    errata: sett_hm
+      .get("error")
+      .context(ChapulinConfigError::BadError)?
+      .to_string(),
+
+    reference_file: sett_hm
+      .get("reference")
+      .context(ChapulinConfigError::BadReferenceVar)?
+      .to_string(),
+
+    me_library_file: sett_hm
+      .get("mobile_element_library")
+      .context(ChapulinConfigError::BadMELibVar)?
+      .to_string(),
+
+    me_align: sett_hm
+      .get("mobile_element_alignment")
+      .context(ChapulinConfigError::BadMEAlignVar)?
+      .to_string(),
+
+    ref_align: sett_hm
+      .get("reference_genome_alignment")
+      .context(ChapulinConfigError::BadSingleReferenceGenomeVar)?
+      .to_string(),
+
+    pair_end_reference_alignment: sett_hm
+      .get("pair_end_reference_alignment")
+      .context(ChapulinConfigError::BadPairedReferenceGenomeVar)?
+      .to_string(),
+  })
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
