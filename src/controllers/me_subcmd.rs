@@ -26,12 +26,21 @@ use crate::modules;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// crate utilities
+use crate::settings::collector::{
+  bool_collector,
+  str_collector,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // error handler
 use crate::error::config_error::ChapulinConfigError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
+
   let subcmd = "ME";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,9 +63,8 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // collect settings
-  let verbose = matches.is_present("verbose");
+  let bool_sett = bool_collector(matches);
 
-  let dry_run = matches.is_present("dry");
 
   let now = SystemTime::now();
   pretty_env_logger::init();
@@ -89,68 +97,26 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
     },
   )?;
 
-  let directory = settings_hm
-    .get("directory")
-    .context(ChapulinConfigError::BadDirectoryVar)?;
-
-  let output = settings_hm
-    .get("output")
-    .context(ChapulinConfigError::BadOutput)?;
-
-  let errata = settings_hm
-    .get("error")
-    .context(ChapulinConfigError::BadError)?;
-
-  let reference_file = settings_hm
-    .get("reference")
-    .context(ChapulinConfigError::BadReferenceVar)?;
-
-  let me_library_file = settings_hm
-    .get("mobile_element_library")
-    .context(ChapulinConfigError::BadMELibVar)?;
-
-  let me_align = settings_hm
-    .get("mobile_element_alignment")
-    .context(ChapulinConfigError::BadMEAlignVar)?;
-
-  let ref_align = settings_hm
-    .get("reference_genome_alignment")
-    .context(ChapulinConfigError::BadSingleReferenceGenomeVar)?;
-
-  let pair_end_reference_alignment = settings_hm
-    .get("pair_end_reference_alignment")
-    .context(ChapulinConfigError::BadPairedReferenceGenomeVar)?;
+  let string_sett = str_collector(settings_hm)?;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  if dry_run {
-    print!(
-      "\n{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n{:<30}{}\n",
-      "Displaying settings".green(),
-      "Configuration file: ".blue(), config.cyan(),
-      "Directory: ".blue(), directory.cyan(),
-      "Output: ".blue(), output.cyan(),
-      "Error: ".blue(), errata.cyan(),
-      "Reference file: ".blue(), reference_file.cyan(),
-      "Mobile element library: ".blue(), me_library_file.cyan(),
-      "Mobile element alignment: ".blue(), me_align.cyan(),
-      "Reference alignment: ".blue(), ref_align.cyan(),
-      "Paired end aligment: ".blue(), pair_end_reference_alignment.cyan(),
-    );
-
+  // print dry run
+  if bool_sett.dry_run {
+    println!("{}", string_sett);
     exit(0);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // create output path
-  let out_dir = format!("{}{}", directory, output);
+  let out_dir = format!("{}{}", string_sett.directory, string_sett.output);
   if !Path::new(&out_dir).exists() {
     create_dir_all(&out_dir)?;
   }
 
   // create error path
-  let err_dir = format!("{}{}", directory, errata);
+  let err_dir = format!("{}{}", string_sett.directory, string_sett.errata);
   if !Path::new(&err_dir).exists() {
     create_dir_all(&err_dir)?;
   }
@@ -169,19 +135,19 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
   // reference genome module
   let crg_chr_assembly = Arc::clone(&mutex_chr_assembly);
 
-  if verbose {
+  if bool_sett.verbose {
     println!(
       "\n{}\n{}{}",
       "Running Reference Genome module...".green(),
       "Reference file read: ".blue(),
-      reference_file.cyan()
+      string_sett.reference_file.cyan()
     );
   }
 
   modules::fasta_read::cache_controller::cache_controller(
     subcmd,
-    directory,
-    reference_file,
+    &string_sett.directory,
+    &string_sett.reference_file,
     crg_chr_assembly,
   )?;
 
@@ -195,27 +161,29 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
   let cme_library = Arc::clone(&mutex_me_library);
 
   // TODO: commit these formating changes all together when update config
-  if verbose {
+  if bool_sett.verbose {
     println!(
       "\n{}\n{}{}\n{}{}",
       "Running Mobile Element module...".green(),
       "Mobile element lirabry read: ".blue(),
-      me_library_file.cyan(),
+      string_sett.me_library_file.cyan(),
       "ME alignment file read: ".blue(),
-      me_align.cyan()
+      string_sett.me_align.cyan()
     );
   }
 
   modules::fasta_read::cache_controller::cache_controller(
     subcmd,
-    directory,
-    me_library_file,
+    &string_sett.directory,
+    &string_sett.me_library_file,
     cref_library,
   )?;
 
+  info!("{:?}", now.elapsed().unwrap());
+
   modules::mobile_elements::me_controller(
-    directory,
-    me_align,
+    &string_sett.directory,
+    &string_sett.me_align,
     cme_library,
     cme_record_collection,
   )?;
@@ -230,38 +198,38 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
   match chr_align {
     "single" => {
-      if verbose {
+      if bool_sett.verbose {
         println!(
           "\n{}\n{}{}",
           "Running Chromosomal Loci module...".green(),
           "Chromosomal alignment file read: ".blue(),
-          ref_align.cyan()
+          string_sett.ref_align.cyan()
         );
       }
 
       modules::chromosomal_loci::cl_single_controller(
-        directory.to_string(),
-        ref_align.to_string(),
-        errata.to_string(),
+        string_sett.directory.to_string(),
+        string_sett.ref_align.to_string(),
+        string_sett.errata.to_string(),
         ccl_record_collection,
         ccl_anchor_registry,
       )?;
     }
 
     "paired" => {
-      if verbose {
+      if bool_sett.verbose {
         println!(
           "\n{}\n{}{}",
           "Running Chromosomal Loci module...".green(),
           "Chromosomal alignment file read: ".blue(),
-          pair_end_reference_alignment.cyan()
+          string_sett.pair_end_reference_alignment.cyan()
         );
       }
 
       modules::chromosomal_loci::cl_paired_controller(
-        directory.to_string(),
-        pair_end_reference_alignment.to_string(),
-        errata.to_string(),
+        string_sett.directory.to_string(),
+        string_sett.pair_end_reference_alignment.to_string(),
+        string_sett.errata.to_string(),
         ccl_record_collection,
         ccl_anchor_registry,
       )?;
@@ -275,7 +243,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // peak identification module
-  if verbose {
+  if bool_sett.verbose {
     println!("\n{}\n", "Running Peak Identification module...".green());
   }
 
