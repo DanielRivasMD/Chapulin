@@ -42,7 +42,9 @@ pub struct ParamSettings {
   pub pair_end_reference_alignment: String,
 }
 
-pub fn str_collector(sett_hm: HashMap<String, String>) -> anyResult<ParamSettings> {
+pub fn str_collector(
+  sett_hm: HashMap<String, String>
+) -> anyResult<ParamSettings> {
   Ok(ParamSettings {
     directory: sett_hm
       .get("directory")
