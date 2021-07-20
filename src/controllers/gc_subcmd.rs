@@ -13,6 +13,11 @@ use std::time::SystemTime;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// crate utilities
+use crate::settings::collector::bool_collector;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // error handler
 use crate::error::{
   common_error::ChapulinCommonError,
@@ -44,21 +49,17 @@ pub fn gc_subcmd(matches: &ArgMatches) -> anyResult<()> {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // collect settings
-  let verbose = matches.is_present("verbose");
-
-  let dry_run = matches.is_present("dry");
-
-  let force = matches.is_present("force");
 
   let now = SystemTime::now();
   pretty_env_logger::init();
+  let bool_sett = bool_collector(matches);
 
   let mut config = "chapulin_config".to_string();
   if let Some(cname) = matches.value_of("config") {
     config = cname.to_string();
   }
 
-  if verbose {
+  if bool_sett.verbose {
     println!(
       "\n{}\n{}{}",
       "Writting configuration...".green(),
@@ -69,7 +70,7 @@ pub fn gc_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  if dry_run {
+  if bool_sett.dry_run {
     print!(
       "\n{}\n{:<30}{}\n",
       "Displaying settings".green(),
@@ -98,7 +99,7 @@ pub fn gc_subcmd(matches: &ArgMatches) -> anyResult<()> {
       "Please observe that path exists: ".blue(),
       config.cyan()
     );
-    if force {
+    if bool_sett.force {
       print!("\n{}\n", "Overwritting!".blue());
       write_conf(fl_conf)?;
     } else {
