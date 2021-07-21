@@ -14,7 +14,6 @@ use std::sync::{
 
 // development libraries
 use genomic_structures::{
-  interpretor,
   ChrAnchorEnum,
   MEAnchor,
   MEChimericPair,
@@ -58,24 +57,9 @@ pub fn me_identificator(
       .split('\t')
       .collect();
 
-    // update read id
-    read_values.read_id = record_line[0].to_string();
+    // load record line
+    load!(read_values, record_line, ChapulinCommonError::Parsing);
 
-    // calculate current values
-    read_values.mobel = record_line[2].to_string();
-    // let read_seq = record_line[9].to_string();
-
-    // flag & read orientation
-    read_values.pv_flag = record_line[1]
-      .parse::<i32>()
-      .context(ChapulinCommonError::Parsing)?;
-    read_values.read_orientation = interpretor(read_values.pv_flag, 5);
-
-    // alignment interpretation
-    read_values.pv_position = record_line[3]
-      .parse::<i32>()
-      .context(ChapulinCommonError::Parsing)?;
-    read_values.pv_cigar = record_line[5].to_string();
     let dc_cigar = CIGAR::loader(&read_values.pv_cigar);
 
     // TODO: perhaps bound adjusted boundries into struct
