@@ -87,16 +87,15 @@ pub fn me_identificator(
     }
 
     // tagging
-    if read_values.cigar.left_boundry <= ME_LIMIT && read_values.read_orientation {
-      read_values.purge_switch = false;
-      read_values.mobel_anchor = true;
-      read_values.mobel_orientation = "upstream".to_string();
-    } else if read_values.me_size - read_values.cigar.right_boundry as f64 <= ME_LIMIT.into()
+    if read_values.cigar.left_boundry <= ME_LIMIT
+      && read_values.read_orientation
+    {
+      read_values.upstream();
+    } else if read_values.me_size - read_values.cigar.right_boundry as f64
+      <= ME_LIMIT.into()
       && !read_values.read_orientation
     {
-      read_values.purge_switch = false;
-      read_values.mobel_anchor = true;
-      read_values.mobel_orientation = "downstream".to_string();
+      read_values.downstream();
     }
 
     // match on proviral flag
@@ -232,6 +231,25 @@ struct ReadValues {
   read_id:           String,
   #[new(default)]
   read_orientation:  bool,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+impl ReadValues {
+  fn upstream(&mut self) {
+    self.switches();
+    self.mobel_orientation = "upstream".to_string();
+  }
+
+  fn downstream(&mut self) {
+    self.switches();
+    self.mobel_orientation = "downstream".to_string();
+  }
+
+  fn switches(&mut self) {
+    self.purge_switch = false;
+    self.mobel_anchor = true;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
