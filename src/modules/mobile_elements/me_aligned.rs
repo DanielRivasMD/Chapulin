@@ -179,8 +179,7 @@ pub fn me_identificator(
     }
 
     // reset anchor switch
-    read_values.mobel_anchor = false;
-    read_values.prev_read_id = read_values.read_id;
+    read_values.reset_anchor();
   }
 
   // evaluate at end of file
@@ -246,6 +245,11 @@ impl ReadValues {
 
   fn reset_purge(&mut self) {
     self.purge_switch = true;
+  }
+
+  fn reset_anchor(&mut self) {
+    self.mobel_anchor = false;
+    self.prev_read_id = self.read_id.clone();
   }
 }
 
