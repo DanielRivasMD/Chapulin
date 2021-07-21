@@ -60,11 +60,8 @@ pub fn me_identificator(
     // load record line
     load!(read_values, record_line, ChapulinCommonError::Parsing);
 
-    let dc_cigar = CIGAR::loader(&read_values.pv_cigar);
-
-    // TODO: perhaps bound adjusted boundries into struct
-    let (adj_left_pos, adj_right_pos) =
-      dc_cigar.boundries(read_values.pv_position);
+    // cigar
+    let dc_cigar = CIGAR::loader(&read_values.pv_cigar, read_values.pv_position);
 
     // TODO: describe break point signature
 
@@ -93,11 +90,11 @@ pub fn me_identificator(
     }
 
     // tagging
-    if adj_left_pos <= ME_LIMIT && read_values.read_orientation {
+    if dc_cigar.left_boundry <= ME_LIMIT && read_values.read_orientation {
       read_values.purge_switch = false;
       read_values.mobel_anchor = true;
       read_values.mobel_orientation = "upstream".to_string();
-    } else if read_values.me_size - adj_right_pos as f64 <= ME_LIMIT.into()
+    } else if read_values.me_size - dc_cigar.right_boundry as f64 <= ME_LIMIT.into()
       && !read_values.read_orientation
     {
       read_values.purge_switch = false;
