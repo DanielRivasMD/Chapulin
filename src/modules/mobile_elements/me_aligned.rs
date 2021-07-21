@@ -60,9 +60,6 @@ pub fn me_identificator(
     // load record line
     load!(read_values, record_line, ChapulinCommonError::Parsing);
 
-    // cigar
-    read_values.cigar.loader(&read_values.pv_cigar, read_values.pv_position);
-
     // TODO: describe break point signature
 
     // retrieve mobile element library records
