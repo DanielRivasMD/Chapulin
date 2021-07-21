@@ -231,6 +231,8 @@ struct ReadValues {
   read_id:           String,
   #[new(default)]
   read_orientation:  bool,
+  #[new(default)]
+  sequence: String,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
