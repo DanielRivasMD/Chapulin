@@ -120,9 +120,7 @@ pub fn me_identificator(
             load!(
               current_record,
               read1,
-              record_line,
-              read_values.me_size,
-              read_values.mobel_orientation,
+              read_values,
               ChapulinCommonError::Parsing
             );
             if read_values.mobel_anchor {
@@ -137,9 +135,7 @@ pub fn me_identificator(
           load!(
             current_record,
             read2,
-            record_line,
-            read_values.me_size,
-            read_values.mobel_orientation,
+            read_values,
             ChapulinCommonError::Parsing
           );
           if read_values.mobel_anchor {
@@ -159,9 +155,7 @@ pub fn me_identificator(
             load!(
               current_record,
               read1,
-              record_line,
-              read_values.me_size,
-              read_values.mobel_orientation,
+              read_values,
               ChapulinCommonError::Parsing
             );
             if read_values.mobel_anchor {
@@ -171,9 +165,7 @@ pub fn me_identificator(
             load!(
               current_record,
               read2,
-              record_line,
-              read_values.me_size,
-              read_values.mobel_orientation,
+              read_values,
               ChapulinCommonError::Parsing
             );
             if read_values.mobel_anchor {
