@@ -57,6 +57,9 @@ pub fn me_identificator(
       .split('\t')
       .collect();
 
+    // reset read values
+    read_values = ReadValues::new();
+
     // load record line
     load!(read_values, record_line, ChapulinCommonError::Parsing);
 
