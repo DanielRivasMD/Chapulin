@@ -82,7 +82,7 @@ pub fn me_identificator(
       }
 
       // reset purge switch
-      read_values.purge_switch = true;
+      read_values.reset_purge();
     }
 
     // tagging
@@ -242,6 +242,10 @@ impl ReadValues {
   fn switches(&mut self) {
     self.purge_switch = false;
     self.mobel_anchor = true;
+  }
+
+  fn reset_purge(&mut self) {
+    self.purge_switch = true;
   }
 }
 
