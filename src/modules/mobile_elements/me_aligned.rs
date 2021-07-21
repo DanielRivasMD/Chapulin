@@ -66,8 +66,7 @@ pub fn me_identificator(
     if let Some(me_record) =
       hm_me_collection.lock().unwrap().get(&read_values.mobel)
     {
-      read_values.me_size = *me_record;
-      // me_size = me_record.me_size;
+      read_values.mobel_size = *me_record;
     }
 
     // purge read pairs
@@ -91,7 +90,7 @@ pub fn me_identificator(
       && read_values.read_orientation
     {
       read_values.upstream();
-    } else if read_values.me_size - read_values.cigar.right_boundry as f64
+    } else if read_values.mobel_size - read_values.cigar.right_boundry as f64
       <= ME_LIMIT.into()
       && !read_values.read_orientation
     {
@@ -210,13 +209,14 @@ struct ReadValues {
   #[new(value = "CIGAR::new()")]
   cigar: CIGAR,
   #[new(value = "0.")]
-  me_size:           f64,
   #[new(default)]
   mobel:             String,
   #[new(value = "false")]
   mobel_anchor:      bool,
   #[new(default)]
   mobel_orientation: String,
+  #[new(value = "0.")]
+  mobel_size:        f64,
   #[new(default)]
   prev_read_id:      String,
   #[new(value = "true")]
