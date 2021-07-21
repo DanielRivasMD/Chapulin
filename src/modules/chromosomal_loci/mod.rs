@@ -33,8 +33,8 @@ pub fn cl_single_controller(
     let cdirectory = directory.clone();
     let cprefix = prefix.clone();
     let cerrata = errata.clone();
-    let c_hash_map_collection = hash_map_collection.clone();
-    let c_hash_map_anchor = hash_map_anchor.clone();
+    let chash_map_collection = hash_map_collection.clone();
+    let chash_map_anchor = hash_map_anchor.clone();
 
     let cl_handle = thread::spawn(move || {
       let sufix = ".sorted.sam".to_string();
@@ -43,8 +43,8 @@ pub fn cl_single_controller(
       cl_aligned::cl_mapper(
         &cl_aligned_file,
         &cerrata,
-        c_hash_map_collection,
-        c_hash_map_anchor,
+        chash_map_collection,
+        chash_map_anchor,
       )
       .expect("TODO thread error");
     });
