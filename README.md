@@ -88,7 +88,7 @@ Additionally, to improve user experience, **Chapulin** offers [Cache Registering
 ## Installation
 
 
-<!-- TODO: -->
+<!-- DOC: -->
 **Soon to come**
 
 ### Via Homebrew (for macOS)
@@ -103,7 +103,7 @@ brew install danielrivasmd/chapulin
 
 
 
-<!-- TODO: -->
+<!-- DOC: -->
 **Soon to come**
 
 ### Via APT (for Debian-based Linux distros)
@@ -117,7 +117,7 @@ sudo apt install chapulin
 
 
 
-<!-- TODO: -->
+<!-- DOC: -->
 **Soon to come**
 
 ### Via Cargo (for Linux, Windows or macOS)
@@ -132,7 +132,7 @@ cargo install chapulin
 
 
 
-<!-- TODO: -->
+<!-- DOC: -->
 **Soon to come**
 
 ### From Github release
@@ -265,7 +265,7 @@ In case you want to explore **Chapulin** interactively, you might want to instal
 
 ## Examples
 
-<!-- TODO -->
+<!-- DOC -->
 **Soon to come**
 
 ### Example `chapulin` config
@@ -276,7 +276,7 @@ Below you can find a config example. Please observe that you can also obtain a c
 ```
 
 
-<!-- TODO:
+<!-- DOC:
 finish examples
 -->
 

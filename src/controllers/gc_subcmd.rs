@@ -29,6 +29,9 @@ use crate::error::{
 pub fn gc_subcmd(matches: &ArgMatches) -> anyResult<()> {
   let _subcmd = "GC";
 
+  let now = SystemTime::now();
+  pretty_env_logger::init();
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // logging
@@ -49,9 +52,6 @@ pub fn gc_subcmd(matches: &ArgMatches) -> anyResult<()> {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // collect settings
-
-  let now = SystemTime::now();
-  pretty_env_logger::init();
   let bool_sett = bool_collector(matches);
 
   let mut config = "chapulin_config".to_string();

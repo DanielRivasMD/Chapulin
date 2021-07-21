@@ -36,6 +36,7 @@ use crate::error::common_error::ChapulinCommonError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/// Map chromosomal loci.
 pub fn cl_mapper(
   cl_bam_file: &str,
   errata: &str,
@@ -72,9 +73,11 @@ pub fn cl_mapper(
       if let Some(current_record) =
         hm_collection.lock().unwrap().get_mut(&read_id)
       {
+        // load chromosomal anchoring data
         reload!(current_record, read1, record_line);
         reload!(current_record, read2, record_line);
 
+        // evaluate mapq
         match current_record.chranch {
           ChrAnchorEnum::Read1 => {
             mapq_switch = mapq!(current_record, read1);
@@ -86,7 +89,7 @@ pub fn cl_mapper(
         };
       }
 
-      // TODO: consider tagging strand on the fly to avoid postload counting
+      // IDEA: consider tagging strand on the fly to avoid postload counting
       if mapq_switch {
         hm_collection.lock().unwrap().remove(&read_id);
       } else {

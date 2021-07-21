@@ -39,6 +39,11 @@ use crate::error::config_error::ChapulinConfigError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/// Control mobile element protocol.
+///   - Load settings.
+///   - Read and write cache.
+///   - [Load mobile element alignment](modules::mobile_elements::me_aligned::me_identificator).
+///   - [Load chromosomal alignment](modules::chromosomal_loci::cl_aligned::cl_mapper).
 pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
   let subcmd = "ME";
 
@@ -59,22 +64,24 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
     }
   }
 
+  let now = SystemTime::now();
+  pretty_env_logger::init();
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // collect settings
   let bool_sett = bool_collector(matches);
 
-
-  let now = SystemTime::now();
-  pretty_env_logger::init();
+  // TODO: probably expand configuration?
 
   let config = matches
     .value_of("config")
     .context(ChapulinConfigError::EmptyConfigOption)?;
 
+  // TODO: relocate into paramsettings
   let chr_align = matches.value_of("chralign").unwrap();
 
-  if verbose {
+  if bool_sett.verbose {
     println!(
       "\n{}\n{}{}",
       "Setting up configuration...".green(),
@@ -119,6 +126,8 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
   if !Path::new(&err_dir).exists() {
     create_dir_all(&err_dir)?;
   }
+
+  info!("{:?}", now.elapsed().unwrap());
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -209,7 +218,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
       modules::chromosomal_loci::cl_single_controller(
         string_sett.directory.to_string(),
         string_sett.ref_align.to_string(),
-        string_sett.errata.to_string(),
+        string_sett.errata,
         ccl_record_collection,
         ccl_anchor_registry,
       )?;
@@ -228,7 +237,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
       modules::chromosomal_loci::cl_paired_controller(
         string_sett.directory.to_string(),
         string_sett.pair_end_reference_alignment.to_string(),
-        string_sett.errata.to_string(),
+        string_sett.errata,
         ccl_record_collection,
         ccl_anchor_registry,
       )?;

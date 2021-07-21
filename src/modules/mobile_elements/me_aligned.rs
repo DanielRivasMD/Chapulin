@@ -199,8 +199,7 @@ pub fn me_identificator(
 #[derive(Debug, new)]
 struct ReadValues {
   #[new(value = "CIGAR::new()")]
-  cigar: CIGAR,
-  #[new(value = "0.")]
+  cigar:             CIGAR,
   #[new(default)]
   mobel:             String,
   #[new(value = "false")]
@@ -224,7 +223,7 @@ struct ReadValues {
   #[new(default)]
   read_orientation:  bool,
   #[new(default)]
-  sequence: String,
+  sequence:          String,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
