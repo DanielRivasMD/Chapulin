@@ -110,10 +110,10 @@ pub fn me_identificator(
           .unwrap()
           .contains_key(&read_values.read_id)
         {
-          hm_record_collection.lock().unwrap().insert(
-            (&read_values.read_id).to_string(),
-            MEChimericPair::new(ChrAnchorEnum::None),
-          );
+          hm_record_collection
+            .lock()
+            .unwrap()
+            .insert((&read_values.read_id).to_string(), MEChimericPair::new());
 
           if let Some(current_record) = hm_record_collection
             .lock()
