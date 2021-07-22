@@ -71,9 +71,11 @@ pub fn me_identificator(
     // TODO: describe break point signature
 
     // retrieve mobile element library records
-    if let Some(me_record) =
-      hm_me_collection.lock().unwrap().get(&local_switches.mobel_anchor.mobel)
-      // hm_me_collection.lock().unwrap().get(&raw_values.scaffold)
+    if let Some(me_record) = hm_me_collection
+      .lock()
+      .unwrap()
+      .get(&local_switches.mobel_anchor.mobel)
+    // hm_me_collection.lock().unwrap().get(&raw_values.scaffold)
     {
       local_switches.mobel_anchor.size = *me_record;
     }
@@ -100,7 +102,8 @@ pub fn me_identificator(
       && local_switches.read_orientation
     {
       local_switches.upstream();
-    } else if local_switches.mobel_anchor.size - raw_values.cigar.right_boundry as f64
+    } else if local_switches.mobel_anchor.size
+      - raw_values.cigar.right_boundry as f64
       <= ME_LIMIT.into()
       && !local_switches.read_orientation
     {
@@ -141,7 +144,7 @@ pub fn me_identificator(
               current_record.chranch = ChrAnchorEnum::Read2;
             }
           }
-          // if already present tag mobel anchor Read2 & chr anchor Read1
+        // if already present tag mobel anchor Read2 & chr anchor Read1
         } else if let Some(current_record) = hm_record_collection
           .lock()
           .unwrap()
@@ -167,6 +170,7 @@ pub fn me_identificator(
           .unwrap()
           .get_mut(&raw_values.read_id)
         {
+          // if sequence field is empty insert ? BUG: is this correct?
           if current_record.read2.sequence.is_empty() {
             load!(
               current_record,
@@ -215,25 +219,23 @@ pub fn me_identificator(
 
 #[derive(Debug, new)]
 struct LocalSwtiches {
-
   #[new(default)]
   mobel_anchor: MEAnchor,
 
   #[new(value = "false")]
-  mobel_anchor_switch:      bool,
+  mobel_anchor_switch: bool,
 
   #[new(default)]
-  prev_read_id:      String,
+  prev_read_id: String,
 
   #[new(value = "true")]
-  purge_switch:      bool,
+  purge_switch: bool,
 
   #[new(default)]
-  read_id:           String,
+  read_id: String,
 
   #[new(default)]
-  read_orientation:  bool,
-
+  read_orientation: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
