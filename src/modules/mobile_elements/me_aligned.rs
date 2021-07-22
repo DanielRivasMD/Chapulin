@@ -102,7 +102,7 @@ pub fn me_identificator(
 
     // match on proviral flag
     // this check is much faster than using binary interpretor
-    match read_values.pv_flag {
+    match read_values.flag {
       // primary alignment
       pf if pf <= 255 => {
         if !hm_record_collection
@@ -215,11 +215,9 @@ struct ReadValues {
   #[new(value = "true")]
   purge_switch:      bool,
   #[new(default)]
-  pv_cigar:          String,
+  flag:              i32,
   #[new(default)]
-  pv_flag:           i32,
-  #[new(default)]
-  pv_position:       i32,
+  position:          i32,
   #[new(default)]
   read_id:           String,
   #[new(default)]
