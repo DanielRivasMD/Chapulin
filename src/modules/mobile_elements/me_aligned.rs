@@ -17,7 +17,7 @@ use genomic_structures::{
   ChrAnchorEnum,
   MEAnchor,
   MEChimericPair,
-  CIGAR,
+  RawValues,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,10 +46,18 @@ pub fn me_identificator(
   let mut lines = byte_file_reader(&me_bam_file)?;
 
   // declare initial values
-  let mut read_values = ReadValues::new();
+  // local temporary values overwritten each iteration
+  // local switches must be declared outside loop to evaluate at last line
+  let mut local_switches = LocalSwtiches::new();
 
   // iterate through file
   while let Some(line) = lines.next() {
+    // reset structs
+    // overwirte local switches
+    local_switches = LocalSwtiches::new();
+    // SAM line values declared at each iteration
+    let mut raw_values = RawValues::new();
+
     // load line into vector
     let record_line: Vec<&str> = from_utf8(&line?)
       .context(ChapulinCommonError::RegistryLine)?
@@ -57,121 +65,128 @@ pub fn me_identificator(
       .split('\t')
       .collect();
 
-    // reset read values
-    read_values = ReadValues::new();
-
-    // load record line
-    load!(read_values, record_line, ChapulinCommonError::Parsing);
-
+    // load SAM line
+    load!(raw_values, record_line, ChapulinCommonError::Parsing);
+    // TODO: load local switches
     // TODO: describe break point signature
 
     // retrieve mobile element library records
     if let Some(me_record) =
-      hm_me_collection.lock().unwrap().get(&read_values.mobel)
+      hm_me_collection.lock().unwrap().get(&local_switches.mobel_anchor.mobel)
+      // hm_me_collection.lock().unwrap().get(&raw_values.scaffold)
     {
-      read_values.mobel_size = *me_record;
+      local_switches.mobel_anchor.size = *me_record;
     }
 
-    // purge read pairs
-    if !(read_values.prev_read_id == read_values.read_id
-      || read_values.prev_read_id.is_empty())
+    // purge read pairs on hash map (record collection)
+    if !(local_switches.prev_read_id == local_switches.read_id
+      || local_switches.prev_read_id.is_empty())
     {
       // evaluate read batch
-      if read_values.purge_switch {
+      if local_switches.purge_switch {
         hm_record_collection
           .lock()
           .unwrap()
-          .remove(&read_values.prev_read_id);
+          .remove(&local_switches.prev_read_id);
       }
 
       // reset purge switch
-      read_values.reset_purge();
+      local_switches.reset_purge();
     }
 
     // tagging
-    if read_values.cigar.left_boundry <= ME_LIMIT
-      && read_values.read_orientation
+    // switches get updated by local switches methods
+    if raw_values.cigar.left_boundry <= ME_LIMIT
+      && local_switches.read_orientation
     {
-      read_values.upstream();
-    } else if read_values.mobel_size - read_values.cigar.right_boundry as f64
+      local_switches.upstream();
+    } else if local_switches.mobel_anchor.size - raw_values.cigar.right_boundry as f64
       <= ME_LIMIT.into()
-      && !read_values.read_orientation
+      && !local_switches.read_orientation
     {
-      read_values.downstream();
+      local_switches.downstream();
     }
 
-    // match on proviral flag
+    // mount data on hash map (record collection)
+    // match on flag (proviral)
     // this check is much faster than using binary interpretor
-    match read_values.flag {
+    match raw_values.flag {
       // primary alignment
-      pf if pf <= 255 => {
+      proviral_flag if proviral_flag <= 255 => {
+        // insert record if it is not present on hash map (record collection)
         if !hm_record_collection
           .lock()
           .unwrap()
-          .contains_key(&read_values.read_id)
+          .contains_key(&raw_values.read_id)
         {
           hm_record_collection
             .lock()
             .unwrap()
-            .insert((&read_values.read_id).to_string(), MEChimericPair::new());
+            .insert((&raw_values.read_id).to_string(), MEChimericPair::new());
 
+          // if newly inserted tag mobel anchor Read1 & chr anchor Read2
           if let Some(current_record) = hm_record_collection
             .lock()
             .unwrap()
-            .get_mut(&read_values.read_id)
+            .get_mut(&raw_values.read_id)
           {
             load!(
               current_record,
               read1,
-              read_values,
+              raw_values,
+              local_switches,
               ChapulinCommonError::Parsing
             );
-            if read_values.mobel_anchor {
+            if local_switches.mobel_anchor_switch {
               current_record.chranch = ChrAnchorEnum::Read2;
             }
           }
+          // if already present tag mobel anchor Read2 & chr anchor Read1
         } else if let Some(current_record) = hm_record_collection
           .lock()
           .unwrap()
-          .get_mut(&read_values.read_id)
+          .get_mut(&raw_values.read_id)
         {
           load!(
             current_record,
             read2,
-            read_values,
+            raw_values,
+            local_switches,
             ChapulinCommonError::Parsing
           );
-          if read_values.mobel_anchor {
+          if local_switches.mobel_anchor_switch {
             current_record.chranch = ChrAnchorEnum::Read1;
           }
         }
       }
 
       // secondary alignment
-      pf if pf >= 256 => {
+      proviral_flag if proviral_flag >= 256 => {
         if let Some(current_record) = hm_record_collection
           .lock()
           .unwrap()
-          .get_mut(&read_values.read_id)
+          .get_mut(&raw_values.read_id)
         {
           if current_record.read2.sequence.is_empty() {
             load!(
               current_record,
               read1,
-              read_values,
+              raw_values,
+              local_switches,
               ChapulinCommonError::Parsing
             );
-            if read_values.mobel_anchor {
+            if local_switches.mobel_anchor_switch {
               current_record.chranch = ChrAnchorEnum::Read2;
             }
           } else {
             load!(
               current_record,
               read2,
-              read_values,
+              raw_values,
+              local_switches,
               ChapulinCommonError::Parsing
             );
-            if read_values.mobel_anchor {
+            if local_switches.mobel_anchor_switch {
               current_record.chranch = ChrAnchorEnum::Read1;
             }
           }
@@ -182,15 +197,15 @@ pub fn me_identificator(
     }
 
     // reset anchor switch
-    read_values.reset_anchor();
+    local_switches.reset_anchor();
   }
 
   // evaluate at end of file
-  if read_values.purge_switch {
+  if local_switches.purge_switch {
     hm_record_collection
       .lock()
       .unwrap()
-      .remove(&read_values.prev_read_id);
+      .remove(&local_switches.prev_read_id);
   }
 
   Ok(())
@@ -199,49 +214,44 @@ pub fn me_identificator(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Debug, new)]
-struct ReadValues {
-  #[new(value = "CIGAR::new()")]
-  cigar:             CIGAR,
+struct LocalSwtiches {
+
   #[new(default)]
-  mobel:             String,
+  mobel_anchor: MEAnchor,
+
   #[new(value = "false")]
-  mobel_anchor:      bool,
-  #[new(default)]
-  mobel_orientation: String,
-  #[new(value = "0.")]
-  mobel_size:        f64,
+  mobel_anchor_switch:      bool,
+
   #[new(default)]
   prev_read_id:      String,
+
   #[new(value = "true")]
   purge_switch:      bool,
-  #[new(default)]
-  flag:              i32,
-  #[new(default)]
-  position:          i32,
+
   #[new(default)]
   read_id:           String,
+
   #[new(default)]
   read_orientation:  bool,
-  #[new(default)]
-  sequence:          String,
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-impl ReadValues {
+impl LocalSwtiches {
   fn upstream(&mut self) {
     self.switches();
-    self.mobel_orientation = "upstream".to_string();
+    self.mobel_anchor.orientation = "upstream".to_string();
   }
 
   fn downstream(&mut self) {
     self.switches();
-    self.mobel_orientation = "downstream".to_string();
+    self.mobel_anchor.orientation = "downstream".to_string();
   }
 
   fn switches(&mut self) {
     self.purge_switch = false;
-    self.mobel_anchor = true;
+    self.mobel_anchor_switch = true;
   }
 
   fn reset_purge(&mut self) {
@@ -249,7 +259,7 @@ impl ReadValues {
   }
 
   fn reset_anchor(&mut self) {
-    self.mobel_anchor = false;
+    self.mobel_anchor_switch = false;
     self.prev_read_id = self.read_id.clone();
   }
 }
