@@ -19,6 +19,7 @@ use genomic_structures::{
   ChrAnchor,
   ChrAnchorEnum,
   MEChimericPair,
+  RawValues,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,24 +55,29 @@ pub fn cl_mapper(
 
   // iterate through file
   while let Some(line) = lines.next() {
+    // reset structs
+    let mut local_switches = LocalSwtiches::new();
+    // SAM line values declared at each iteration
+    let mut raw_values = RawValues::new();
+
+    // load line into vector
     let record_line: Vec<&str> = from_utf8(&line?)
       .context(ChapulinCommonError::RegistryLine)?
       .trim()
       .split('\t')
       .collect();
 
-    // calculate current values
-    let read_id = record_line[0].to_string();
-    let chr = record_line[2].to_string();
+    // load SAM line
+    load!(raw_values, record_line, ChapulinCommonError::Parsing);
 
     // TODO: read supplementary fields for additional information & load on
     // struct
 
-    if hm_collection.lock().unwrap().contains_key(&read_id) {
-      let mut mapq_switch = false;
+    if hm_collection.lock().unwrap().contains_key(&raw_values.read_id) {
+      local_switches.mapq_switch = false;
 
       if let Some(current_record) =
-        hm_collection.lock().unwrap().get_mut(&read_id)
+        hm_collection.lock().unwrap().get_mut(&raw_values.read_id)
       {
         // load chromosomal anchoring data
         reload!(current_record, read1, record_line);
@@ -80,27 +86,27 @@ pub fn cl_mapper(
         // evaluate mapq
         match current_record.chranch {
           ChrAnchorEnum::Read1 => {
-            mapq_switch = mapq!(current_record, read1);
+            local_switches.mapq_switch = mapq!(current_record, read1);
           }
           ChrAnchorEnum::Read2 => {
-            mapq_switch = mapq!(current_record, read2);
+            local_switches.mapq_switch = mapq!(current_record, read2);
           }
           _ => (),
         };
       }
 
       // IDEA: consider tagging strand on the fly to avoid postload counting
-      if mapq_switch {
-        hm_collection.lock().unwrap().remove(&read_id);
+      if local_switches.mapq_switch {
+        hm_collection.lock().unwrap().remove(&raw_values.read_id);
       } else {
         // register chromosome anchors
-        if !an_registry.lock().unwrap().contains_key(&chr) {
-          an_registry.lock().unwrap().insert(chr.clone(), Vec::new());
+        if !an_registry.lock().unwrap().contains_key(&raw_values.scaffold) {
+          an_registry.lock().unwrap().insert(raw_values.scaffold.clone(), Vec::new());
         }
 
-        if let Some(current_chr) = an_registry.lock().unwrap().get_mut(&chr) {
-          if !current_chr.contains(&read_id.to_string()) {
-            current_chr.push(read_id.to_string())
+        if let Some(current_chr) = an_registry.lock().unwrap().get_mut(&raw_values.scaffold) {
+          if !current_chr.contains(&raw_values.read_id.to_string()) {
+            current_chr.push(raw_values.read_id.to_string())
           }
         }
       }
@@ -114,6 +120,14 @@ pub fn cl_mapper(
   }
 
   Ok(())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, new)]
+struct LocalSwtiches {
+  #[new(default)]
+  mapq_switch: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
