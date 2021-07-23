@@ -16,7 +16,6 @@ use std::sync::{
 
 // development libraries
 use genomic_structures::{
-  ChrAnchor,
   ChrAnchorEnum,
   MEChimericPair,
   RawValues,
@@ -73,7 +72,11 @@ pub fn cl_mapper(
     // TODO: read supplementary fields for additional information & load on
     // struct
 
-    if hm_collection.lock().unwrap().contains_key(&raw_values.read_id) {
+    if hm_collection
+      .lock()
+      .unwrap()
+      .contains_key(&raw_values.read_id)
+    {
       local_switches.mapq_switch = false;
 
       if let Some(current_record) =
@@ -100,11 +103,20 @@ pub fn cl_mapper(
         hm_collection.lock().unwrap().remove(&raw_values.read_id);
       } else {
         // register chromosome anchors
-        if !an_registry.lock().unwrap().contains_key(&raw_values.scaffold) {
-          an_registry.lock().unwrap().insert(raw_values.scaffold.clone(), Vec::new());
+        if !an_registry
+          .lock()
+          .unwrap()
+          .contains_key(&raw_values.scaffold)
+        {
+          an_registry
+            .lock()
+            .unwrap()
+            .insert(raw_values.scaffold.clone(), Vec::new());
         }
 
-        if let Some(current_chr) = an_registry.lock().unwrap().get_mut(&raw_values.scaffold) {
+        if let Some(current_chr) =
+          an_registry.lock().unwrap().get_mut(&raw_values.scaffold)
+        {
           if !current_chr.contains(&raw_values.read_id.to_string()) {
             current_chr.push(raw_values.read_id.to_string())
           }
