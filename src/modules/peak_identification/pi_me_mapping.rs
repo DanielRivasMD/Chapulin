@@ -15,8 +15,8 @@ use std::sync::{
 
 // development libraries
 use genomic_structures::{
-  strand_counter,
-  thresholder,
+  strand_count,
+  threshold,
   ChrAnchorEnum,
   MEChimericPair,
 };
@@ -71,7 +71,7 @@ pub fn pi_me_identifier(
       if let Some(me_pair) = hm_collection.lock().unwrap().get(&id_read) {
         match &me_pair.chranch {
           ChrAnchorEnum::Read1 => {
-            read_count = strand_counter(
+            read_count = strand_count(
               id_read,
               strand,
               read_count,
@@ -82,7 +82,7 @@ pub fn pi_me_identifier(
           }
 
           ChrAnchorEnum::Read2 => {
-            read_count = strand_counter(
+            read_count = strand_count(
               id_read,
               strand,
               read_count,
@@ -99,7 +99,7 @@ pub fn pi_me_identifier(
 
     // TODO: memotization
     if read_count != 0 {
-      let pois_threshold = thresholder(
+      let pois_threshold = threshold(
         read_count as f64,
         chr_size,
         0.001,
