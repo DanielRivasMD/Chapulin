@@ -83,8 +83,8 @@ pub fn cl_mapper(
         hm_collection.lock().unwrap().get_mut(&raw_values.read_id)
       {
         // load chromosomal anchoring data
-        reload!(current_record, read1, record_line);
-        reload!(current_record, read2, record_line);
+        reload!(current_record, read1, raw_values);
+        reload!(current_record, read2, raw_values);
 
         // evaluate mapq
         match current_record.chranch {
