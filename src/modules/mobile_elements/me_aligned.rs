@@ -241,6 +241,17 @@ struct LocalSwtiches {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 impl LocalSwtiches {
+  fn mobel_anchor_update(&mut self, raw_values: RawValues) {
+    self.mobel_anchor.update(
+      raw_values.cigar,
+      raw_values.flag,
+      raw_values.scaffold,
+      // raw_values.orientation,
+      raw_values.position,
+      // raw_values.size
+    );
+  }
+
   fn upstream(&mut self) {
     self.switches();
     self.mobel_anchor.orientation = "upstream".to_string();
