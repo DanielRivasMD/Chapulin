@@ -54,11 +54,6 @@ pub fn cl_mapper(
 
   // iterate through file
   while let Some(line) = lines.next() {
-    // reset structs
-    let mut local_switches = LocalSwtiches::new();
-    // SAM line values declared at each iteration
-    let mut raw_values = RawValues::new();
-
     // load line into vector
     let record_line: Vec<&str> = from_utf8(&line?)
       .context(ChapulinCommonError::RegistryLine)?
@@ -66,8 +61,11 @@ pub fn cl_mapper(
       .split('\t')
       .collect();
 
-    // load SAM line
-    load!(raw_values, record_line, ChapulinCommonError::Parsing);
+    // reset structs
+    let mut local_switches = LocalSwtiches::new();
+    // SAM line values declared at each iteration
+    let raw_values = RawValues::load(record_line); //, ChapulinCommonError::Parsing);
+    // let mut raw_values = load!(record_line, ChapulinCommonError::Parsing);
 
     // TODO: read supplementary fields for additional information & load on
     // struct

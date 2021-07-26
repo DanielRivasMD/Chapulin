@@ -52,12 +52,6 @@ pub fn me_identificator(
 
   // iterate through file
   while let Some(line) = lines.next() {
-    // reset structs
-    // overwirte local switches
-    local_switches = LocalSwtiches::new();
-    // SAM line values declared at each iteration
-    let mut raw_values = RawValues::new();
-
     // load line into vector
     let record_line: Vec<&str> = from_utf8(&line?)
       .context(ChapulinCommonError::RegistryLine)?
@@ -65,8 +59,13 @@ pub fn me_identificator(
       .split('\t')
       .collect();
 
-    // load SAM line
-    load!(raw_values, record_line, ChapulinCommonError::Parsing);
+    // reset structs
+    // overwirte local switches
+    local_switches = LocalSwtiches::new();
+    // SAM line values declared at each iteration
+    // let raw_values = RawValues::load(record_line); //, ChapulinCommonError::Parsing);
+    let mut raw_values = RawValues::new();
+    update!(raw_values, record_line, ChapulinCommonError::Parsing);
     // TODO: load local switches
     // TODO: describe break point signature
 
@@ -123,7 +122,7 @@ pub fn me_identificator(
             .unwrap()
             .get_mut(&raw_values.read_id)
           {
-            load!(
+            update!(
               current_record,
               read1,
               raw_values,
@@ -140,7 +139,7 @@ pub fn me_identificator(
           .unwrap()
           .get_mut(&raw_values.read_id)
         {
-          load!(
+          update!(
             current_record,
             read2,
             raw_values,
@@ -162,7 +161,7 @@ pub fn me_identificator(
         {
           // if sequence field is empty insert ? BUG: is this correct?
           if current_record.read2.sequence.is_empty() {
-            load!(
+            update!(
               current_record,
               read1,
               raw_values,
@@ -173,7 +172,7 @@ pub fn me_identificator(
               current_record.chranch = ChrAnchorEnum::Read2;
             }
           } else {
-            load!(
+            update!(
               current_record,
               read2,
               raw_values,
