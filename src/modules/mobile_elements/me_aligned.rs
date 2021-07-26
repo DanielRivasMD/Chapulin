@@ -98,17 +98,7 @@ pub fn me_identificator(
 
     // tagging
     // switches get updated by local switches methods
-    if raw_values.cigar.left_boundry <= ME_LIMIT
-      && local_switches.read_orientation
-    {
-      local_switches.upstream();
-    } else if local_switches.mobel_anchor.size
-      - raw_values.cigar.right_boundry as f64
-      <= ME_LIMIT.into()
-      && !local_switches.read_orientation
-    {
-      local_switches.downstream();
-    }
+    local_switches.tag();
 
     // mount data on hash map (record collection)
     // match on flag (proviral)
@@ -250,6 +240,16 @@ impl LocalSwtiches {
       raw_values.position,
       // raw_values.size
     );
+  }
+
+  fn tag(&mut self) {
+    if self.mobel_anchor.cigar.left_boundry <= ME_LIMIT && self.read_orientation {
+      self.upstream();
+    } else if self.mobel_anchor.size - self.mobel_anchor.cigar.right_boundry as f64 <= ME_LIMIT.into() && !self.read_orientation {
+      self.downstream();
+    } else {
+      // TODO: nothing
+    }
   }
 
   fn upstream(&mut self) {
