@@ -67,6 +67,7 @@ pub fn me_identificator(
     let mut raw_values = RawValues::new();
     update!(raw_values, record_line, ChapulinCommonError::Parsing);
     // TODO: load local switches
+    local_switches.mobel_anchor_update(raw_values.clone());
     // TODO: describe break point signature
 
     // retrieve mobile element library records
