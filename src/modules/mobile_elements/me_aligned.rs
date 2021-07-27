@@ -78,6 +78,8 @@ pub fn me_identificator(
     // hm_me_collection.lock().unwrap().get(&raw_values.scaffold)
     {
       local_switches.mobel_anchor.size = *me_record;
+    } else {
+      error!("Mobile element: {:?} is in alignment but not in database", &local_switches.mobel_anchor.mobel);
     }
 
     // purge read pairs on hash map (record collection)
