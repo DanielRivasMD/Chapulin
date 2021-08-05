@@ -25,6 +25,7 @@ pub fn me_controller(
   me_aligned_file: &str,
   hash_map_me_library: Arc<Mutex<HashMap<String, f64>>>,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  debug_iteration: i32,
 ) -> anyResult<()> {
   // load mobile element aligned reads
   let me_aligned_file_full = format!("{}{}", directory, me_aligned_file);
@@ -33,6 +34,7 @@ pub fn me_controller(
     &me_aligned_file_full,
     hash_map_me_library,
     hash_map_collection,
+    debug_iteration,
   )?;
 
   Ok(())

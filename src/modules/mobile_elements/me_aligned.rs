@@ -41,6 +41,7 @@ pub fn me_identificator(
   hm_me_collection: Arc<Mutex<HashMap<String, f64>>>,
   // hm_me_collection: Arc<Mutex<HashMap<String, MElibrary>>>,
   hm_record_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  debug_iteration: i32,
 ) -> anyResult<()> {
   // load file
   let mut lines = byte_file_reader(&me_bam_file)?;

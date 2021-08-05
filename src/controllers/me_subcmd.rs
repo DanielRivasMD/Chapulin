@@ -72,6 +72,10 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
   // collect settings
   let bool_sett = bool_collector(matches);
 
+  // debug
+  let debug_iteration =
+    matches.value_of("debug").unwrap().parse::<i32>().unwrap();
+
   // TODO: probably expand configuration?
 
   let config = matches
@@ -194,6 +198,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
     &string_sett.me_align,
     cme_library,
     cme_record_collection,
+    debug_iteration,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());

@@ -71,6 +71,15 @@ pub fn cli_chapulin() -> App<'static> {
         .default_value("paired")
         .possible_values(&["single", "paired"])
       )
+      .arg(
+        Arg::new("debug")
+        .short('d')
+        .long("debug")
+        .about("Print values for debugging")
+        .required(true)
+        .takes_value(true)
+        .default_value("0")
+      )
     )
 
     .subcommand(App::new("SV")
