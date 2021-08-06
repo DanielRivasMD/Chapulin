@@ -74,6 +74,10 @@ pub fn me_identificator(
     // overwirte local switches
     local_switches = LocalSwtiches::new();
 
+    // TODO: attach this value to enum miscellaneous filed on raw values struct
+    // temporary mobel size holder
+    let mut tmp_mobel_anchor_size = 0.;
+
 
     // SAM line values updated at each iteration
     update!(raw_values, record_line, ChapulinCommonError::Parsing);
@@ -95,6 +99,7 @@ pub fn me_identificator(
       local_switches.mobel_anchor.size = *me_record;
       // TODO: collect the mobile element size
       // TODO: to update
+      tmp_mobel_anchor_size = *me_record;
     } else {
       // error!("Mobile element: {:?} is in alignment but not in database", &local_switches.mobel_anchor.mobel);
     }
@@ -149,6 +154,7 @@ pub fn me_identificator(
               current_record,
               read1,
               raw_values,
+              tmp_mobel_anchor_size,
               local_switches,
               ChapulinCommonError::Parsing
             );
@@ -166,6 +172,7 @@ pub fn me_identificator(
             current_record,
             read2,
             raw_values,
+            tmp_mobel_anchor_size,
             local_switches,
             ChapulinCommonError::Parsing
           );
@@ -188,6 +195,7 @@ pub fn me_identificator(
               current_record,
               read1,
               raw_values,
+              tmp_mobel_anchor_size,
               local_switches,
               ChapulinCommonError::Parsing
             );
@@ -199,6 +207,7 @@ pub fn me_identificator(
               current_record,
               read2,
               raw_values,
+              tmp_mobel_anchor_size,
               local_switches,
               ChapulinCommonError::Parsing
             );
