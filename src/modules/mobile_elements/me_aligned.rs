@@ -51,6 +51,7 @@ pub fn me_identificator(
   // local switches must be declared outside loop to evaluate at last line
   let mut local_switches = LocalSwtiches::new();
 
+  let mut reads = ReadControl::new();
   // iterate through file
   while let Some(line) = lines.next() {
     // load line into vector
@@ -67,6 +68,10 @@ pub fn me_identificator(
     // let raw_values = RawValues::load(record_line); //, ChapulinCommonError::Parsing);
     let mut raw_values = RawValues::new();
     update!(raw_values, record_line, ChapulinCommonError::Parsing);
+
+    // collect read id
+    reads.read_id = raw_values.read_id.clone();
+
     // TODO: load local switches
     local_switches.mobel_anchor_update(raw_values.clone());
     // TODO: describe break point signature
@@ -92,7 +97,7 @@ pub fn me_identificator(
         hm_record_collection
           .lock()
           .unwrap()
-          .remove(&local_switches.prev_read_id);
+          .remove(&reads.prev_read_id);
       }
 
       // reset purge switch
@@ -202,7 +207,7 @@ pub fn me_identificator(
     hm_record_collection
       .lock()
       .unwrap()
-      .remove(&local_switches.prev_read_id);
+      .remove(&reads.prev_read_id);
   }
 
   Ok(())
@@ -210,6 +215,18 @@ pub fn me_identificator(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// collect read id info
+#[derive(Debug, new)]
+struct ReadControl {
+  // TODO: think about a way to implement read_id as &str
+  #[new(default)]
+  read_id: String,
+
+  #[new(default)]
+  prev_read_id: String,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 #[derive(Debug, new)]
 struct LocalSwtiches {
   #[new(default)]
@@ -218,14 +235,8 @@ struct LocalSwtiches {
   #[new(value = "false")]
   mobel_anchor_switch: bool,
 
-  #[new(default)]
-  prev_read_id: String,
-
   #[new(value = "true")]
   purge_switch: bool,
-
-  #[new(default)]
-  read_id: String,
 
   #[new(default)]
   read_orientation: bool,
@@ -276,7 +287,6 @@ impl LocalSwtiches {
 
   fn reset_anchor(&mut self) {
     self.mobel_anchor_switch = false;
-    self.prev_read_id = self.read_id.clone();
   }
 }
 
