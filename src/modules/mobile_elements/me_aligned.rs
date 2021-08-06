@@ -14,6 +14,7 @@ use std::sync::{
 
 // development libraries
 use genomic_structures::{
+  // AnchorEnum,
   ChrAnchorEnum,
   MEAnchor,
   MEChimericPair,
@@ -72,10 +73,10 @@ pub fn me_identificator(
     // reset structs
     // overwirte local switches
     local_switches = LocalSwtiches::new();
-    // SAM line values declared at each iteration
-    // let raw_values = RawValues::load(record_line); //, ChapulinCommonError::Parsing);
-    update!(raw_values, record_line, ChapulinCommonError::Parsing);
 
+
+    // SAM line values updated at each iteration
+    update!(raw_values, record_line, ChapulinCommonError::Parsing);
 
     // TODO: load local switches
     // TODO: just clone cigar struct?
@@ -92,8 +93,10 @@ pub fn me_identificator(
     // hm_me_collection.lock().unwrap().get(&raw_values.scaffold)
     {
       local_switches.mobel_anchor.size = *me_record;
+      // TODO: collect the mobile element size
+      // TODO: to update
     } else {
-      error!("Mobile element: {:?} is in alignment but not in database", &local_switches.mobel_anchor.mobel);
+      // error!("Mobile element: {:?} is in alignment but not in database", &local_switches.mobel_anchor.mobel);
     }
 
     // purge read pairs on hashmap (record collection)
@@ -247,83 +250,82 @@ struct LocalSwtiches {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: extend functionality of raw values locally instead
-trait MEAnchorExt {
-  fn mobel_anchor_update(&mut self);
-  // fn mobel_tag(
-  // &self,
-  // switch: LocalSwtiches,
-  // ) -> String;
-}
-
-impl MEAnchorExt for RawValues {
-  fn mobel_anchor_update(
-    &mut self,
-    // raw_values: &RawValues,
-  ) {
-    self.anchor = AnchorEnum::MobileElement(MEAnchor::load(
-      self.cigar.clone(),
-      self.flag,
-      self.scaffold.clone(),
-      "self.orientation".to_string(),
-      self.position,
-      0.,
-    ));
-  }
-
-  // fn moble_tag(
-  //   &self,
-  //   switch: LocalSwtiches,
-  // ) -> String {
-  //   if self.cigar.left_boundry <= ME_LIMIT && switch.read_orientation {
-  //     // self.upstream();
-  //     return String::from("upstream");
-  //   } else if self.anchor.unwrap().size - self.cigar.right_boundry as f64
-  //     <= ME_LIMIT.into()
-  //     && !switch.read_orientation
-  //   {
-  //     // self.downstream();
-  //     return String::from("downstream");
-  //   } else {
-  //     // TODO: nothing
-  //     return String::new();
-  //   }
-  // }
-}
-
 // impl RawValues {
-//   // TODO: to deprecate
-//   fn mobel_anchor_update(
-//     &mut self,
-//     raw_values: &RawValues,
-//   ) {
-//     self.mobel_anchor.update(
-//       raw_values.cigar.clone(),
-//       raw_values.flag,
-//       raw_values.scaffold.clone(),
-//       // raw_values.orientation,
-//       raw_values.position,
-//       // raw_values.size
-//     );
-//   }
-
-//   fn tag(&mut self) {
-//     if self.mobel_anchor.cigar.left_boundry <= ME_LIMIT && self.read_orientation
-//     {
-//       self.upstream();
-//     } else if self.mobel_anchor.size
-//       - self.mobel_anchor.cigar.right_boundry as f64
-//       <= ME_LIMIT.into()
-//       && !self.read_orientation
-//     {
-//       self.downstream();
-//     } else {
-//       // TODO: nothing
-//     }
-//   }
+// // TODO: extend functionality of raw values locally instead
+// trait MEAnchorExt {
+//   fn mobel_anchor_update(&mut self);
+//   // fn mobel_tag(
+//   // &self,
+//   // switch: LocalSwtiches,
+//   // ) -> String;
 // }
 
+// impl MEAnchorExt for RawValues {
+//   fn mobel_anchor_update(
+//     &mut self,
+//     // raw_values: &RawValues,
+//   ) {
+//     self.anchor = AnchorEnum::MobileElement(MEAnchor::load(
+//       self.cigar.clone(),
+//       self.flag,
+//       self.scaffold.clone(),
+//       "self.orientation".to_string(),
+//       self.position,
+//       0.,
+//     ));
+//   }
+
+//   // fn moble_tag(
+//   //   &self,
+//   //   switch: LocalSwtiches,
+//   // ) -> String {
+//   //   if self.cigar.left_boundry <= ME_LIMIT && switch.read_orientation {
+//   //     // self.upstream();
+//   //     return String::from("upstream");
+//   //   } else if self.anchor.unwrap().size - self.cigar.right_boundry as f64
+//   //     <= ME_LIMIT.into()
+//   //     && !switch.read_orientation
+//   //   {
+//   //     // self.downstream();
+//   //     return String::from("downstream");
+//   //   } else {
+//   //     // TODO: nothing
+//   //     return String::new();
+//   //   }
+//   // }
+// }
+
+// TODO: to deprecate
 impl LocalSwtiches {
+  fn mobel_anchor_update(
+    &mut self,
+    raw_values: &RawValues,
+  ) {
+    self.mobel_anchor.update(
+      raw_values.cigar.clone(),
+      raw_values.flag,
+      raw_values.scaffold.clone(),
+      // raw_values.orientation,
+      raw_values.position,
+      // raw_values.size
+    );
+  }
+
+  fn tag(&mut self) {
+    if self.mobel_anchor.cigar.left_boundry <= ME_LIMIT && self.read_orientation
+    {
+      self.upstream();
+    } else if self.mobel_anchor.size
+      - self.mobel_anchor.cigar.right_boundry as f64
+      <= ME_LIMIT.into()
+      && !self.read_orientation
+    {
+      self.downstream();
+    } else {
+      // TODO: nothing
+    }
+  }
+
   fn upstream(&mut self) {
     self.switches();
     self.mobel_anchor.orientation = "upstream".to_string();
@@ -349,3 +351,5 @@ impl LocalSwtiches {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// TODO: write down tests to assert that data & switches are being updated properly
