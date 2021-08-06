@@ -51,6 +51,8 @@ pub fn me_identificator(
   // local switches must be declared outside loop to evaluate at last line
   let mut local_switches = LocalSwtiches::new();
 
+  let mut raw_values = RawValues::new();
+
   // iterate through file
   while let Some(line) = lines.next() {
     // load line into vector
@@ -65,11 +67,8 @@ pub fn me_identificator(
     local_switches = LocalSwtiches::new();
     // SAM line values declared at each iteration
     // let raw_values = RawValues::load(record_line); //, ChapulinCommonError::Parsing);
-    let mut raw_values = RawValues::new();
     update!(raw_values, record_line, ChapulinCommonError::Parsing);
 
-    // collect read id
-    reads.read_id = raw_values.read_id.clone();
 
     // TODO: load local switches
     local_switches.mobel_anchor_update(raw_values.clone());
@@ -88,15 +87,15 @@ pub fn me_identificator(
     }
 
     // purge read pairs on hash map (record collection)
-    if !(local_switches.prev_read_id == local_switches.read_id
-      || local_switches.prev_read_id.is_empty())
+    if !(raw_values.read_id.previous == raw_values.read_id.current
+      || raw_values.read_id.previous.is_empty())
     {
       // evaluate read batch
       if local_switches.purge_switch {
         hm_record_collection
           .lock()
           .unwrap()
-          .remove(&reads.prev_read_id);
+          .remove(&raw_values.read_id.previous);
       }
 
       // reset purge switch
@@ -117,18 +116,18 @@ pub fn me_identificator(
         if !hm_record_collection
           .lock()
           .unwrap()
-          .contains_key(&raw_values.read_id)
+          .contains_key(&raw_values.read_id.current)
         {
           hm_record_collection
             .lock()
             .unwrap()
-            .insert((&raw_values.read_id).to_string(), MEChimericPair::new());
+            .insert(raw_values.read_id.current.clone(), MEChimericPair::new());
 
           // if newly inserted tag mobel anchor Read1 & chr anchor Read2
           if let Some(current_record) = hm_record_collection
             .lock()
             .unwrap()
-            .get_mut(&raw_values.read_id)
+            .get_mut(&raw_values.read_id.current)
           {
             update!(
               current_record,
@@ -145,7 +144,7 @@ pub fn me_identificator(
         } else if let Some(current_record) = hm_record_collection
           .lock()
           .unwrap()
-          .get_mut(&raw_values.read_id)
+          .get_mut(&raw_values.read_id.current)
         {
           update!(
             current_record,
@@ -165,7 +164,7 @@ pub fn me_identificator(
         if let Some(current_record) = hm_record_collection
           .lock()
           .unwrap()
-          .get_mut(&raw_values.read_id)
+          .get_mut(&raw_values.read_id.current)
         {
           // if sequence field is empty insert ? BUG: is this correct?
           if current_record.read2.sequence.is_empty() {
@@ -201,7 +200,7 @@ pub fn me_identificator(
     local_switches.reset_anchor();
 
     // remember previous read
-    reads.read_memory();
+    raw_values.read_id.read_memory();
 
   }
 
@@ -210,7 +209,7 @@ pub fn me_identificator(
     hm_record_collection
       .lock()
       .unwrap()
-      .remove(&reads.prev_read_id);
+      .remove(&raw_values.read_id.previous);
   }
 
   Ok(())
