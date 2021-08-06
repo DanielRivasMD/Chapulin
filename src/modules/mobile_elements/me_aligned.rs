@@ -200,6 +200,10 @@ pub fn me_identificator(
 
     // reset anchor switch
     local_switches.reset_anchor();
+
+    // remember previous read
+    reads.read_memory();
+
   }
 
   // evaluate at end of file
@@ -227,6 +231,15 @@ struct ReadControl {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+impl ReadControl {
+  fn read_memory(&mut self) {
+    self.prev_read_id = self.read_id.clone();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #[derive(Debug, new)]
 struct LocalSwtiches {
   #[new(default)]
