@@ -59,9 +59,6 @@ pub fn me_identificator(
   // but it will remember previous state
   let mut raw_values = RawValues::new();
 
-  // create mobile element anchor holder
-  // which will be transfer to hashmap
-  let mut me_anchor = MEAnchor::new();
 
   // iterate through file
   while let Some(line) = lines.next() {
@@ -84,12 +81,6 @@ pub fn me_identificator(
     // TODO: just clone cigar struct?
     // TODO: to deprecate
     // mobel anchor struct updates EXCEPT orientation & size
-    me_anchor.update(
-      raw_values.cigar.clone(),
-      raw_values.flag,
-      raw_values.scaffold.clone(),
-      raw_values.position,
-    );
     // local_switches.mobel_anchor_update(&raw_values);
     // TODO: describe break point signature
 
@@ -101,7 +92,6 @@ pub fn me_identificator(
     // hm_me_collection.lock().unwrap().get(&raw_values.scaffold)
     {
       local_switches.mobel_anchor.size = *me_record;
-      me_anchor.size = *me_record;
     } else {
       error!("Mobile element: {:?} is in alignment but not in database", &local_switches.mobel_anchor.mobel);
     }
@@ -141,11 +131,10 @@ pub fn me_identificator(
           .unwrap()
           .contains_key(&raw_values.read_id.current)
         {
-          hm_record_collection.lock().unwrap().insert(
-            raw_values.read_id.current.clone(),
-            MEChimericPair::load(me_anchor.clone()),
-          );
-          // .insert(raw_values.read_id.current.clone(), MEChimericPair::new());
+          hm_record_collection
+            .lock()
+            .unwrap()
+            .insert(raw_values.read_id.current.clone(), MEChimericPair::new());
 
           // if newly inserted tag mobel anchor Read1 & chr anchor Read2
           if let Some(current_record) = hm_record_collection
