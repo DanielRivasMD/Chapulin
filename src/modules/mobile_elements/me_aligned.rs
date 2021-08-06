@@ -49,9 +49,14 @@ pub fn me_identificator(
 
   // declare initial values
   // local temporary values overwritten each iteration
-  // local switches must be declared outside loop to evaluate at last line
+  // local switches must be declared outside the loop as well as
+  // inside to evaluate at last line
   let mut local_switches = LocalSwtiches::new();
 
+  // declare mutable raw values prior to loop
+  // so read control can remember
+  // it will be overwritten after each iteration
+  // but it will remember previous state
   let mut raw_values = RawValues::new();
 
   // iterate through file
@@ -87,7 +92,10 @@ pub fn me_identificator(
       error!("Mobile element: {:?} is in alignment but not in database", &local_switches.mobel_anchor.mobel);
     }
 
-    // purge read pairs on hash map (record collection)
+    // purge read pairs on hashmap (record collection)
+    // enter block if
+    // read id as changed (through read memory) indicating different batch
+    // or previous read is not empty (indicating is not the first line)
     if !(raw_values.read_id.previous == raw_values.read_id.current
       || raw_values.read_id.previous.is_empty())
     {
@@ -107,13 +115,13 @@ pub fn me_identificator(
     // switches get updated by local switches methods
     local_switches.tag();
 
-    // mount data on hash map (record collection)
+    // mount data on hashmap (record collection)
     // match on flag (proviral)
     // this check is much faster than using binary interpretor
     match raw_values.flag {
       // primary alignment
       proviral_flag if proviral_flag <= 255 => {
-        // insert record if it is not present on hash map (record collection)
+        // insert record if it is not present on hashmap (record collection)
         if !hm_record_collection
           .lock()
           .unwrap()
