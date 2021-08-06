@@ -51,7 +51,6 @@ pub fn me_identificator(
   // local switches must be declared outside loop to evaluate at last line
   let mut local_switches = LocalSwtiches::new();
 
-  let mut reads = ReadControl::new();
   // iterate through file
   while let Some(line) = lines.next() {
     // load line into vector
@@ -215,27 +214,6 @@ pub fn me_identificator(
   }
 
   Ok(())
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// collect read id info
-#[derive(Debug, new)]
-struct ReadControl {
-  // TODO: think about a way to implement read_id as &str
-  #[new(default)]
-  read_id: String,
-
-  #[new(default)]
-  prev_read_id: String,
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-impl ReadControl {
-  fn read_memory(&mut self) {
-    self.prev_read_id = self.read_id.clone();
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
