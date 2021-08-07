@@ -16,6 +16,7 @@ use std::sync::{
 use genomic_structures::{
   // AnchorEnum,
   ChrAnchorEnum,
+  ExtraValuesEnum,
   MEAnchor,
   MEChimericPair,
   RawValues,
@@ -74,9 +75,6 @@ pub fn me_identificator(
     // overwirte local switches
     local_switches = LocalSwtiches::new();
 
-    // TODO: attach this value to enum miscellaneous filed on raw values struct
-    // temporary mobel size holder
-    let mut tmp_mobel_anchor_size = 0.;
 
 
     // SAM line values updated at each iteration
@@ -92,13 +90,8 @@ pub fn me_identificator(
     // retrieve mobile element library records
     if let Some(me_record) =
       hm_me_collection.lock().unwrap().get(&raw_values.scaffold)
-    // .get(&local_switches.mobel_anchor.mobel)
-    // hm_me_collection.lock().unwrap().get(&raw_values.scaffold)
     {
-      // TODO: collect the mobile element size
-      // TODO: to update
-      tmp_mobel_anchor_size = *me_record;
-    // local_switches.mobel_anchor.size = *me_record;
+      raw_values.extra = ExtraValuesEnum::MobelSize(*me_record);
     } else {
       // error!("Mobile element: {:?} is in alignment but not in database", &local_switches.mobel_anchor.mobel);
     }
@@ -154,7 +147,6 @@ pub fn me_identificator(
               current_record,
               read1,
               raw_values,
-              tmp_mobel_anchor_size,
               local_switches,
               ChapulinCommonError::Parsing
             );
@@ -172,7 +164,6 @@ pub fn me_identificator(
             current_record,
             read2,
             raw_values,
-            tmp_mobel_anchor_size,
             local_switches,
             ChapulinCommonError::Parsing
           );
@@ -195,7 +186,6 @@ pub fn me_identificator(
               current_record,
               read1,
               raw_values,
-              tmp_mobel_anchor_size,
               local_switches,
               ChapulinCommonError::Parsing
             );
@@ -207,7 +197,6 @@ pub fn me_identificator(
               current_record,
               read2,
               raw_values,
-              tmp_mobel_anchor_size,
               local_switches,
               ChapulinCommonError::Parsing
             );
