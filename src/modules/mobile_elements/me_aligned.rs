@@ -293,32 +293,10 @@ struct LocalSwtiches {
 //   // }
 // }
 
-// TODO: to deprecate
-impl LocalSwtiches {
-  fn mobel_anchor_update(
     &mut self,
-    raw_values: &RawValues,
-  ) {
-    self.mobel_anchor.update(
-      raw_values.cigar.clone(),
-      raw_values.flag,
-      raw_values.scaffold.clone(),
-      // raw_values.orientation,
-      raw_values.position,
-      // raw_values.size
-    );
-  }
 
-  fn tag(&mut self) {
-    if self.mobel_anchor.cigar.left_boundry <= ME_LIMIT && self.read_orientation
-    {
-      self.upstream();
-    } else if self.mobel_anchor.size
-      - self.mobel_anchor.cigar.right_boundry as f64
       <= ME_LIMIT.into()
-      && !self.read_orientation
     {
-      self.downstream();
     } else {
       // TODO: nothing
     }
