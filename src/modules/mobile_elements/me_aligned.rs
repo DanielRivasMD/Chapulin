@@ -235,12 +235,6 @@ pub fn me_identificator(
 // explicit value assginment to boolean switches
 #[derive(Debug, new)]
 struct LocalSwtiches {
-  #[new(default)]
-  mobel_anchor: MEAnchor,
-
-  // TODO: relocate mobile anchor to not clone it later
-  // #[new(default)]
-  // mobel_anchor: MEAnchor,
   #[new(value = "false")]
   mobel_anchor_switch: bool,
 
