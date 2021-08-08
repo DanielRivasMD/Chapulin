@@ -253,6 +253,14 @@ trait MEAnchorExt {
     &mut self,
     switch: &mut LocalSwtiches,
   ) /* -> String */;
+  fn downstream(
+    &mut self,
+    switch: &mut LocalSwtiches,
+  );
+  fn upstream(
+    &mut self,
+    switch: &mut LocalSwtiches,
+  );
 }
 
 impl MEAnchorExt for RawValues {
@@ -262,39 +270,41 @@ impl MEAnchorExt for RawValues {
   ) /* -> String */
   {
     if self.cigar.left_boundry <= ME_LIMIT && switch.read_orientation {
-      switch.upstream(self);
+      self.upstream(switch);
     // return String::from("upstream");
     } else if self.extra_get() - self.cigar.right_boundry as f64
       <= ME_LIMIT.into()
       && !switch.read_orientation
     {
-      switch.downstream(self);
+      self.downstream(switch);
     // return String::from("downstream");
     } else {
       // TODO: nothing
       // return String::new();
     }
   }
+
+  // change swithces & tag mobile element orientation as downstream
+  fn downstream(
+    &mut self,
+    switch: &mut LocalSwtiches,
+  ) {
+    switch.switches();
+    self.orientation = OrientationEnum::Downstream;
+  }
+
+  // change swithces & tag mobile element orientation as upstream
+  fn upstream(
+    &mut self,
+    switch: &mut LocalSwtiches,
+  ) {
+    switch.switches();
+    self.orientation = OrientationEnum::Upstream;
+  }
 }
 
 // local implementations on local switches
 impl LocalSwtiches {
-  fn upstream(
-    &mut self,
-    raw: &mut RawValues,
-  ) {
-    self.switches();
-    raw.orientation = OrientationEnum::Upstream;
-  }
-
-  fn downstream(
-    &mut self,
-    raw: &mut RawValues,
-  ) {
-    self.switches();
-    raw.orientation = OrientationEnum::Downstream;
-  }
-
   fn switches(&mut self) {
     self.purge_switch = true;
     self.mobel_anchor_switch = true;
