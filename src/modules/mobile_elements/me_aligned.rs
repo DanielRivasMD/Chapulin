@@ -248,59 +248,35 @@ struct LocalSwtiches {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// impl RawValues {
-// // TODO: extend functionality of raw values locally instead
-// trait MEAnchorExt {
-//   fn mobel_anchor_update(&mut self);
-//   // fn mobel_tag(
-//   // &self,
-//   // switch: LocalSwtiches,
-//   // ) -> String;
-// }
-
-// impl MEAnchorExt for RawValues {
-//   fn mobel_anchor_update(
-//     &mut self,
-//     // raw_values: &RawValues,
-//   ) {
-//     self.anchor = AnchorEnum::MobileElement(MEAnchor::load(
-//       self.cigar.clone(),
-//       self.flag,
-//       self.scaffold.clone(),
-//       "self.orientation".to_string(),
-//       self.position,
-//       0.,
-//     ));
-//   }
-
-//   // fn moble_tag(
-//   //   &self,
-//   //   switch: LocalSwtiches,
-//   // ) -> String {
-//   //   if self.cigar.left_boundry <= ME_LIMIT && switch.read_orientation {
-//   //     // self.upstream();
-//   //     return String::from("upstream");
-//   //   } else if self.anchor.unwrap().size - self.cigar.right_boundry as f64
-//   //     <= ME_LIMIT.into()
-//   //     && !switch.read_orientation
-//   //   {
-//   //     // self.downstream();
-//   //     return String::from("downstream");
-//   //   } else {
-//   //     // TODO: nothing
-//   //     return String::new();
-//   //   }
-//   // }
-// }
-
+// extend functionality of raw values locally
+trait MEAnchorExt {
+  fn mobel_tag(
     &mut self,
+    switch: &mut LocalSwtiches,
+  ) /* -> String */;
+}
 
+impl MEAnchorExt for RawValues {
+  fn mobel_tag(
+    &mut self,
+    switch: &mut LocalSwtiches,
+  ) /* -> String */
+  {
+    if self.cigar.left_boundry <= ME_LIMIT && switch.read_orientation {
+      switch.upstream(self);
+    // return String::from("upstream");
+    } else if self.extra_get() - self.cigar.right_boundry as f64
       <= ME_LIMIT.into()
+      && !switch.read_orientation
     {
+      switch.downstream(self);
+    // return String::from("downstream");
     } else {
       // TODO: nothing
+      // return String::new();
     }
   }
+}
 
   fn upstream(&mut self) {
     self.switches();
