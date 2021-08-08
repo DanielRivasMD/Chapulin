@@ -19,6 +19,7 @@ use genomic_structures::{
   ExtraValuesEnum,
   MEAnchor,
   MEChimericPair,
+  OrientationEnum,
   RawValues,
   CIGAR,
 };
@@ -231,18 +232,22 @@ pub fn me_identificator(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// explicit value assginment to boolean switches
 #[derive(Debug, new)]
 struct LocalSwtiches {
   #[new(default)]
   mobel_anchor: MEAnchor,
 
+  // TODO: relocate mobile anchor to not clone it later
+  // #[new(default)]
+  // mobel_anchor: MEAnchor,
   #[new(value = "false")]
   mobel_anchor_switch: bool,
 
-  #[new(value = "true")]
+  #[new(value = "false")]
   purge_switch: bool,
 
-  #[new(default)]
+  #[new(value = "false")]
   read_orientation: bool,
 }
 
@@ -278,23 +283,32 @@ impl MEAnchorExt for RawValues {
   }
 }
 
-  fn upstream(&mut self) {
+// local implementations on local switches
+impl LocalSwtiches {
+  fn upstream(
+    &mut self,
+    raw: &mut RawValues,
+  ) {
     self.switches();
-    self.mobel_anchor.orientation = "upstream".to_string();
+    raw.orientation = OrientationEnum::Upstream;
   }
 
-  fn downstream(&mut self) {
+  fn downstream(
+    &mut self,
+    raw: &mut RawValues,
+  ) {
     self.switches();
-    self.mobel_anchor.orientation = "downstream".to_string();
+    raw.orientation = OrientationEnum::Downstream;
   }
 
   fn switches(&mut self) {
-    self.purge_switch = false;
+    self.purge_switch = true;
     self.mobel_anchor_switch = true;
   }
 
+  // TODO: probably uneccesary? to deprecate
   fn reset_purge(&mut self) {
-    self.purge_switch = true;
+    self.purge_switch = false;
   }
 
   fn reset_anchor(&mut self) {
