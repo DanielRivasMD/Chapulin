@@ -61,8 +61,8 @@ pub fn cl_mapper(
       .split('\t')
       .collect();
 
-    // reset structs
-    let mut local_switches = LocalSwtiches::new();
+    // reset mapq switch
+    let mut mapq_switch = false;
     // SAM line values declared at each iteration
     let raw_values = RawValues::load(record_line); //, ChapulinCommonError::Parsing);
     // let mut raw_values = load!(record_line, ChapulinCommonError::Parsing);
@@ -75,7 +75,8 @@ pub fn cl_mapper(
       .unwrap()
       .contains_key(&raw_values.read_id)
     {
-      local_switches.mapq_switch = false;
+      // reset switch
+      mapq_switch.deactivate();
 
       if let Some(current_record) =
         hm_collection.lock().unwrap().get_mut(&raw_values.read_id)
@@ -87,18 +88,18 @@ pub fn cl_mapper(
         // evaluate mapq
         match current_record.chranch {
           ChrAnchorEnum::Read1 => {
-            local_switches.mapq_switch = mapq!(current_record, read1);
+            mapq_switch = mapq!(current_record, read1);
           }
           ChrAnchorEnum::Read2 => {
-            local_switches.mapq_switch = mapq!(current_record, read2);
+            mapq_switch = mapq!(current_record, read2);
           }
           _ => (),
         };
       }
 
       // IDEA: consider tagging strand on the fly to avoid postload counting
-      if local_switches.mapq_switch {
         hm_collection.lock().unwrap().remove(&raw_values.read_id);
+      if mapq_switch {
       } else {
         // register chromosome anchors
         if !an_registry
@@ -134,21 +135,12 @@ pub fn cl_mapper(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, new)]
-struct LocalSwtiches {
-  #[new(default)]
-  mapq_switch: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-impl LocalSwtiches {
-  fn activate_mapq(&mut self) {
-    self.mapq_switch = true;
   }
 
-  fn deactivate_mapq(&mut self) {
-    self.mapq_switch = false;
   }
 }
 
