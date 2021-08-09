@@ -79,7 +79,7 @@ pub fn me_identificator(
 
 
     // SAM line values updated at each iteration
-    update!(raw_values, record_line, ChapulinCommonError::Parsing);
+    raw_values.update(record_line)?;
 
     // TODO: load local switches
     // TODO: just clone cigar struct?
@@ -99,7 +99,7 @@ pub fn me_identificator(
 
     // tagging mobel anchor
     // switches get updated by local switches methods
-    local_switches.tag();
+    raw_values.mobel_tag(&mut local_switches);
 
     // purge read pairs on hashmap (record collection)
     // enter block if
