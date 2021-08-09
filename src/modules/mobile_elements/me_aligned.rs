@@ -100,7 +100,7 @@ pub fn me_identificator(
     raw_values.reset_orientation();
 
     // reset anchor switch
-    local_switches.deactivate_anchor();
+    local_switches.mobel.deactivate();
 
     // remember previous read
     raw_values.read_id.read_memory();
@@ -126,14 +126,14 @@ struct LocalSwtiches {
   // activate when encounter mobile element compatible features
   // reset at end of each iteration
   #[new(value = "false")]
-  mobel_anchor_switch: bool,
+  mobel: bool,
 
   // control whether read batches will be removed
   // majority of records will be removed
   // keep active unless encounter mobile element compatible features
   // re activate only after read batch evaluation
   #[new(value = "true")]
-  purge_switch: bool,
+  purge: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,24 +141,18 @@ struct LocalSwtiches {
 // local implementations on local switches
 impl LocalSwtiches {
   fn switches(&mut self) {
-    self.activate_anchor();
-    self.deactivate_purge();
+    self.mobel.activate();
+    self.purge.deactivate();
   }
+}
 
-  fn activate_purge(&mut self) {
-    self.purge_switch = true;
-  }
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  fn deactivate_purge(&mut self) {
-    self.purge_switch = false;
-  }
 trait ActivateExt {
   fn activate(&mut self);
   fn deactivate(&mut self);
 }
 
-  fn activate_anchor(&mut self) {
-    self.mobel_anchor_switch = true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 impl ActivateExt for bool {
@@ -166,8 +160,6 @@ impl ActivateExt for bool {
     *self = true;
   }
 
-  fn deactivate_anchor(&mut self) {
-    self.mobel_anchor_switch = false;
   fn deactivate(&mut self) {
     *self = false;
   }
@@ -291,7 +283,7 @@ fn batch_purge(
 
     // reset purge switch
     // purge switch re activates after read batch evaluation
-    local_switches.activate_purge();
+    local_switches.purge.activate();
   }
 }
 
@@ -300,7 +292,7 @@ fn purge(
   raw_values: &RawValues,
   hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
 ) {
-  if local_switches.purge_switch {
+  if local_switches.purge {
     hm_record_collection
       .lock()
       .unwrap()
