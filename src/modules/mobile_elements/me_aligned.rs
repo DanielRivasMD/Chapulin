@@ -14,14 +14,12 @@ use std::sync::{
 
 // development libraries
 use genomic_structures::{
-  // AnchorEnum,
   ChrAnchorEnum,
   ExtraValuesEnum,
   MEAnchor,
   MEChimericPair,
   OrientationEnum,
   RawValues,
-  CIGAR,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,15 +49,16 @@ pub fn me_identificator(
   let mut lines = byte_file_reader(&me_bam_file)?;
 
   // declare initial values
-  // local temporary values overwritten each iteration
-  // local switches must be declared outside the loop as well as
-  // inside to evaluate at last line
+  // local temporary values are controlled by implementations
+  // local switches must be declared outside the loop
+  // to keep memory of previous iterations as well as
+  // to evaluate at last line
   let mut local_switches = LocalSwtiches::new();
 
   // declare mutable raw values prior to loop
   // so read control can remember
   // it will be overwritten after each iteration
-  // but it will remember previous state
+  // but it will retain previous state
   let mut raw_values = RawValues::new();
 
 
@@ -72,20 +71,13 @@ pub fn me_identificator(
       .split('\t')
       .collect();
 
-    // reset structs
-    // overwirte local switches
-    local_switches = LocalSwtiches::new();
-
 
 
     // SAM line values updated at each iteration
+    // observe that raw values holds read control
+    // for keeping the state of read batch
     raw_values.update(record_line)?;
 
-    // TODO: load local switches
-    // TODO: just clone cigar struct?
-    // TODO: to deprecate
-    // mobel anchor struct updates EXCEPT orientation & size
-    local_switches.mobel_anchor_update(&raw_values);
     // TODO: describe break point signature
 
     // retrieve mobile element library records
@@ -94,7 +86,10 @@ pub fn me_identificator(
     {
       raw_values.extra = ExtraValuesEnum::MobelSize(*me_record);
     } else {
-      // error!("Mobile element: {:?} is in alignment but not in database", &local_switches.mobel_anchor.mobel);
+      // error!(
+      //   "Mobile element: {:?} is in alignment but not in database",
+      //   &raw_values.scaffold
+      // );
     }
 
     // tagging mobel anchor
@@ -103,12 +98,15 @@ pub fn me_identificator(
 
     // purge read pairs on hashmap (record collection)
     // enter block if
-    // read id as changed (through read memory) indicating different batch
-    // or previous read is not empty (indicating is not the first line)
-    if !(raw_values.read_id.previous == raw_values.read_id.current
-      || raw_values.read_id.previous.is_empty())
+    // read id as changed (through read memory) indicating different batch or
+    // previous read is not empty (indicating is not the first line)
+    if !(raw_values.read_id.previous == raw_values.read_id.current ||
+      raw_values.read_id.previous.is_empty())
     {
       // evaluate read batch
+      // purge switch is true if
+      // no reads have been succesfully anchored to mobile element
+      // therefore previous read batch will be removed
       if local_switches.purge_switch {
         hm_record_collection
           .lock()
@@ -117,17 +115,19 @@ pub fn me_identificator(
       }
 
       // reset purge switch
-      // TODO: probably uneccesary? to deprecate
-      local_switches.reset_purge();
+      // purge switch re activates after read batch evaluation
+      local_switches.activate_purge();
     }
 
-    // mount data on hashmap (record collection)
+    // TODO: deprecate macro usage & replace for methods on raw values?
+    // TODO: integrate chromosomal anchor tagging to macro / method
+    // mount current data on hashmap (record collection)
     // match on flag (proviral)
     // this check is much faster than using binary interpretor
     match raw_values.flag {
       // primary alignment
       proviral_flag if proviral_flag <= 255 => {
-        // insert record if it is not present on hashmap (record collection)
+        // create new entry if not present on hashmap (record collection)
         if !hm_record_collection
           .lock()
           .unwrap()
@@ -138,7 +138,9 @@ pub fn me_identificator(
             .unwrap()
             .insert(raw_values.read_id.current.clone(), MEChimericPair::new());
 
-          // if newly inserted tag mobel anchor Read1 & chr anchor Read2
+          // if newly inserted assign tag
+          // mobile element anchor Read1
+          // chromosomal anchor Read2
           if let Some(current_record) = hm_record_collection
             .lock()
             .unwrap()
@@ -155,7 +157,9 @@ pub fn me_identificator(
               current_record.chranch = ChrAnchorEnum::Read2;
             }
           }
-        // if already present tag mobel anchor Read2 & chr anchor Read1
+        // if already present assign tag
+        // mobile element anchor Read2
+        // chromosomal anchor Read1
         } else if let Some(current_record) = hm_record_collection
           .lock()
           .unwrap()
@@ -215,7 +219,7 @@ pub fn me_identificator(
     raw_values.reset_orientation();
 
     // reset anchor switch
-    local_switches.reset_anchor();
+    local_switches.deactivate_anchor();
 
     // remember previous read
     raw_values.read_id.read_memory();
@@ -235,12 +239,21 @@ pub fn me_identificator(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// majority of reads will be purged
 // explicit value assginment to boolean switches
 #[derive(Debug, new)]
 struct LocalSwtiches {
+  // keep track whether read in pair is compatible for mobile element anchoring
+  // activate when encounter mobile element compatible features
+  // reset at end of each iteration
   #[new(value = "false")]
   mobel_anchor_switch: bool,
 
+  // control whether read batches will be removed
+  // majority of records will be removed
+  // keep active unless encounter mobile element compatible features
+  // re activate only after read batch evaluation
+  #[new(value = "true")]
   purge_switch: bool,
 }
 
@@ -252,31 +265,50 @@ trait MEAnchorExt {
     &mut self,
     switch: &mut LocalSwtiches,
   ) /* -> String */;
+
   fn downstream(
     &mut self,
     switch: &mut LocalSwtiches,
   );
+
   fn upstream(
     &mut self,
     switch: &mut LocalSwtiches,
   );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 impl MEAnchorExt for RawValues {
+  // since read orientation can be calculated with only
+  // on current values on the fly through function
   fn mobel_tag(
     &mut self,
     switch: &mut LocalSwtiches,
   ) /* -> String */
   {
+    // assign true when read is aligned on
+    // reversed strand in relation to assembly
+    // otherwise false
     let read_orient = self.read_orientation_get();
     if self.cigar.left_boundry <= ME_LIMIT && read_orient {
+      // println!("UPSTREAM: {} <= {}", self.cigar.left_boundry, ME_LIMIT);
       self.upstream(switch);
     // return String::from("upstream");
     } else if self.extra_get() - self.cigar.right_boundry as f64 <=
       ME_LIMIT.into() &&
       !read_orient
     {
+      // println!(
+      //   "DOWNSTREAM: {} - {} = {} <= {}",
+      //   self.extra_get(),
+      //   self.cigar.right_boundry,
+      //   self.extra_get() - self.cigar.right_boundry as f64,
+      //   ME_LIMIT
+      // );
       self.downstream(switch);
+    // BUG: some values appear negative.
+    // BUG: investigate the reason and consider an additional condition
     // return String::from("downstream");
     } else {
       // TODO: nothing
@@ -302,6 +334,8 @@ impl MEAnchorExt for RawValues {
     self.orientation = OrientationEnum::Upstream;
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // local implementations on local switches
 impl LocalSwtiches {
@@ -329,4 +363,5 @@ impl LocalSwtiches {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: write down tests to assert that data & switches are being updated properly
+// TODO: write down tests to assert that data &
+// switches are being updated properly
