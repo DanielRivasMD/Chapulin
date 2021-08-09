@@ -259,6 +259,32 @@ struct LocalSwtiches {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// local implementations on local switches
+impl LocalSwtiches {
+  fn switches(&mut self) {
+    self.activate_anchor();
+    self.deactivate_purge();
+  }
+
+  fn activate_purge(&mut self) {
+    self.purge_switch = true;
+  }
+
+  fn deactivate_purge(&mut self) {
+    self.purge_switch = false;
+  }
+
+  fn activate_anchor(&mut self) {
+    self.mobel_anchor_switch = true;
+  }
+
+  fn deactivate_anchor(&mut self) {
+    self.mobel_anchor_switch = false;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // extend functionality of raw values locally
 trait MEAnchorExt {
   fn mobel_tag(
@@ -332,32 +358,6 @@ impl MEAnchorExt for RawValues {
   ) {
     switch.switches();
     self.orientation = OrientationEnum::Upstream;
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// local implementations on local switches
-impl LocalSwtiches {
-  fn switches(&mut self) {
-    self.activate_anchor();
-    self.deactivate_purge();
-  }
-
-  fn activate_purge(&mut self) {
-    self.purge_switch = true;
-  }
-
-  fn deactivate_purge(&mut self) {
-    self.purge_switch = false;
-  }
-
-  fn activate_anchor(&mut self) {
-    self.mobel_anchor_switch = true;
-  }
-
-  fn deactivate_anchor(&mut self) {
-    self.mobel_anchor_switch = false;
   }
 }
 
