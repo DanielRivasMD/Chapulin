@@ -89,102 +89,8 @@ pub fn me_identificator(
     // purge read pairs on hashmap (record collection)
     batch_purge(&mut local_switches, &mut raw_values, &hm_record_collection);
 
-
-    // TODO: deprecate macro usage & replace for methods on raw values?
-    // TODO: integrate chromosomal anchor tagging to macro / method
     // mount current data on hashmap (record collection)
-    // match on flag (proviral)
-    // this check is much faster than using binary interpretor
-    match raw_values.flag {
-      // primary alignment
-      proviral_flag if proviral_flag <= 255 => {
-        // create new entry if not present on hashmap (record collection)
-        if !hm_record_collection
-          .lock()
-          .unwrap()
-          .contains_key(&raw_values.read_id.current)
-        {
-          hm_record_collection
-            .lock()
-            .unwrap()
-            .insert(raw_values.read_id.current.clone(), MEChimericPair::new());
-
-          // if newly inserted assign tag
-          // mobile element anchor Read1
-          // chromosomal anchor Read2
-          if let Some(current_record) = hm_record_collection
-            .lock()
-            .unwrap()
-            .get_mut(&raw_values.read_id.current)
-          {
-            update!(
-              current_record,
-              read1,
-              raw_values,
-              local_switches,
-              ChapulinCommonError::Parsing
-            );
-            if local_switches.mobel_anchor_switch {
-              current_record.chranch = ChrAnchorEnum::Read2;
-            }
-          }
-        // if already present assign tag
-        // mobile element anchor Read2
-        // chromosomal anchor Read1
-        } else if let Some(current_record) = hm_record_collection
-          .lock()
-          .unwrap()
-          .get_mut(&raw_values.read_id.current)
-        {
-          update!(
-            current_record,
-            read2,
-            raw_values,
-            local_switches,
-            ChapulinCommonError::Parsing
-          );
-          if local_switches.mobel_anchor_switch {
-            current_record.chranch = ChrAnchorEnum::Read1;
-          }
-        }
-      }
-
-      // secondary alignment
-      proviral_flag if proviral_flag >= 256 => {
-        if let Some(current_record) = hm_record_collection
-          .lock()
-          .unwrap()
-          .get_mut(&raw_values.read_id.current)
-        {
-          // if sequence field is empty insert ? BUG: is this correct?
-          if current_record.read2.sequence.is_empty() {
-            update!(
-              current_record,
-              read1,
-              raw_values,
-              local_switches,
-              ChapulinCommonError::Parsing
-            );
-            if local_switches.mobel_anchor_switch {
-              current_record.chranch = ChrAnchorEnum::Read2;
-            }
-          } else {
-            update!(
-              current_record,
-              read2,
-              raw_values,
-              local_switches,
-              ChapulinCommonError::Parsing
-            );
-            if local_switches.mobel_anchor_switch {
-              current_record.chranch = ChrAnchorEnum::Read1;
-            }
-          }
-        }
-      }
-
-      _ => (),
-    }
+    mount(&local_switches, &mut raw_values, &hm_record_collection)?;
 
     // reset orientation
     raw_values.reset_orientation();
@@ -385,5 +291,110 @@ fn purge(
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// mount current data on hashmap (record collection)
+fn mount(
+  local_switches: &LocalSwtiches,
+  raw_values: &mut RawValues,
+  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+) -> anyResult<()> {
+  // match on flag (proviral)
+  // this check is much faster than using binary interpretor
+  match raw_values.flag {
+    // primary alignment
+    proviral_flag if proviral_flag <= 255 => {
+      // create new entry if not present on hashmap (record collection)
+      if !hm_record_collection
+        .lock()
+        .unwrap()
+        .contains_key(&raw_values.read_id.current)
+      {
+        hm_record_collection
+          .lock()
+          .unwrap()
+          .insert(raw_values.read_id.current.clone(), MEChimericPair::new());
+
+        // if newly inserted assign tag
+        // mobile element anchor Read1
+        // chromosomal anchor Read2
+        if let Some(current_record) = hm_record_collection
+          .lock()
+          .unwrap()
+          .get_mut(&raw_values.read_id.current)
+        {
+          update!(
+            current_record,
+            read1,
+            raw_values,
+            local_switches,
+            ChapulinCommonError::Parsing
+          );
+          if local_switches.mobel_anchor_switch {
+            current_record.chranch = ChrAnchorEnum::Read2;
+          }
+        }
+      // if already present assign tag
+      // mobile element anchor Read2
+      // chromosomal anchor Read1
+      } else if let Some(current_record) = hm_record_collection
+        .lock()
+        .unwrap()
+        .get_mut(&raw_values.read_id.current)
+      {
+        update!(
+          current_record,
+          read2,
+          raw_values,
+          local_switches,
+          ChapulinCommonError::Parsing
+        );
+        if local_switches.mobel_anchor_switch {
+          current_record.chranch = ChrAnchorEnum::Read1;
+        }
+      }
+    }
+
+    // secondary alignment
+    proviral_flag if proviral_flag >= 256 => {
+      if let Some(current_record) = hm_record_collection
+        .lock()
+        .unwrap()
+        .get_mut(&raw_values.read_id.current)
+      {
+        // if sequence field is empty insert ? BUG: is this correct?
+        if current_record.read2.sequence.is_empty() {
+          update!(
+            current_record,
+            read1,
+            raw_values,
+            local_switches,
+            ChapulinCommonError::Parsing
+          );
+          if local_switches.mobel_anchor_switch {
+            current_record.chranch = ChrAnchorEnum::Read2;
+          }
+        } else {
+          update!(
+            current_record,
+            read2,
+            raw_values,
+            local_switches,
+            ChapulinCommonError::Parsing
+          );
+          if local_switches.mobel_anchor_switch {
+            current_record.chranch = ChrAnchorEnum::Read1;
+          }
+        }
+      }
+    }
+
+    _ => (),
+  }
+
+  Ok(())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // TODO: write down tests to assert that data &
 // switches are being updated properly
