@@ -152,13 +152,24 @@ impl LocalSwtiches {
   fn deactivate_purge(&mut self) {
     self.purge_switch = false;
   }
+trait ActivateExt {
+  fn activate(&mut self);
+  fn deactivate(&mut self);
+}
 
   fn activate_anchor(&mut self) {
     self.mobel_anchor_switch = true;
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+impl ActivateExt for bool {
+  fn activate(&mut self) {
+    *self = true;
   }
 
   fn deactivate_anchor(&mut self) {
     self.mobel_anchor_switch = false;
+  fn deactivate(&mut self) {
+    *self = false;
   }
 }
 
