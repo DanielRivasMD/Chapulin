@@ -329,16 +329,7 @@ fn mount(
           .unwrap()
           .get_mut(&raw_values.read_id.current)
         {
-          update!(
-            current_record,
-            read1,
-            raw_values,
-            local_switches,
-            ChapulinCommonError::Parsing
-          );
-          if local_switches.mobel_anchor_switch {
-            current_record.chranch = ChrAnchorEnum::Read2;
-          }
+          load!(current_record, raw_values, local_switches, read1, Read2);
         }
       // if already present assign tag
       // mobile element anchor Read2
@@ -348,16 +339,7 @@ fn mount(
         .unwrap()
         .get_mut(&raw_values.read_id.current)
       {
-        update!(
-          current_record,
-          read2,
-          raw_values,
-          local_switches,
-          ChapulinCommonError::Parsing
-        );
-        if local_switches.mobel_anchor_switch {
-          current_record.chranch = ChrAnchorEnum::Read1;
-        }
+        load!(current_record, raw_values, local_switches, read2, Read1);
       }
     }
 
@@ -368,29 +350,12 @@ fn mount(
         .unwrap()
         .get_mut(&raw_values.read_id.current)
       {
-        // if sequence field is empty insert ? BUG: is this correct?
+        // if sequence field is empty insert indicates no primary alignment has
+        // been filled on read 2 this assumes secondary alignments are ordered
         if current_record.read2.sequence.is_empty() {
-          update!(
-            current_record,
-            read1,
-            raw_values,
-            local_switches,
-            ChapulinCommonError::Parsing
-          );
-          if local_switches.mobel_anchor_switch {
-            current_record.chranch = ChrAnchorEnum::Read2;
-          }
+          load!(current_record, raw_values, local_switches, read1, Read2);
         } else {
-          update!(
-            current_record,
-            read2,
-            raw_values,
-            local_switches,
-            ChapulinCommonError::Parsing
-          );
-          if local_switches.mobel_anchor_switch {
-            current_record.chranch = ChrAnchorEnum::Read1;
-          }
+          load!(current_record, raw_values, local_switches, read2, Read1);
         }
       }
     }
