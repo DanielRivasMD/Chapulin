@@ -211,6 +211,9 @@ pub fn me_identificator(
       _ => (),
     }
 
+    // reset orientation
+    raw_values.reset_orientation();
+
     // reset anchor switch
     local_switches.reset_anchor();
 
