@@ -72,7 +72,6 @@ pub fn me_identificator(
       .collect();
 
 
-
     // SAM line values updated at each iteration
     // observe that raw values holds read control
     // for keeping the state of read batch
@@ -81,16 +80,7 @@ pub fn me_identificator(
     // TODO: describe break point signature
 
     // retrieve mobile element library records
-    if let Some(me_record) =
-      hm_me_collection.lock().unwrap().get(&raw_values.scaffold)
-    {
-      raw_values.extra = ExtraValuesEnum::MobelSize(*me_record);
-    } else {
-      // error!(
-      //   "Mobile element: {:?} is in alignment but not in database",
-      //   &raw_values.scaffold
-      // );
-    }
+    me_get(&mut raw_values, &hm_me_collection);
 
     // tagging mobel anchor
     // switches get updated by local switches methods
@@ -363,5 +353,22 @@ impl MEAnchorExt for RawValues {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+fn me_get(
+  raw_values: &mut RawValues,
+  hm_me_collection: &Arc<Mutex<HashMap<String, f64>>>,
+) {
+  if let Some(me_record) =
+    hm_me_collection.lock().unwrap().get(&raw_values.scaffold)
+  {
+    raw_values.extra = ExtraValuesEnum::MobelSize(*me_record);
+  } else {
+    // error!(
+    //   "Mobile element: {:?} is in alignment but not in database",
+    //   &raw_values.scaffold
+    // );
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // TODO: write down tests to assert that data &
 // switches are being updated properly
