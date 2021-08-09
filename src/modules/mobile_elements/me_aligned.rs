@@ -87,27 +87,8 @@ pub fn me_identificator(
     raw_values.mobel_tag(&mut local_switches);
 
     // purge read pairs on hashmap (record collection)
-    // enter block if
-    // read id as changed (through read memory) indicating different batch or
-    // previous read is not empty (indicating is not the first line)
-    if !(raw_values.read_id.previous == raw_values.read_id.current ||
-      raw_values.read_id.previous.is_empty())
-    {
-      // evaluate read batch
-      // purge switch is true if
-      // no reads have been succesfully anchored to mobile element
-      // therefore previous read batch will be removed
-      if local_switches.purge_switch {
-        hm_record_collection
-          .lock()
-          .unwrap()
-          .remove(&raw_values.read_id.previous);
-      }
+    batch_purge(&mut local_switches, &mut raw_values, &hm_record_collection);
 
-      // reset purge switch
-      // purge switch re activates after read batch evaluation
-      local_switches.activate_purge();
-    }
 
     // TODO: deprecate macro usage & replace for methods on raw values?
     // TODO: integrate chromosomal anchor tagging to macro / method
@@ -217,12 +198,7 @@ pub fn me_identificator(
   }
 
   // evaluate at end of file
-  if local_switches.purge_switch {
-    hm_record_collection
-      .lock()
-      .unwrap()
-      .remove(&raw_values.read_id.previous);
-  }
+  purge(&local_switches, &raw_values, &hm_record_collection);
 
   Ok(())
 }
@@ -366,6 +342,45 @@ fn me_get(
     //   "Mobile element: {:?} is in alignment but not in database",
     //   &raw_values.scaffold
     // );
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// purge read pairs on hashmap (record collection)
+fn batch_purge(
+  local_switches: &mut LocalSwtiches,
+  raw_values: &mut RawValues,
+  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+) {
+  // enter block if
+  // read id as changed (through read memory) indicating different batch or
+  // previous read is not empty (indicating is not the first line)
+  if !(raw_values.read_id.previous == raw_values.read_id.current ||
+    raw_values.read_id.previous.is_empty())
+  {
+    // evaluate read batch
+    // purge switch is true if
+    // no reads have been succesfully anchored to mobile element
+    // therefore previous read batch will be removed
+    purge(&local_switches, &raw_values, hm_record_collection);
+
+    // reset purge switch
+    // purge switch re activates after read batch evaluation
+    local_switches.activate_purge();
+  }
+}
+
+fn purge(
+  local_switches: &LocalSwtiches,
+  raw_values: &RawValues,
+  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+) {
+  if local_switches.purge_switch {
+    hm_record_collection
+      .lock()
+      .unwrap()
+      .remove(&raw_values.read_id.previous);
   }
 }
 
