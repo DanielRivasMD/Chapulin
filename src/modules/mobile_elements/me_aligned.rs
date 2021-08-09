@@ -303,16 +303,23 @@ impl MEAnchorExt for RawValues {
 // local implementations on local switches
 impl LocalSwtiches {
   fn switches(&mut self) {
-    self.purge_switch = true;
-    self.mobel_anchor_switch = true;
+    self.activate_anchor();
+    self.deactivate_purge();
   }
 
-  // TODO: probably uneccesary? to deprecate
-  fn reset_purge(&mut self) {
+  fn activate_purge(&mut self) {
+    self.purge_switch = true;
+  }
+
+  fn deactivate_purge(&mut self) {
     self.purge_switch = false;
   }
 
-  fn reset_anchor(&mut self) {
+  fn activate_anchor(&mut self) {
+    self.mobel_anchor_switch = true;
+  }
+
+  fn deactivate_anchor(&mut self) {
     self.mobel_anchor_switch = false;
   }
 }
