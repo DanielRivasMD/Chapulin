@@ -61,6 +61,8 @@ pub fn me_identificator(
   // but it will retain previous state
   let mut raw_values = RawValues::new();
 
+  // counter for debugger parameter
+  let mut ct = 0;
 
   // iterate through file
   while let Some(line) = lines.next() {
@@ -71,6 +73,8 @@ pub fn me_identificator(
       .split('\t')
       .collect();
 
+    // debugger counter
+    ct += 1;
 
     // SAM line values updated at each iteration
     // observe that raw values holds read control
@@ -101,6 +105,9 @@ pub fn me_identificator(
     // remember previous read
     raw_values.read_id.read_memory();
 
+    if ct > debug_iteration && debug_iteration > 0 {
+      break;
+    }
   }
 
   // evaluate at end of file
