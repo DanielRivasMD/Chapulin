@@ -16,6 +16,7 @@ use std::sync::{
 
 // development libraries
 use genomic_structures::{
+  ChrAnchor,
   ChrAnchorEnum,
   MEChimericPair,
   RawValues,
@@ -63,27 +64,30 @@ pub fn cl_mapper(
 
     // reset mapq switch
     let mut mapq_switch = false;
+
     // SAM line values declared at each iteration
-    let raw_values = RawValues::load(record_line); //, ChapulinCommonError::Parsing);
-    // let mut raw_values = load!(record_line, ChapulinCommonError::Parsing);
+    let raw_values = RawValues::load(record_line)?;
 
     // TODO: read supplementary fields for additional information & load on
     // struct
 
-    if hm_collection
+    // if read id is present on hashmap (record collection)
+    if hm_record_collection
       .lock()
       .unwrap()
-      .contains_key(&raw_values.read_id)
+      .contains_key(&raw_values.read_id.current)
     {
       // reset switch
       mapq_switch.deactivate();
 
-      if let Some(current_record) =
-        hm_collection.lock().unwrap().get_mut(&raw_values.read_id)
+      if let Some(current_record) = hm_record_collection
+        .lock()
+        .unwrap()
+        .get_mut(&raw_values.read_id.current)
       {
         // load chromosomal anchoring data
-        reload!(current_record, read1, raw_values);
-        reload!(current_record, read2, raw_values);
+        load!(current_record, raw_values, read1);
+        load!(current_record, raw_values, read2);
 
         // evaluate mapq
         match current_record.chranch {
@@ -116,8 +120,8 @@ pub fn cl_mapper(
         if let Some(current_chr) =
           an_registry.lock().unwrap().get_mut(&raw_values.scaffold)
         {
-          if !current_chr.contains(&raw_values.read_id.to_string()) {
-            current_chr.push(raw_values.read_id.to_string())
+          if !current_chr.contains(&raw_values.read_id.current.to_string()) {
+            current_chr.push(raw_values.read_id.current.to_string())
           }
         }
       }
