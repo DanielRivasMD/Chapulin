@@ -238,11 +238,7 @@ struct LocalSwtiches {
   #[new(value = "false")]
   mobel_anchor_switch: bool,
 
-  #[new(value = "false")]
   purge_switch: bool,
-
-  #[new(value = "false")]
-  read_orientation: bool,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -269,12 +265,13 @@ impl MEAnchorExt for RawValues {
     switch: &mut LocalSwtiches,
   ) /* -> String */
   {
-    if self.cigar.left_boundry <= ME_LIMIT && switch.read_orientation {
+    let read_orient = self.read_orientation_get();
+    if self.cigar.left_boundry <= ME_LIMIT && read_orient {
       self.upstream(switch);
     // return String::from("upstream");
-    } else if self.extra_get() - self.cigar.right_boundry as f64
-      <= ME_LIMIT.into()
-      && !switch.read_orientation
+    } else if self.extra_get() - self.cigar.right_boundry as f64 <=
+      ME_LIMIT.into() &&
+      !read_orient
     {
       self.downstream(switch);
     // return String::from("downstream");
