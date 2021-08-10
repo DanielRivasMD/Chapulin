@@ -174,7 +174,6 @@ fn mount(
   Ok(())
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
 // load chromosomal anchor data on mobile element chimeric pair
 fn load(
   hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
@@ -193,13 +192,69 @@ fn load(
 impl ActivateExt for bool {
   fn activate(&mut self) {
     *self = true;
-///////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// register read id on scaffold
+fn register(
+  raw_values: RawValues,
+  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+) {
+  // IDEA: consider tagging strand on the fly to avoid postload counting
+  if anchor(hm_record_collection, &raw_values) {
+    // TODO: potentially problematic
+    // if raw_values.quality > MAPQ {
+    // if mapq_switch {
+    // if local_switches.mapq_switch {
+    hm_record_collection
+      .lock()
+      .unwrap()
+      .remove(&raw_values.read_id.current);
+  } else {
+    // register chromosome anchors
+    if !an_registry
+      .lock()
+      .unwrap()
+      .contains_key(&raw_values.scaffold)
+    {
+      // clone scaffold value here
+      an_registry
+        .lock()
+        .unwrap()
+        .insert(raw_values.scaffold.clone(), Vec::new());
+    }
+
+    if let Some(current_chr) =
+      an_registry.lock().unwrap().get_mut(&raw_values.scaffold)
+    {
+      if !current_chr.contains(&raw_values.read_id.current) {
+        // observe that value of the current read is moved here
+        current_chr.push(raw_values.read_id.current)
+      }
+    }
   }
+}
 
   fn deactivate(&mut self) {
     *self = false;
+// read chromosomal anchor enum
+fn anchor(
+  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  raw_values: &RawValues,
+) -> bool {
+  let mut switch_out = false;
+  if let Some(current_record) = hm_record_collection
+    .lock()
+    .unwrap()
+    .get(&raw_values.read_id.current)
+  {
+    match current_record.chranch {
+      ChrAnchorEnum::Read1 => switch_out = mapq!(current_record, read1),
+      ChrAnchorEnum::Read2 => switch_out = mapq!(current_record, read2),
+      _ => (),
+    };
   }
+  switch_out
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
