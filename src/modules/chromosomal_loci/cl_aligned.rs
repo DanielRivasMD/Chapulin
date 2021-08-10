@@ -307,3 +307,42 @@ fn anchor(
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// // purge read pairs on hashmap (record collection)
+// fn batch_purge(
+//   local_switches: &mut LocalSwtiches,
+//   raw_values: &RawValues,
+//   hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+// ) {
+//   // enter block if
+//   // read id as changed (through read memory) indicating different batch or
+//   // previous read is not empty (indicating is not the first line)
+//   if !(raw_values.read_id.previous == raw_values.read_id.current ||
+//     raw_values.read_id.previous.is_empty())
+//   {
+//     // evaluate read batch
+//     // purge switch is true if
+//     // no reads have been succesfully anchored to mobile element
+//     // therefore previous read batch will be removed
+//     purge(local_switches, raw_values, hm_record_collection);
+
+//     // reset purge switch
+//     // purge switch re activates after read batch evaluation
+//     local_switches.mapq.deactivate();
+//   }
+// }
+
+fn purge(
+  // local_switches: &LocalSwtiches,
+  raw_values: &RawValues,
+  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+) {
+  // if local_switches.mapq {
+  hm_record_collection
+    .lock()
+    .unwrap()
+    .remove(&raw_values.read_id.previous);
+  // }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
