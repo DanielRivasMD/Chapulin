@@ -142,13 +142,59 @@ pub fn cl_mapper(
 trait ActivateExt {
   fn activate(&mut self);
   fn deactivate(&mut self);
+// mount current data on hashmap (record collection)
+fn mount(
+  raw_values: RawValues,
+  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+  mut file_out: &File,
+) -> anyResult<()> {
+  // if read id is present on hashmap (record collection)
+  if hm_record_collection
+    .lock()
+    .unwrap()
+    .contains_key(&raw_values.read_id.current)
+  {
+    // load chromosomal anchoring data
+    // check whether sequence or reverse sequence is equal
+    // BUG: palindromic reads?
+    load(hm_record_collection, &raw_values);
+
+    // register
+    register(raw_values, hm_record_collection, an_registry);
+  } else {
+    // TODO: all records are going here. investigate the reason
+    file_out
+      .write_all(raw_values.read_id.current.as_bytes())
+      .context(ChapulinCommonError::WriteFile {
+        f: raw_values.read_id.current,
+      })?;
+  }
+
+  Ok(())
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// load chromosomal anchor data on mobile element chimeric pair
+fn load(
+  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  raw_values: &RawValues,
+) {
+  if let Some(current_record) = hm_record_collection
+    .lock()
+    .unwrap()
+    .get_mut(&raw_values.read_id.current)
+  {
+    load!(current_record, *raw_values, read1);
+    load!(current_record, *raw_values, read2);
+  }
+}
 
 impl ActivateExt for bool {
   fn activate(&mut self) {
     *self = true;
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
   }
 
   fn deactivate(&mut self) {
