@@ -1,5 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// TODO: heavily comment
+// TODO: since modules are functional, consider implementing error handlers per
+// function. this assumes that error handlers can be efficiently tested
+
 // standard libraries
 use anyhow::Context;
 use anyhow::Result as anyResult;
@@ -80,24 +84,27 @@ pub fn cl_mapper(
       .split('\t')
       .collect();
 
-    // debugger counter
-    ct += 1;
-
+    // // debugger counter
+    // ct += 1;
+    // if ct % 10000 == 0 {
+    //   // println!("{}", ct);
+    // }
 
     // SAM line values updated at each iteration
     // observe that raw values holds read control
     // for keeping the state of read batch
     raw_values.update(record_line)?;
 
+    if raw_values.read_id.current == "SRR556146.17" {
+      println!("{:?}", raw_values.sequence);
+      println!("{:?}", raw_values.quality);
+    }
     // TODO: read supplementary fields for additional information & load on
     // struct
 
     // mount
-    mount(raw_values, &hm_record_collection, &an_registry, &file_out)?;
+    mount(&raw_values, &hm_record_collection, &file_out)?;
 
-    if ct > debug_iteration && debug_iteration > 0 {
-      break;
-    }
     eval_batch(
       &mut local_switches,
       &raw_values,
@@ -105,7 +112,23 @@ pub fn cl_mapper(
       &an_registry,
     );
 
+    // remember previous read
+    raw_values.read_id.read_memory();
+
+    // println!("Iteration: {} -> {}", ct, local_switches.mapq);
+    // if ct > debug_iteration && debug_iteration > 0 {
+    //   //   // println!("{:#?}", hm_record_collection);
+    //   break;
+    // }
   }
+
+  // if let Some(cr) = hm_record_collection.lock().unwrap().get("SRR556146.17")
+  // {   println!("Read1: {:#?}", cr.read1.sequence);
+  //   println!("Read1: {:#?}", cr.read1.me_read);
+  //   println!("Read2: {:#?}", cr.read2.sequence);
+  //   println!("Read2: {:#?}", cr.read2.chr_read);
+  // }
+  // // println!("{:#?}", hm_record_collection);
 
   Ok(())
 }
@@ -168,10 +191,11 @@ impl ActivateExt for bool {
 
 // mount current data on hashmap (record collection)
 fn mount(
-  raw_values: RawValues,
+  // local_switches: &LocalSwtiches,
+  raw_values: &RawValues,
   hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-  an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
-  mut file_out: &File,
+  // an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+  mut _file_out: &File,
 ) -> anyResult<()> {
   // if read id is present on hashmap (record collection)
   if hm_record_collection
@@ -184,15 +208,20 @@ fn mount(
     // BUG: palindromic reads?
     load(&raw_values, hm_record_collection);
 
-    // register
-    register(raw_values, hm_record_collection, an_registry);
+  // // register
+  // register(
+  //   &mut local_switches,
+  //   raw_values,
+  //   hm_record_collection,
+  //   an_registry,
+  // );
   } else {
     // TODO: all records are going here. investigate the reason
-    file_out
-      .write_all(raw_values.read_id.current.as_bytes())
-      .context(ChapulinCommonError::WriteFile {
-        f: raw_values.read_id.current,
-      })?;
+    // file_out
+    //   .write_all(raw_values.read_id.current.as_bytes())
+    //   .context(ChapulinCommonError::WriteFile {
+    //     f: raw_values.read_id.current.clone(),
+    //   })?;
   }
 
   Ok(())
@@ -216,27 +245,21 @@ fn load(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // register read id on scaffold
-fn register(
-  raw_values: RawValues,
 fn eval_batch(
   local_switches: &mut LocalSwtiches,
   raw_values: &RawValues,
   hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) {
-  // IDEA: consider tagging strand on the fly to avoid postload counting
-  if anchor(&raw_values, hm_record_collection) {
-    // TODO: potentially problematic
-    // if raw_values.quality > MAPQ {
-    // if mapq_switch {
-    // if local_switches.mapq_switch {
-    hm_record_collection
-      .lock()
-      .unwrap()
-      .remove(&raw_values.read_id.current);
-  } else {
-    // register chromosome anchors
-    if !an_registry
+  // let _ = anchor(raw_values, hm_record_collection);
+  // local_switches.mapq =
+  //   local_switches.mapq || anchor(raw_values, hm_record_collection);
+
+  // evaluate read batch
+  // batch_purge(local_switches, raw_values, hm_record_collection);
+
+  // TODO: why are the reads not in order. also, this function should account
+  // for that fact since it must support single-end alignments as well
   if !(raw_values.read_id.previous == raw_values.read_id.current ||
     raw_values.read_id.previous.is_empty())
   {
@@ -264,44 +287,88 @@ fn eval_batch(
     .and_memory(anchor(raw_values, hm_record_collection));
 }
 
+// if local_switches.mapq {
+//   purge()
+// }
+
+// IDEA: consider tagging strand on the fly to avoid postload counting
+// BUG: this switch must contain memory, otherwise it'll delete all read2
+// if anchor(&raw_values, hm_record_collection) {
+//   if raw_values.read_id.current == "SRR556146.17" {
+//     println!("Removing");
+//   }
+//   hm_record_collection
+//     .lock()
+//     .unwrap()
+//     .remove(&raw_values.read_id.current);
+// } else {
+//   if raw_values.read_id.current == "SRR556146.17" {
+//     println!("Registering");
+//   }
+// register chromosome anchors
+
+fn register(
+  an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+  raw_values: &RawValues,
+) {
+  if !an_registry
+    .lock()
+    .unwrap()
+    .contains_key(&raw_values.scaffold)
+  {
+    // clone scaffold value here
+    an_registry
       .lock()
       .unwrap()
-      .contains_key(&raw_values.scaffold)
-    {
-      // clone scaffold value here
-      an_registry
-        .lock()
-        .unwrap()
-        .insert(raw_values.scaffold.clone(), Vec::new());
-    }
+      .insert(raw_values.scaffold.clone(), Vec::new());
+  }
 
-    if let Some(current_chr) =
-      an_registry.lock().unwrap().get_mut(&raw_values.scaffold)
-    {
-      if !current_chr.contains(&raw_values.read_id.current) {
-        // observe that value of the current read is moved here
-        current_chr.push(raw_values.read_id.current)
-      }
+  if let Some(current_chr) =
+    an_registry.lock().unwrap().get_mut(&raw_values.scaffold)
+  {
+    // verify whether vector contains entry
+    if !current_chr.contains(&raw_values.read_id.previous) {
+      // observe that value of the current read is moved here
+      current_chr.push(raw_values.read_id.previous.clone())
     }
   }
 }
 
 // read chromosomal anchor enum
+// TODO: considering that reads are previously tagged for chr anchor,
+// remembering the state is not a problem because all filtering can be
+// done on the current read.
 fn anchor(
   raw_values: &RawValues,
   hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
 ) -> bool {
-  let mut switch_out = false;
+  let mut switch_out = true;
   if let Some(current_record) = hm_record_collection
     .lock()
     .unwrap()
     .get(&raw_values.read_id.current)
   {
+    // println!("{:#?}", current_record);
     match current_record.chranch {
-      ChrAnchorEnum::Read1 => switch_out = mapq!(current_record, read1),
-      ChrAnchorEnum::Read2 => switch_out = mapq!(current_record, read2),
+      ChrAnchorEnum::Read1 => {
+        switch_out = mapq!(current_record, read1);
+      }
+      ChrAnchorEnum::Read2 => {
+        switch_out = mapq!(current_record, read1);
+        println!("Inside Match");
+        println!("{:?}", current_record.read1.chr_read.is_empty());
+        println!("{:?}", current_record.read1.chr_read[0].mapq < MAPQ);
+        println!("{:?}", switch_out);
+      }
       _ => (),
     };
+  }
+
+  if raw_values.read_id.current == "SRR556146.17" {
+    println!("Inside Match");
+    //   println!();
+    //   println!("{:#?}", raw_values);
+    //   println!("Switch: {:?}", switch_out);
   }
   switch_out
 }
