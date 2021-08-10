@@ -43,6 +43,7 @@ pub fn cl_mapper(
   errata: &str,
   hm_record_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
+  debug_iteration: i32,
 ) -> anyResult<()> {
   // load file
   let mut lines = byte_file_reader(&cl_bam_file)?;
@@ -54,6 +55,8 @@ pub fn cl_mapper(
       f: fl_write,
     })?;
 
+  // counter for debugger parameter
+  let mut ct = 0;
 
   // iterate through file
   while let Some(line) = lines.next() {
@@ -64,10 +67,12 @@ pub fn cl_mapper(
       .split('\t')
       .collect();
 
+    // debugger counter
+    ct += 1;
+
+
     // SAM line values declared at each iteration
     let raw_values = RawValues::load(record_line)?;
-
-
 
     // TODO: read supplementary fields for additional information & load on
     // struct
@@ -75,6 +80,9 @@ pub fn cl_mapper(
     // mount
     mount(raw_values, &hm_record_collection, &an_registry, &file_out)?;
 
+    if ct > debug_iteration && debug_iteration > 0 {
+      break;
+    }
   }
 
   Ok(())
