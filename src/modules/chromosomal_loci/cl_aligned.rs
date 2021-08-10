@@ -82,9 +82,6 @@ pub fn cl_mapper(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-trait ActivateExt {
-  fn activate(&mut self);
-  fn deactivate(&mut self);
 // mount current data on hashmap (record collection)
 fn mount(
   raw_values: RawValues,
@@ -132,9 +129,6 @@ fn load(
   }
 }
 
-impl ActivateExt for bool {
-  fn activate(&mut self) {
-    *self = true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // register read id on scaffold
@@ -178,8 +172,6 @@ fn register(
   }
 }
 
-  fn deactivate(&mut self) {
-    *self = false;
 // read chromosomal anchor enum
 fn anchor(
   raw_values: &RawValues,
