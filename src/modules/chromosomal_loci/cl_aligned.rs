@@ -55,6 +55,19 @@ pub fn cl_mapper(
       f: fl_write,
     })?;
 
+  // declare initial values
+  // local temporary values are controlled by implementations
+  // local switches must be declared outside the loop
+  // to keep memory of previous iterations as well as
+  // to evaluate at last line
+  let mut local_switches = LocalSwtiches::new();
+
+  // declare mutable raw values prior to loop
+  // so read control can remember
+  // it will be overwritten after each iteration
+  // but it will retain previous state
+  let mut raw_values = RawValues::new();
+
   // counter for debugger parameter
   let mut ct = 0;
 
@@ -71,8 +84,10 @@ pub fn cl_mapper(
     ct += 1;
 
 
-    // SAM line values declared at each iteration
-    let raw_values = RawValues::load(record_line)?;
+    // SAM line values updated at each iteration
+    // observe that raw values holds read control
+    // for keeping the state of read batch
+    raw_values.update(record_line)?;
 
     // TODO: read supplementary fields for additional information & load on
     // struct
