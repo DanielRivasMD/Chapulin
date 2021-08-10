@@ -98,6 +98,13 @@ pub fn cl_mapper(
     if ct > debug_iteration && debug_iteration > 0 {
       break;
     }
+    eval_batch(
+      &mut local_switches,
+      &raw_values,
+      &hm_record_collection,
+      &an_registry,
+    );
+
   }
 
   Ok(())
@@ -211,6 +218,9 @@ fn load(
 // register read id on scaffold
 fn register(
   raw_values: RawValues,
+fn eval_batch(
+  local_switches: &mut LocalSwtiches,
+  raw_values: &RawValues,
   hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) {
@@ -227,6 +237,33 @@ fn register(
   } else {
     // register chromosome anchors
     if !an_registry
+  if !(raw_values.read_id.previous == raw_values.read_id.current ||
+    raw_values.read_id.previous.is_empty())
+  {
+    if local_switches.mapq {
+      if raw_values.read_id.previous == "SRR556146.17" {
+        println!("Removing");
+        println!();
+      }
+
+      purge(&raw_values, hm_record_collection);
+    } else {
+      if raw_values.read_id.previous == "SRR556146.17" {
+        println!("Registering");
+        println!();
+      }
+
+      register(an_registry, raw_values);
+      local_switches.mapq.activate();
+    }
+  }
+
+  // memory
+  local_switches
+    .mapq
+    .and_memory(anchor(raw_values, hm_record_collection));
+}
+
       .lock()
       .unwrap()
       .contains_key(&raw_values.scaffold)
