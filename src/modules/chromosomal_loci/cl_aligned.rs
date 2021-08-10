@@ -112,6 +112,53 @@ struct LocalSwtiches {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// activation trait
+trait ActivateExt {
+  fn activate(&mut self);
+
+  fn deactivate(&mut self);
+
+  fn or_memory(
+    &mut self,
+    new: bool,
+  );
+
+  fn and_memory(
+    &mut self,
+    new: bool,
+  );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// extend implement on boolean
+impl ActivateExt for bool {
+  fn activate(&mut self) {
+    *self = true;
+  }
+
+  fn deactivate(&mut self) {
+    *self = false;
+  }
+
+  fn or_memory(
+    &mut self,
+    new: bool,
+  ) {
+    *self = *self || new
+  }
+
+  fn and_memory(
+    &mut self,
+    new: bool,
+  ) {
+    *self = *self && new
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // mount current data on hashmap (record collection)
 fn mount(
   raw_values: RawValues,
