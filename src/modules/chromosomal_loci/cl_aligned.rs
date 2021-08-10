@@ -54,7 +54,7 @@ pub fn cl_mapper(
 
   // create output file
   let fl_write = format!("{}.err", errata);
-  let file_out =
+  let mut file_out =
     File::create(&fl_write).context(ChapulinCommonError::CreateFile {
       f: fl_write,
     })?;
@@ -92,7 +92,7 @@ pub fn cl_mapper(
     }
 
     // mount
-    mount(raw_values, &hm_record_collection, &an_registry, &file_out)?;
+    raw_values.mount(&hm_record_collection, &an_registry, &mut file_out)?;
 
     if ct > debug_iteration && debug_iteration > 0 {
       break;
@@ -104,51 +104,84 @@ pub fn cl_mapper(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// mount current data on hashmap (record collection)
-fn mount(
-  raw_values: RawValues,
-  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-  an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
-  mut file_out: &File,
-) -> anyResult<()> {
-  // if read id is present on hashmap (record collection)
-  if hm_record_collection
-    .lock()
-    .unwrap()
-    .contains_key(&raw_values.read_id.current)
-  {
-    // load chromosomal anchoring data
-    // check whether sequence or reverse sequence is equal
-    // BUG: palindromic reads?
-    load(&raw_values, hm_record_collection);
+trait MountExt {
+  fn mount(
+    self,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+    file_out: &mut File,
+  ) -> anyResult<()>;
 
-    // register
-    register(raw_values, hm_record_collection, an_registry);
-  } else {
-    // TODO: all records are going here. investigate the reason
-    file_out
-      .write_all(raw_values.read_id.current.as_bytes())
-      .context(ChapulinCommonError::WriteFile {
-        f: raw_values.read_id.current,
-      })?;
-  }
-
-  Ok(())
+  fn load(
+    &self,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  );
 }
 
-// load chromosomal anchor data on mobile element chimeric pair
-fn load(
-  raw_values: &RawValues,
-  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-) {
-  if let Some(current_record) = hm_record_collection
-    .lock()
-    .unwrap()
-    .get_mut(&raw_values.read_id.current)
-  {
-    load!(current_record, *raw_values, read1);
-    load!(current_record, *raw_values, read2);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+impl MountExt for RawValues {
+  // mount current data on hashmap (record collection)
+  fn mount(
+    self,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+    file_out: &mut File,
+  ) -> anyResult<()> {
+    // if read id is present on hashmap (record collection)
+    if hm_record_collection
+      .lock()
+      .unwrap()
+      .contains_key(&self.read_id.current)
+    {
+      // load chromosomal anchoring data
+      // check whether sequence or reverse sequence is equal
+      // BUG: palindromic reads?
+      self.load(hm_record_collection);
+
+      // register
+      self.register(hm_record_collection, an_registry);
+    } else {
+      // TODO: all records are going here. investigate the reason
+      file_out
+        .write_all(self.read_id.current.as_bytes())
+        .context(ChapulinCommonError::WriteFile {
+          f: self.read_id.current,
+        })?;
+    }
+
+    Ok(())
   }
+
+  // load chromosomal anchor data on mobile element chimeric pair
+  fn load(
+    &self,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  ) {
+    if let Some(current_record) = hm_record_collection
+      .lock()
+      .unwrap()
+      .get_mut(&self.read_id.current)
+    {
+      load!(current_record, *self, read1);
+      load!(current_record, *self, read2);
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+trait RegisterExt {
+  fn register(
+    self,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+  );
+
+  fn anchor(
+    &self,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  ) -> bool;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,84 +190,82 @@ fn load(
 // for that fact since it must support single-end alignments as well
 // IDEA: consider tagging strand on the fly to avoid postload counting
 // BUG: this switch must contain memory, otherwise it'll delete all read2
-// register read id on scaffold
-fn register(
-  raw_values: RawValues,
-  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-  an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
-) {
-  if anchor(&raw_values, hm_record_collection) {
-    if raw_values.read_id.current == "SRR556146.17" {
-      println!("Removing");
-      println!();
-    }
-    hm_record_collection
-      .lock()
-      .unwrap()
-      .remove(&raw_values.read_id.current);
-  } else {
-    if raw_values.read_id.current == "SRR556146.17" {
-      println!("Registering");
-      println!();
-    }
-    // register chromosome anchors
-    if !an_registry
-      .lock()
-      .unwrap()
-      .contains_key(&raw_values.scaffold)
-    {
-      // clone scaffold value here
-      an_registry
+impl RegisterExt for RawValues {
+  // register read id on scaffold
+  fn register(
+    self,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+  ) {
+    if self.anchor(hm_record_collection) {
+      if self.read_id.current == "SRR556146.17" {
+        println!("Removing");
+        println!();
+      }
+      hm_record_collection
         .lock()
         .unwrap()
-        .insert(raw_values.scaffold.clone(), Vec::new());
-    }
+        .remove(&self.read_id.current);
+    } else {
+      if self.read_id.current == "SRR556146.17" {
+        println!("Registering");
+        println!();
+      }
+      // register chromosome anchors
+      if !an_registry.lock().unwrap().contains_key(&self.scaffold) {
+        // clone scaffold value here
+        an_registry
+          .lock()
+          .unwrap()
+          .insert(self.scaffold.clone(), Vec::new());
+      }
 
-    if let Some(current_chr) =
-      an_registry.lock().unwrap().get_mut(&raw_values.scaffold)
+      if let Some(current_chr) =
+        an_registry.lock().unwrap().get_mut(&self.scaffold)
+      {
+        // verify whether vector contains entry
+        if !current_chr.contains(&self.read_id.current) {
+          // observe that value of the current read is moved here
+          current_chr.push(self.read_id.current)
+        }
+      }
+    }
+  }
+
+  fn anchor(
+    &self,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  ) -> bool {
+    let mut switch_out = true;
+    if let Some(current_record) = hm_record_collection
+      .lock()
+      .unwrap()
+      .get(&self.read_id.current)
     {
-      // verify whether vector contains entry
-      if !current_chr.contains(&raw_values.read_id.current) {
-        // observe that value of the current read is moved here
-        current_chr.push(raw_values.read_id.current)
-      }
+      // println!("{:#?}", current_record);
+      match current_record.chranch {
+        ChrAnchorEnum::Read1 => {
+          switch_out = mapq!(current_record, read1);
+        }
+        ChrAnchorEnum::Read2 => {
+          switch_out = mapq!(current_record, read2);
+          println!("Inside Match");
+          println!("{:?}", current_record.read1.chr_read.is_empty());
+          println!("{:?}", current_record.read1.chr_read[0].mapq < MAPQ);
+          println!("{:?}", switch_out);
+        }
+        _ => (),
+      };
     }
-  }
-}
 
-fn anchor(
-  raw_values: &RawValues,
-  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-) -> bool {
-  let mut switch_out = true;
-  if let Some(current_record) = hm_record_collection
-    .lock()
-    .unwrap()
-    .get(&raw_values.read_id.current)
-  {
-    // println!("{:#?}", current_record);
-    match current_record.chranch {
-      ChrAnchorEnum::Read1 => {
-        switch_out = mapq!(current_record, read1);
-      }
-      ChrAnchorEnum::Read2 => {
-        switch_out = mapq!(current_record, read2);
-        println!("Inside Match");
-        println!("{:?}", current_record.read1.chr_read.is_empty());
-        println!("{:?}", current_record.read1.chr_read[0].mapq < MAPQ);
-        println!("{:?}", switch_out);
-      }
-      _ => (),
-    };
+    if self.read_id.current == "SRR556146.17" {
+      println!("Inside Match");
+      //   println!();
+      //   println!("{:#?}", self);
+      //   println!("Switch: {:?}", switch_out);
+    }
+    switch_out
   }
-
-  if raw_values.read_id.current == "SRR556146.17" {
-    println!("Inside Match");
-    //   println!();
-    //   println!("{:#?}", raw_values);
-    //   println!("Switch: {:?}", switch_out);
-  }
-  switch_out
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
