@@ -84,17 +84,17 @@ pub fn me_identificator(
     // TODO: describe break point signature
 
     // retrieve mobile element library records
-    me_get(&mut raw_values, &hm_me_collection);
+    raw_values.library_get(&hm_me_collection);
 
     // tagging mobel anchor
     // switches get updated by local switches methods
     raw_values.mobel_tag(&mut local_switches);
 
     // purge read pairs on hashmap (record collection)
-    batch_purge(&mut local_switches, &raw_values, &hm_record_collection);
+    raw_values.batch_purge(&mut local_switches, &hm_record_collection);
 
     // mount current data on hashmap (record collection)
-    mount(&local_switches, &raw_values, &hm_record_collection)?;
+    raw_values.mount(&local_switches, &hm_record_collection)?;
 
     // reset orientation
     raw_values.reset_orientation();
@@ -106,12 +106,13 @@ pub fn me_identificator(
     raw_values.read_id.read_memory();
 
     if ct > debug_iteration && debug_iteration > 0 {
+      // println!("{:#?}", hm_record_collection);
       break;
     }
   }
 
   // evaluate at end of file
-  purge(&local_switches, &raw_values, &hm_record_collection);
+  raw_values.purge(&local_switches, &hm_record_collection);
 
   Ok(())
 }
@@ -148,6 +149,7 @@ impl LocalSwtiches {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// activation trait
 trait ActivateExt {
   fn activate(&mut self);
   fn deactivate(&mut self);
@@ -155,6 +157,7 @@ trait ActivateExt {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// extend implement on boolean
 impl ActivateExt for bool {
   fn activate(&mut self) {
     *self = true;
@@ -187,6 +190,7 @@ trait MEAnchorExt {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// extend implementation on raw values
 impl MEAnchorExt for RawValues {
   // since read orientation can be calculated with only
   // on current values on the fly through function
@@ -241,128 +245,173 @@ impl MEAnchorExt for RawValues {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-fn me_get(
-  raw_values: &mut RawValues,
-  hm_me_collection: &Arc<Mutex<HashMap<String, f64>>>,
-) {
-  if let Some(me_record) =
-    hm_me_collection.lock().unwrap().get(&raw_values.scaffold)
-  {
-    raw_values.extra = ExtraValuesEnum::MobelSize(*me_record);
-  } else {
-    // error!(
-    //   "Mobile element: {:?} is in alignment but not in database",
-    //   &raw_values.scaffold
-    // );
+trait LibraryExt {
+  fn library_get(
+    &mut self,
+    hm_record_collection: &Arc<Mutex<HashMap<String, f64>>>,
+  );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+impl LibraryExt for RawValues {
+  // TODO: transform this function into extend implementation
+  // collect mobile element from library & mount it on raw values extra enum
+  fn library_get(
+    &mut self,
+    hm_me_collection: &Arc<Mutex<HashMap<String, f64>>>,
+  ) {
+    if let Some(me_record) =
+      hm_me_collection.lock().unwrap().get(&self.scaffold)
+    {
+      self.extra = ExtraValuesEnum::MobelSize(*me_record);
+    } else {
+      // error!(
+      //   "Mobile element: {:?} is in alignment but not in database",
+      //   &self.scaffold
+      // );
+    }
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// purge read pairs on hashmap (record collection)
-fn batch_purge(
-  local_switches: &mut LocalSwtiches,
-  raw_values: &RawValues,
-  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-) {
-  // enter block if
-  // read id as changed (through read memory) indicating different batch or
-  // previous read is not empty (indicating is not the first line)
-  if !(raw_values.read_id.previous == raw_values.read_id.current ||
-    raw_values.read_id.previous.is_empty())
-  {
-    // evaluate read batch
-    // purge switch is true if
-    // no reads have been succesfully anchored to mobile element
-    // therefore previous read batch will be removed
-    purge(local_switches, raw_values, hm_record_collection);
+trait PurgeExt {
+  fn batch_purge(
+    &self,
+    local_switches: &mut LocalSwtiches,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  );
 
-    // reset purge switch
-    // purge switch re activates after read batch evaluation
-    local_switches.purge.activate();
-  }
-}
-
-fn purge(
-  local_switches: &LocalSwtiches,
-  raw_values: &RawValues,
-  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-) {
-  if local_switches.purge {
-    hm_record_collection
-      .lock()
-      .unwrap()
-      .remove(&raw_values.read_id.previous);
-  }
+  fn purge(
+    &self,
+    local_switches: &LocalSwtiches,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// mount current data on hashmap (record collection)
-fn mount(
-  local_switches: &LocalSwtiches,
-  raw_values: &RawValues,
-  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-) -> anyResult<()> {
-  // match on flag (proviral)
-  // this check is much faster than using binary interpretor
-  match raw_values.flag {
-    // primary alignment
-    proviral_flag if proviral_flag <= 255 => {
-      // create new entry if not present on hashmap (record collection)
-      if !hm_record_collection
+impl PurgeExt for RawValues {
+  // purge read pairs on hashmap (record collection)
+  fn batch_purge(
+    &self,
+    local_switches: &mut LocalSwtiches,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  ) {
+    // enter block if
+    // read id as changed (through read memory) indicating different batch or
+    // previous read is not empty (indicating is not the first line)
+    if !(self.read_id.previous == self.read_id.current ||
+      self.read_id.previous.is_empty())
+    {
+      // evaluate read batch
+      // purge switch is true if
+      // no reads have been succesfully anchored to mobile element
+      // therefore previous read batch will be removed
+      self.purge(local_switches, hm_record_collection);
+
+      // reset purge switch
+      // purge switch re activates after read batch evaluation
+      local_switches.purge.activate();
+    }
+  }
+
+  fn purge(
+    &self,
+    local_switches: &LocalSwtiches,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  ) {
+    if local_switches.purge {
+      hm_record_collection
         .lock()
         .unwrap()
-        .contains_key(&raw_values.read_id.current)
-      {
-        hm_record_collection
+        .remove(&self.read_id.previous);
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+trait MountExt {
+  fn mount(
+    &self,
+    local_switches: &LocalSwtiches,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  ) -> anyResult<()>;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+impl MountExt for RawValues {
+  // TODO: perhaps add switches to control where records are assigned?
+  // mount current data on hashmap (record collection)
+  fn mount(
+    &self,
+    local_switches: &LocalSwtiches,
+    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  ) -> anyResult<()> {
+    // match on flag (proviral)
+    // this check is much faster than using binary interpretor
+    match self.flag {
+      // primary alignment
+      proviral_flag if proviral_flag <= 255 => {
+        // create new entry if not present on hashmap (record collection)
+        if !hm_record_collection
           .lock()
           .unwrap()
-          .insert(raw_values.read_id.current.clone(), MEChimericPair::new());
+          .contains_key(&self.read_id.current)
+        {
+          hm_record_collection
+            .lock()
+            .unwrap()
+            .insert(self.read_id.current.clone(), MEChimericPair::new());
 
-        // if newly inserted assign tag
-        // mobile element anchor Read1
-        // chromosomal anchor Read2
+          // if newly inserted assign tag
+          // mobile element anchor Read1
+          // chromosomal anchor Read2
+          if let Some(current_record) = hm_record_collection
+            .lock()
+            .unwrap()
+            .get_mut(&self.read_id.current)
+          {
+            load!(current_record, self, local_switches, read1, Read2);
+          }
+        // if already present assign tag
+        // mobile element anchor Read2
+        // chromosomal anchor Read1
+        } else if let Some(current_record) = hm_record_collection
+          .lock()
+          .unwrap()
+          .get_mut(&self.read_id.current)
+        {
+          load!(current_record, self, local_switches, read2, Read1);
+        }
+      }
+
+      // secondary alignment
+      proviral_flag if proviral_flag >= 256 => {
         if let Some(current_record) = hm_record_collection
           .lock()
           .unwrap()
-          .get_mut(&raw_values.read_id.current)
+          .get_mut(&self.read_id.current)
         {
-          load!(current_record, raw_values, local_switches, read1, Read2);
-        }
-      // if already present assign tag
-      // mobile element anchor Read2
-      // chromosomal anchor Read1
-      } else if let Some(current_record) = hm_record_collection
-        .lock()
-        .unwrap()
-        .get_mut(&raw_values.read_id.current)
-      {
-        load!(current_record, raw_values, local_switches, read2, Read1);
-      }
-    }
-
-    // secondary alignment
-    proviral_flag if proviral_flag >= 256 => {
-      if let Some(current_record) = hm_record_collection
-        .lock()
-        .unwrap()
-        .get_mut(&raw_values.read_id.current)
-      {
-        // if sequence field is empty insert indicates no primary alignment has
-        // been filled on read 2 this assumes secondary alignments are ordered
-        if current_record.read2.sequence.is_empty() {
-          load!(current_record, raw_values, local_switches, read1, Read2);
-        } else {
-          load!(current_record, raw_values, local_switches, read2, Read1);
+          // if sequence field is empty insert indicates no primary alignment
+          // has been filled on read 2 this assumes secondary
+          // alignments are ordered
+          if current_record.read2.sequence.is_empty() {
+            load!(current_record, self, local_switches, read1, Read2);
+          } else {
+            load!(current_record, self, local_switches, read2, Read1);
+          }
         }
       }
+
+      _ => (),
     }
 
-    _ => (),
+    Ok(())
   }
-
-  Ok(())
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
