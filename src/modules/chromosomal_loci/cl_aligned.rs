@@ -41,17 +41,19 @@ use crate::error::common_error::ChapulinCommonError;
 pub fn cl_mapper(
   cl_bam_file: &str,
   errata: &str,
-  hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  hm_record_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) -> anyResult<()> {
+  // load file
+  let mut lines = byte_file_reader(&cl_bam_file)?;
+
+  // create output file
   let fl_write = format!("{}.err", errata);
-  let _fl =
+  let file_out =
     File::create(&fl_write).context(ChapulinCommonError::CreateFile {
       f: fl_write,
     })?;
 
-  // load file
-  let mut lines = byte_file_reader(&cl_bam_file)?;
 
   // iterate through file
   while let Some(line) = lines.next() {
@@ -62,76 +64,17 @@ pub fn cl_mapper(
       .split('\t')
       .collect();
 
-    // reset mapq switch
-    let mut mapq_switch = false;
-
     // SAM line values declared at each iteration
     let raw_values = RawValues::load(record_line)?;
+
+
 
     // TODO: read supplementary fields for additional information & load on
     // struct
 
-    // if read id is present on hashmap (record collection)
-    if hm_record_collection
-      .lock()
-      .unwrap()
-      .contains_key(&raw_values.read_id.current)
-    {
-      // reset switch
-      mapq_switch.deactivate();
+    // mount
+    mount(raw_values, &hm_record_collection, &an_registry, &file_out)?;
 
-      if let Some(current_record) = hm_record_collection
-        .lock()
-        .unwrap()
-        .get_mut(&raw_values.read_id.current)
-      {
-        // load chromosomal anchoring data
-        load!(current_record, raw_values, read1);
-        load!(current_record, raw_values, read2);
-
-        // evaluate mapq
-        match current_record.chranch {
-          ChrAnchorEnum::Read1 => {
-            mapq_switch = mapq!(current_record, read1);
-          }
-          ChrAnchorEnum::Read2 => {
-            mapq_switch = mapq!(current_record, read2);
-          }
-          _ => (),
-        };
-      }
-
-      // IDEA: consider tagging strand on the fly to avoid postload counting
-        hm_collection.lock().unwrap().remove(&raw_values.read_id);
-      if mapq_switch {
-      } else {
-        // register chromosome anchors
-        if !an_registry
-          .lock()
-          .unwrap()
-          .contains_key(&raw_values.scaffold)
-        {
-          an_registry
-            .lock()
-            .unwrap()
-            .insert(raw_values.scaffold.clone(), Vec::new());
-        }
-
-        if let Some(current_chr) =
-          an_registry.lock().unwrap().get_mut(&raw_values.scaffold)
-        {
-          if !current_chr.contains(&raw_values.read_id.current.to_string()) {
-            current_chr.push(raw_values.read_id.current.to_string())
-          }
-        }
-      }
-    } else {
-      // TODO: all records are going here. investigate the reason
-      // ic!(record_line);
-      // fl.write_all(record_line[0].to_string().as_bytes()).
-      // context(ChapulinCommonError::WriteFile{ f: record_line[0].
-      // to_string() })?;
-    }
   }
 
   Ok(())
@@ -158,7 +101,7 @@ fn mount(
     // load chromosomal anchoring data
     // check whether sequence or reverse sequence is equal
     // BUG: palindromic reads?
-    load(hm_record_collection, &raw_values);
+    load(&raw_values, hm_record_collection);
 
     // register
     register(raw_values, hm_record_collection, an_registry);
@@ -176,8 +119,8 @@ fn mount(
 
 // load chromosomal anchor data on mobile element chimeric pair
 fn load(
-  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
   raw_values: &RawValues,
+  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
 ) {
   if let Some(current_record) = hm_record_collection
     .lock()
@@ -201,7 +144,7 @@ fn register(
   an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
 ) {
   // IDEA: consider tagging strand on the fly to avoid postload counting
-  if anchor(hm_record_collection, &raw_values) {
+  if anchor(&raw_values, hm_record_collection) {
     // TODO: potentially problematic
     // if raw_values.quality > MAPQ {
     // if mapq_switch {
@@ -239,8 +182,8 @@ fn register(
     *self = false;
 // read chromosomal anchor enum
 fn anchor(
-  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
   raw_values: &RawValues,
+  hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
 ) -> bool {
   let mut switch_out = false;
   if let Some(current_record) = hm_record_collection
