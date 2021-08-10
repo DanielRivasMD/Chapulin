@@ -91,10 +91,10 @@ pub fn me_identificator(
     raw_values.mobel_tag(&mut local_switches);
 
     // purge read pairs on hashmap (record collection)
-    batch_purge(&mut local_switches, &mut raw_values, &hm_record_collection);
+    batch_purge(&mut local_switches, &raw_values, &hm_record_collection);
 
     // mount current data on hashmap (record collection)
-    mount(&local_switches, &mut raw_values, &hm_record_collection)?;
+    mount(&local_switches, &raw_values, &hm_record_collection)?;
 
     // reset orientation
     raw_values.reset_orientation();
@@ -172,7 +172,7 @@ trait MEAnchorExt {
   fn mobel_tag(
     &mut self,
     switch: &mut LocalSwtiches,
-  ) /* -> String */;
+  );
 
   fn downstream(
     &mut self,
@@ -193,8 +193,7 @@ impl MEAnchorExt for RawValues {
   fn mobel_tag(
     &mut self,
     switch: &mut LocalSwtiches,
-  ) /* -> String */
-  {
+  ) {
     // assign true when read is aligned on
     // reversed strand in relation to assembly
     // otherwise false
@@ -202,7 +201,6 @@ impl MEAnchorExt for RawValues {
     if self.cigar.left_boundry <= ME_LIMIT && read_orient {
       // println!("UPSTREAM: {} <= {}", self.cigar.left_boundry, ME_LIMIT);
       self.upstream(switch);
-    // return String::from("upstream");
     } else if self.extra_get() - self.cigar.right_boundry as f64 <=
       ME_LIMIT.into() &&
       !read_orient
@@ -217,10 +215,8 @@ impl MEAnchorExt for RawValues {
       self.downstream(switch);
     // BUG: some values appear negative.
     // BUG: investigate the reason and consider an additional condition
-    // return String::from("downstream");
     } else {
       // TODO: nothing
-      // return String::new();
     }
   }
 
@@ -266,7 +262,7 @@ fn me_get(
 // purge read pairs on hashmap (record collection)
 fn batch_purge(
   local_switches: &mut LocalSwtiches,
-  raw_values: &mut RawValues,
+  raw_values: &RawValues,
   hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
 ) {
   // enter block if
@@ -279,7 +275,7 @@ fn batch_purge(
     // purge switch is true if
     // no reads have been succesfully anchored to mobile element
     // therefore previous read batch will be removed
-    purge(&local_switches, &raw_values, hm_record_collection);
+    purge(local_switches, raw_values, hm_record_collection);
 
     // reset purge switch
     // purge switch re activates after read batch evaluation
@@ -305,7 +301,7 @@ fn purge(
 // mount current data on hashmap (record collection)
 fn mount(
   local_switches: &LocalSwtiches,
-  raw_values: &mut RawValues,
+  raw_values: &RawValues,
   hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
 ) -> anyResult<()> {
   // match on flag (proviral)
