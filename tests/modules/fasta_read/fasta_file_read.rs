@@ -54,3 +54,32 @@ data_test! {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+macro_rules! fastread {
+  ( $func: ident; $assertion: ident; $key: expr; $val: expr ) => {
+    #[test]
+    fn $func() {
+      // let ref_seq = "../../samples/dummy_ref.fa";
+      let ref_seq = "tests/samples/dummy_ref.fa";
+      let mutex_ref_seq = Arc::new(Mutex::new(HashMap::new()));
+      let clone_mutex = Arc::clone(&mutex_ref_seq);
+
+      // read fasta
+      // observe that error is unwrap
+      fasta_reader(ref_seq, mutex_ref_seq).unwrap();
+
+      // assert
+      $assertion!(clone_mutex.lock().unwrap().get($key), Some(&$val));
+    }
+  };
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+fastread!(test01; assert_eq; "1"; 54.);
+fastread!(test02; assert_eq; "4"; 14.);
+fastread!(fail01; assert_ne; "4"; 104.);
+fastread!(fail02; assert_ne; "1"; 504.);
+fastread!(fail03; assert_ne; "10"; 0.);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
