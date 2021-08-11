@@ -163,8 +163,8 @@ impl MountExt for RawValues {
       .unwrap()
       .get_mut(&self.read_id.current)
     {
-      load!(current_record, *self, read1);
-      load!(current_record, *self, read2);
+      load!( chromosomal => current_record; *self; read1 );
+      load!( chromosomal => current_record; *self; read2 );
     }
   }
 }
