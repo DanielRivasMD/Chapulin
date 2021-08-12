@@ -39,7 +39,7 @@ pub fn cache_controller(
   } else {
     // read fasta reference
     let cfasta = hash_map_fasta.clone();
-    fasta_file_read::fasta_reader(&ref_sequence, cfasta)?;
+    fasta_file_read::fasta_read(&ref_sequence, cfasta)?;
 
     // write to cache
     fasta_cache_write::write_cache(&ref_cache, hash_map_fasta)?;

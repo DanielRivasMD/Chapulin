@@ -23,7 +23,7 @@ use crate::error::common_error::ChapulinCommonError;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// Read fasta file to obtain sequence lenghts.
-pub fn fasta_reader(
+pub fn fasta_read(
   ref_seq: &str,
   fasta_record: Arc<Mutex<HashMap<String, f64>>>,
 ) -> anyResult<()> {
