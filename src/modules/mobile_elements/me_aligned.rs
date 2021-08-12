@@ -113,6 +113,7 @@ pub fn me_identificator(
 
   // evaluate at end of file
   raw_values.purge(&local_switches, &hm_record_collection);
+  // println!("{:?}", hm_record_collection.lock().unwrap().keys());
 
   Ok(())
 }
@@ -317,6 +318,7 @@ impl PurgeExt for RawValues {
     }
   }
 
+  // TODO: consider using drain_filter from HashMap to purge records
   fn purge(
     &self,
     local_switches: &LocalSwtiches,

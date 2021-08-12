@@ -27,6 +27,7 @@ pub fn cl_single_controller(
   errata: String,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
+  debug_iteration: i32,
 ) -> anyResult<()> {
   // load reference chromosome aligned reads
   for i in 1..=2 {
@@ -45,6 +46,7 @@ pub fn cl_single_controller(
         &cerrata,
         chash_map_collection,
         chash_map_anchor,
+        debug_iteration,
       )
       .expect("TODO thread error");
     });
@@ -62,6 +64,7 @@ pub fn cl_paired_controller(
   errata: String,
   hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
   hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
+  debug_iteration: i32,
 ) -> anyResult<()> {
   let cl_aligned_file = format!("{}{}", directory, prefix);
 
@@ -70,6 +73,7 @@ pub fn cl_paired_controller(
     &errata,
     hash_map_collection,
     hash_map_anchor,
+    debug_iteration,
   )?;
 
   Ok(())

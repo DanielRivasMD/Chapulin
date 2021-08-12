@@ -45,6 +45,18 @@ fn main() -> anyResult<()> {
   // TODO: add single-end reference read support by interpreting CIGAR
   //  TODO: replace if statements for match / switch
 
+  // // FIX: better interphase for commands
+  // #[derive(Debug)]
+  // struct SubCmds(String, String);
+
+  // let subcms_vec = vec![
+  //   SubCmds("AC".to_string(), "AC".to_string()),
+  //   SubCmds("CR".to_string(), "CR".to_string()),
+  //   SubCmds("GC".to_string(), "GC".to_string()),
+  //   SubCmds("ME".to_string(), "ME".to_string()),
+  //   SubCmds("SV".to_string(), "SV".to_string()),
+  // ];
+
   // AC controller
   if let Some(matches) = matches.subcommand_matches("AC") {
     controllers::ac_subcmd::ac_subcmd(matches)?;

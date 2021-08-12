@@ -169,8 +169,8 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
   // mobile elements module
   let cref_library = Arc::clone(&mutex_me_library);
-  let cme_record_collection = Arc::clone(&mutex_record_collection);
   let cme_library = Arc::clone(&mutex_me_library);
+  let cme_record_collection = Arc::clone(&mutex_record_collection);
 
   // TODO: commit these formating changes all together when update config
   if bool_sett.verbose {
@@ -203,11 +203,24 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
   info!("{:?}", now.elapsed().unwrap());
 
+  // let mut ct = 1;
+  // for (k, v) in mutex_record_collection.lock().unwrap().iter() {
+  //   ic!(k);
+  //   println!("{:#?}", v);
+  //   println!();
+  //   ct += 1;
+  //   if ct == 5 {
+  //     break;
+  //   }
+  // }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // chromosomal loci module
   let ccl_record_collection = Arc::clone(&mutex_record_collection);
   let ccl_anchor_registry = Arc::clone(&mutex_anchor_registry);
+
+  // println!("{:?}", mutex_record_collection);
 
   match chr_align {
     "single" => {
@@ -226,6 +239,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
         string_sett.errata,
         ccl_record_collection,
         ccl_anchor_registry,
+        debug_iteration,
       )?;
     }
 
@@ -239,12 +253,14 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
         );
       }
 
+      // println!("{:?}", &ccl_record_collection);
       modules::chromosomal_loci::cl_paired_controller(
         string_sett.directory.to_string(),
         string_sett.pair_end_reference_alignment.to_string(),
         string_sett.errata,
         ccl_record_collection,
         ccl_anchor_registry,
+        debug_iteration,
       )?;
     }
 
@@ -252,6 +268,17 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
   }
 
   info!("{:?}", now.elapsed().unwrap());
+
+  // let mut ct = 1;
+  // for (k, v) in mutex_record_collection.lock().unwrap().iter() {
+  //   ic!(k);
+  //   println!("{:#?}", v);
+  //   println!();
+  //   ct += 1;
+  //   if ct == 5 {
+  //     break;
+  //   }
+  // }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -272,7 +299,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // TODO: build interphase to PostgreSQL
+  // // TODO: build interphase to PostgreSQL
 
   Ok(())
 }

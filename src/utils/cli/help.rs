@@ -250,3 +250,49 @@ pub fn cli_chapulin() -> App<'static> {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// TODO: example on how to take argument from default, cli | file
+// fn main() {
+//     let matches = App::new("MyApp")
+//         .version("0.1.0")
+//         .about("Example for StackOverflow")
+//         .arg(
+//             Arg::with_name("config")
+//                 .short("c")
+//                 .long("config")
+//                 .value_name("FILE")
+//                 .help("Sets a custom config file"),
+//         )
+//         .arg(
+//             Arg::with_name("example")
+//                 .short("e")
+//                 .long("example")
+//                 .help("Sets an example parameter")
+//                 .default_value("default_value")
+//                 .takes_value(true),
+//         )
+//         .get_matches();
+//
+//     let mut value = String::new();
+//
+//     if let Some(c) = matches.value_of("config") {
+//         let file = File::open(c);
+//         match file {
+//             Ok(mut f) => {
+//                 // Note: I have a file `config.txt` that has contents
+// `file_value`                 f.read_to_string(&mut value).expect("Error
+// reading value");             }
+//             Err(_) => println!("Error reading file"),
+//         }
+//
+//         // Note: this lets us override the config file value with the
+//         // cli argument, if provided
+//         if matches.occurrences_of("example") > 0 {
+//             value = matches.value_of("example").unwrap().to_string();
+//         }
+//     } else {
+//         value = matches.value_of("example").unwrap().to_string();
+//     }
+//
+//     println!("Value for config: {}", value);
+// }

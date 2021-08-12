@@ -86,10 +86,10 @@ pub fn cl_mapper(
     // TODO: read supplementary fields for additional information & load on
     // struct
 
-    if raw_values.read_id.current == "SRR556146.17" {
-      println!("{:?}", raw_values.sequence);
-      println!("{:?}", raw_values.quality);
-    }
+    // if raw_values.read_id.current == "SRR556146.17" {
+    //   println!("{:?}", raw_values.sequence);
+    //   println!("{:?}", raw_values.quality);
+    // }
 
     // mount
     raw_values.mount(&hm_record_collection, &an_registry, &mut file_out)?;
@@ -229,6 +229,8 @@ impl RegisterExt for RawValues {
           current_chr.push(self.read_id.current)
         }
       }
+
+      // count anchor
     }
   }
 
@@ -249,21 +251,21 @@ impl RegisterExt for RawValues {
         }
         ChrAnchorEnum::Read2 => {
           switch_out = mapq!(current_record, read2);
-          println!("Inside Match");
-          println!("{:?}", current_record.read1.chr_read.is_empty());
-          println!("{:?}", current_record.read1.chr_read[0].mapq < MAPQ);
-          println!("{:?}", switch_out);
+          // println!("Inside Match");
+          // println!("{:?}", current_record.read2.chr_read.is_empty());
+          // println!("{:?}", current_record.read2.chr_read[0].mapq < MAPQ);
+          // println!("{:?}", switch_out);
         }
         _ => (),
       };
     }
 
-    if self.read_id.current == "SRR556146.17" {
-      println!("Inside Match");
-      //   println!();
-      //   println!("{:#?}", self);
-      //   println!("Switch: {:?}", switch_out);
-    }
+    // if self.read_id.current == "SRR556146.17" {
+    //   println!("Inside Match");
+    //   //   println!();
+    //   //   println!("{:#?}", self);
+    //   //   println!("Switch: {:?}", switch_out);
+    // }
     switch_out
   }
 }
