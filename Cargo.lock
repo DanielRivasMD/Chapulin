@@ -239,9 +239,12 @@ dependencies = [
 name = "genomic_structures"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "colored",
  "data-test",
  "derive-new",
  "libc",
+ "thiserror",
 ]
 
 [[package]]
