@@ -12,11 +12,15 @@ use std::sync::{
 // crate utilities
 use chapulin::modules::mobile_elements::me_aligned;
 use genomic_structures::{
+  BreakPoint,
+  ChrAnchorEnum,
   ExtraValuesEnum,
   MEAnchor,
   MEChimericPair,
   MEChimericRead,
+  OrientationEnum,
   RawValues,
+  CIGAR,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,6 +72,69 @@ me_aligned!(test02; assert_eq; "CS0001.1";
     &["CS0001.1", "75", "REF_cs100", "1", "37", "100M", "=", "150", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
     &["CS0001.1", "135", "REF_cs100", "150", "37", "100M", "=", "1", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"]
     ]));
+"REF_cs100";
+1000.
+);
+me_aligned!(test03; assert_eq; "CS0001.1";
+  Some(&MEChimericPair{
+    read1: MEChimericRead{
+      breakpoint: BreakPoint{
+        sequence: String::new(),
+        coordinate: 0,
+      },
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          cigar: CIGAR{
+            align: vec![100],
+            del: vec![],
+            ins: vec![],
+            lclip: 0,
+            left_boundry: 1,
+            rclip: 0,
+            right_boundry: 101,
+            signature: String::from("100M"),
+          },
+          flag: 75,
+          mobel: String::from("REF_cs100"),
+          orientation: OrientationEnum::None,
+          position: 1,
+          size: 1000.0
+        }
+      ],
+      quality: 37,
+      sequence: String::from("AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN"),
+    },
+    read2: MEChimericRead{
+      breakpoint: BreakPoint{
+        sequence: String::new(),
+        coordinate: 0
+      },
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          cigar: CIGAR{
+            align: vec![100],
+            del: vec![],
+            ins: vec![],
+            lclip: 0,
+            left_boundry: 150,
+            rclip: 0,
+            right_boundry: 250,
+            signature: String::from("100M"),
+          },
+          flag: 135,
+          mobel: String::from("REF_cs100"),
+          orientation: OrientationEnum::None,
+          position: 150,
+          size: 1000.0
+        }
+      ],
+      quality: 37,
+      sequence: String::from("TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC"),
+    },
+    chranch: ChrAnchorEnum::None,
+  });
 "REF_cs100";
 1000.
 );
