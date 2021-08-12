@@ -12,7 +12,6 @@ dependencies = [
  "clap_generate",
  "colored",
  "config",
- "data-test",
  "derive-new",
  "fuzzy_logic",
  "genomic_structures",
