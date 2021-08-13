@@ -6,7 +6,7 @@
 
 // standard libraries
 use anyhow::Context;
-use std::fs::File;
+use std::fs::File as stdFile;
 use std::io::Write;
 use std::str::from_utf8;
 
@@ -53,7 +53,7 @@ pub fn cl_mapper(
   // create output file
   let fl_write = format!("{}.err", errata);
   let mut file_out =
-    File::create(&fl_write).context(ChapulinCommonError::CreateFile {
+    stdFile::create(&fl_write).context(ChapulinCommonError::CreateFile {
       f: fl_write,
     })?;
 
@@ -107,7 +107,7 @@ trait MountExt {
     self,
     hm_record_collection: &alias::RecordME,
     an_registry: &alias::RegistryME,
-    file_out: &mut File,
+    file_out: &mut stdFile,
   ) -> alias::AnyResult;
 
   fn load(
@@ -124,7 +124,7 @@ impl MountExt for RawValues {
     self,
     hm_record_collection: &alias::RecordME,
     an_registry: &alias::RegistryME,
-    file_out: &mut File,
+    file_out: &mut stdFile,
   ) -> alias::AnyResult {
     // if read id is present on hashmap (record collection)
     if hm_record_collection
