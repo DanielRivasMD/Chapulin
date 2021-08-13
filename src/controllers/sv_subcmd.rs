@@ -2,7 +2,6 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
 use clap::ArgMatches;
 use colored::*;
 use config::{
@@ -10,16 +9,12 @@ use config::{
   File,
 };
 use std::collections::HashMap;
-use std::sync::{
-  Arc,
-  Mutex,
-};
 use std::time::SystemTime;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// modules
-use crate::modules;
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -31,9 +26,14 @@ use crate::error::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// modules
+use crate::modules;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // TODO: add compatibility for known coordinates
 
-pub fn sv_subcmd(matches: &ArgMatches) -> anyResult<()> {
+pub fn sv_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   let subcmd = "SV";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,14 +109,14 @@ pub fn sv_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
-  let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
-  let mutex_chr_assembly = Arc::new(Mutex::new(HashMap::new()));
+  let mutex_record_collection = alias::arc_map();
+  let mutex_anchor_registry = alias::arc_map();
+  let mutex_chr_assembly = alias::arc_map();
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // reference genome module
-  let crg_chr_assembly = Arc::clone(&mutex_chr_assembly);
+  let crg_chr_assembly = alias::arc_clone(&mutex_chr_assembly);
 
   if verbose {
     println!(

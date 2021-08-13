@@ -1,21 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use anyhow::Result as anyResult;
-use std::collections::HashMap;
-use std::sync::{
-  Arc,
-  Mutex,
-};
 use std::thread;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// development libraries
-use genomic_structures::{
-  MEChimericPair,
-  SVChimericPair,
-};
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,10 +19,10 @@ mod pi_sv_mapping;
 pub fn pi_me_controller(
   output: String,
   errata: String,
-  hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
-  hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
-  hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
-) -> anyResult<()> {
+  hash_map_collection: alias::RecordME,
+  hash_map_anchor: alias::RegistryME,
+  hash_map_chr_assembly: alias::LibraryME,
+) -> alias::AnyResult {
   let chromosome_vec =
     chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 
@@ -65,10 +56,10 @@ pub fn pi_me_controller(
 pub fn pi_sv_controller(
   _output: String,
   _errata: String,
-  hash_map_collection: Arc<Mutex<HashMap<String, SVChimericPair>>>,
-  hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
-  hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
-) -> anyResult<()> {
+  hash_map_collection: alias::RecordSV,
+  hash_map_anchor: alias::RegistryME,
+  hash_map_chr_assembly: alias::LibraryME,
+) -> alias::AnyResult {
   let chromosome_vec =
     chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 
@@ -95,8 +86,8 @@ pub fn pi_sv_controller(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 fn chr_constructor(
-  hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
-  hash_map_chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
+  hash_map_anchor: alias::RegistryME,
+  hash_map_chr_assembly: alias::LibraryME,
 ) -> Vec<String> {
   // iterate on reference chromosomes
   let mut chromosome_vec = Vec::new();

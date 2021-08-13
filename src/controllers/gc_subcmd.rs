@@ -2,7 +2,6 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
 use clap::ArgMatches;
 use colored::*;
 use std::fs::File;
@@ -10,6 +9,11 @@ use std::io::Write;
 use std::path::Path;
 use std::process::exit;
 use std::time::SystemTime;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -26,7 +30,7 @@ use crate::error::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub fn gc_subcmd(matches: &ArgMatches) -> anyResult<()> {
+pub fn gc_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   let _subcmd = "GC";
 
   let now = SystemTime::now();
@@ -122,7 +126,7 @@ pub fn gc_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-fn write_conf(fl_write: String) -> anyResult<()> {
+fn write_conf(fl_write: String) -> alias::AnyResult {
   info!("Writting...",);
 
   let mut fl =

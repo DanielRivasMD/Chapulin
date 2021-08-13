@@ -2,13 +2,7 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
-use std::collections::HashMap;
 use std::str::from_utf8;
-use std::sync::{
-  Arc,
-  Mutex,
-};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +15,11 @@ use genomic_structures::{
   OrientationEnum,
   RawValues,
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,11 +39,10 @@ use crate::error::common_error::ChapulinCommonError;
 // TODO: extract features from fasta other than sequence length
 pub fn me_identificator(
   me_bam_file: &str,
-  hm_me_collection: Arc<Mutex<HashMap<String, f64>>>,
-  // hm_me_collection: Arc<Mutex<HashMap<String, MElibrary>>>,
-  hm_record_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
+  hm_me_collection: alias::LibraryME,
+  hm_record_collection: alias::RecordME,
   debug_iteration: i32,
-) -> anyResult<()> {
+) -> alias::AnyResult {
   // load file
   let mut lines = byte_file_reader(&me_bam_file)?;
 
@@ -202,11 +200,11 @@ impl MEAnchorExt for RawValues {
     // assign true when read is aligned on
     // reversed strand in relation to assembly
     // otherwise false
-    let read_orient = self.read_orientation_get();
+    let read_orient = self.get_read_orientation();
     if self.cigar.left_boundry <= ME_LIMIT && read_orient {
       // println!("UPSTREAM: {} <= {}", self.cigar.left_boundry, ME_LIMIT);
       self.upstream(switch);
-    } else if self.extra_get() - self.cigar.right_boundry as f64 <=
+    } else if self.get_extra() - self.cigar.right_boundry as f64 <=
       ME_LIMIT.into() &&
       !read_orient
     {
@@ -249,7 +247,7 @@ impl MEAnchorExt for RawValues {
 trait LibraryExt {
   fn library_get(
     &mut self,
-    hm_record_collection: &Arc<Mutex<HashMap<String, f64>>>,
+    hm_record_collection: &alias::LibraryME,
   );
 }
 
@@ -260,7 +258,7 @@ impl LibraryExt for RawValues {
   // collect mobile element from library & mount it on raw values extra enum
   fn library_get(
     &mut self,
-    hm_me_collection: &Arc<Mutex<HashMap<String, f64>>>,
+    hm_me_collection: &alias::LibraryME,
   ) {
     if let Some(me_record) =
       hm_me_collection.lock().unwrap().get(&self.scaffold)
@@ -281,13 +279,13 @@ trait PurgeExt {
   fn batch_purge(
     &self,
     local_switches: &mut LocalSwtiches,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    hm_record_collection: &alias::RecordME,
   );
 
   fn purge(
     &self,
     local_switches: &LocalSwtiches,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    hm_record_collection: &alias::RecordME,
   );
 }
 
@@ -298,7 +296,7 @@ impl PurgeExt for RawValues {
   fn batch_purge(
     &self,
     local_switches: &mut LocalSwtiches,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    hm_record_collection: &alias::RecordME,
   ) {
     // enter block if
     // read id as changed (through read memory) indicating different batch or
@@ -322,7 +320,7 @@ impl PurgeExt for RawValues {
   fn purge(
     &self,
     local_switches: &LocalSwtiches,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    hm_record_collection: &alias::RecordME,
   ) {
     if local_switches.purge {
       hm_record_collection
@@ -339,8 +337,8 @@ trait MountExt {
   fn mount(
     &self,
     local_switches: &LocalSwtiches,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-  ) -> anyResult<()>;
+    hm_record_collection: &alias::RecordME,
+  ) -> alias::AnyResult;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -351,8 +349,8 @@ impl MountExt for RawValues {
   fn mount(
     &self,
     local_switches: &LocalSwtiches,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-  ) -> anyResult<()> {
+    hm_record_collection: &alias::RecordME,
+  ) -> alias::AnyResult {
     // match on flag (proviral)
     // this check is much faster than using binary interpretor
     match self.flag {

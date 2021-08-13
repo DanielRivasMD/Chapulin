@@ -2,13 +2,12 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
-use std::collections::HashMap;
 use std::str::from_utf8;
-use std::sync::{
-  Arc,
-  Mutex,
-};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -25,8 +24,8 @@ use crate::error::common_error::ChapulinCommonError;
 /// Read fasta file to obtain sequence lenghts.
 pub fn fasta_read(
   ref_seq: &str,
-  fasta_record: Arc<Mutex<HashMap<String, f64>>>,
-) -> anyResult<()> {
+  fasta_record: alias::LibraryME,
+) -> alias::AnyResult {
   // initalize mutable values
   let mut current_chr = String::new();
   let mut current_len = 0.;

@@ -1,11 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard library
-use std::collections::HashMap;
-use std::sync::{
-  Arc,
-  Mutex,
-};
+use std::sync::Arc;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use chapulin::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -23,11 +24,11 @@ macro_rules! cl_aligned {
       let errata = "";
 
       // declare anchor registry
-      let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
+      let mutex_anchor_registry = alias::arc_map();
 
       // declare chimeric chromosomal loci collection
-      let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
-      let clone_mutex = Arc::clone(&mutex_record_collection);
+      let mutex_record_collection = alias::arc_map();
+      let clone_mutex = alias::arc_clone(&mutex_record_collection);
 
       // identify mobile elements
       // observe that error is unwrap

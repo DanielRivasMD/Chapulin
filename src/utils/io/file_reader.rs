@@ -2,13 +2,14 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
-use bytelines::{
-  ByteLines,
-  ByteLinesReader,
-};
+use bytelines::ByteLinesReader;
 use std::fs::File;
 use std::io::BufReader;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,9 +18,7 @@ use crate::error::common_error::ChapulinCommonError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub fn byte_file_reader(
-  input_file: &str
-) -> anyResult<ByteLines<BufReader<File>>> {
+pub fn byte_file_reader(input_file: &str) -> alias::AnyBufferResult {
   let file =
     File::open(&input_file).context(ChapulinCommonError::ReadFile {
       f: input_file.to_string(),

@@ -1,13 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use anyhow::Result as anyResult;
-use std::collections::HashMap;
 use std::path::Path;
-use std::sync::{
-  Arc,
-  Mutex,
-};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24,8 +23,8 @@ pub fn cache_controller(
   subcmd: &str,
   directory: &str,
   fasta_file: &str,
-  hash_map_fasta: Arc<Mutex<HashMap<String, f64>>>,
-) -> anyResult<()> {
+  hash_map_fasta: alias::LibraryME,
+) -> alias::AnyResult {
   let ref_sequence = format!("{}{}", directory, fasta_file);
   let ref_cache = format!("{}.{}.cache", directory, fasta_file);
 

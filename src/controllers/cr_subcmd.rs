@@ -2,7 +2,6 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
 use clap::ArgMatches;
 use colored::*;
 use config::{
@@ -11,16 +10,12 @@ use config::{
 };
 use std::collections::HashMap;
 use std::process::exit;
-use std::sync::{
-  Arc,
-  Mutex,
-};
 use std::time::SystemTime;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// modules
-use crate::modules;
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -29,7 +24,12 @@ use crate::error::config_error::ChapulinConfigError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub fn cr_subcmd(matches: &ArgMatches) -> anyResult<()> {
+// modules
+use crate::modules;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pub fn cr_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   let subcmd = "CR";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,13 +128,13 @@ pub fn cr_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  let mutex_chr_assembly = Arc::new(Mutex::new(HashMap::new()));
-  let mutex_me_library = Arc::new(Mutex::new(HashMap::new()));
+  let mutex_chr_assembly = alias::arc_map();
+  let mutex_me_library = alias::arc_map();
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // reference genome module
-  let crg_chr_assembly = Arc::clone(&mutex_chr_assembly);
+  let crg_chr_assembly = alias::arc_clone(&mutex_chr_assembly);
 
   if verbose {
     println!(
@@ -157,7 +157,7 @@ pub fn cr_subcmd(matches: &ArgMatches) -> anyResult<()> {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // mobile elements module
-  let cref_library = Arc::clone(&mutex_me_library);
+  let cref_library = alias::arc_clone(&mutex_me_library);
 
   if verbose {
     println!(

@@ -2,14 +2,9 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
-use std::sync::{
-  Arc,
-  Mutex,
-};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,8 +13,12 @@ use genomic_structures::{
   strand_count,
   threshold,
   ChrAnchorEnum,
-  MEChimericPair,
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,10 +39,10 @@ pub fn pi_me_identifier(
   ikey: &str,
   output: &str,
   _errata: &str,
-  hm_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
-  an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
-  chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
-) -> anyResult<()> {
+  hm_collection: alias::RecordME,
+  an_registry: alias::RegistryME,
+  chr_assembly: alias::LibraryME,
+) -> alias::AnyResult {
   let mut chr_position_hm = HashMap::new();
   let chr_size = *chr_assembly.lock().unwrap().get(ikey).unwrap();
 

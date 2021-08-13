@@ -1,20 +1,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use anyhow::Result as anyResult;
 use std::collections::HashMap;
-use std::sync::{
-  Arc,
-  Mutex,
-};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // development libraries
-use genomic_structures::{
-  threshold,
-  SVChimericPair,
-};
+use genomic_structures::threshold;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -25,16 +22,16 @@ use crate::settings::constants::NO_FDR;
 
 pub fn pi_sv_identifier(
   ikey: &str,
-  hm_collection: Arc<Mutex<HashMap<String, SVChimericPair>>>,
-  an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
-  chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
-) -> anyResult<()> {
+  _hm_collection: alias::RecordSV,
+  an_registry: alias::RegistryME,
+  chr_assembly: alias::LibraryME,
+) -> alias::AnyResult {
   let chr_size = *chr_assembly.lock().unwrap().get(ikey).unwrap();
   let ids_read = an_registry.lock().unwrap().get(ikey).unwrap().clone();
 
   let read_count = ids_read.len();
 
-  let mut chr_position_hm = HashMap::new();
+  let chr_position_hm = HashMap::new();
 
   // // TODO: work on this macro
   // for id_read in ids_read {

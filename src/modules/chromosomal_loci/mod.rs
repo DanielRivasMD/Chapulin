@@ -1,18 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use anyhow::Result as anyResult;
-use std::collections::HashMap;
-use std::sync::{
-  Arc,
-  Mutex,
-};
 use std::thread;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// development libraries
-use genomic_structures::MEChimericPair;
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -25,10 +19,10 @@ pub fn cl_single_controller(
   directory: String,
   prefix: String,
   errata: String,
-  hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
-  hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
+  hash_map_collection: alias::RecordME,
+  hash_map_anchor: alias::RegistryME,
   debug_iteration: i32,
-) -> anyResult<()> {
+) -> alias::AnyResult {
   // load reference chromosome aligned reads
   for i in 1..=2 {
     let cdirectory = directory.clone();
@@ -62,10 +56,10 @@ pub fn cl_paired_controller(
   directory: String,
   prefix: String,
   errata: String,
-  hash_map_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
-  hash_map_anchor: Arc<Mutex<HashMap<String, Vec<String>>>>,
+  hash_map_collection: alias::RecordME,
+  hash_map_anchor: alias::RegistryME,
   debug_iteration: i32,
-) -> anyResult<()> {
+) -> alias::AnyResult {
   let cl_aligned_file = format!("{}{}", directory, prefix);
 
   cl_aligned::cl_mapper(

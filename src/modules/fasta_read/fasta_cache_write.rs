@@ -2,14 +2,13 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
-use std::collections::HashMap;
 use std::fs::File as stdFile;
 use std::io::Write;
-use std::sync::{
-  Arc,
-  Mutex,
-};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,8 +19,8 @@ use crate::error::common_error::ChapulinCommonError;
 
 pub fn write_cache(
   ref_cache: &str,
-  chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
-) -> anyResult<()> {
+  chr_assembly: alias::LibraryME,
+) -> alias::AnyResult {
   let chr_hm = chr_assembly.lock().unwrap();
   let mut ref_cache_file =
     stdFile::create(ref_cache).context(ChapulinCommonError::CreateFile {

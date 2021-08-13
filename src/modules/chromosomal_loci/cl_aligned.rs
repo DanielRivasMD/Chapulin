@@ -6,15 +6,9 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
-use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 use std::str::from_utf8;
-use std::sync::{
-  Arc,
-  Mutex,
-};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,9 +16,13 @@ use std::sync::{
 use genomic_structures::{
   ChrAnchor,
   ChrAnchorEnum,
-  MEChimericPair,
   RawValues,
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -45,10 +43,10 @@ use crate::error::common_error::ChapulinCommonError;
 pub fn cl_mapper(
   cl_bam_file: &str,
   errata: &str,
-  hm_record_collection: Arc<Mutex<HashMap<String, MEChimericPair>>>,
-  an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
+  hm_record_collection: alias::RecordME,
+  an_registry: alias::RegistryME,
   debug_iteration: i32,
-) -> anyResult<()> {
+) -> alias::AnyResult {
   // load file
   let mut lines = byte_file_reader(&cl_bam_file)?;
 
@@ -107,14 +105,14 @@ pub fn cl_mapper(
 trait MountExt {
   fn mount(
     self,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-    an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+    hm_record_collection: &alias::RecordME,
+    an_registry: &alias::RegistryME,
     file_out: &mut File,
-  ) -> anyResult<()>;
+  ) -> alias::AnyResult;
 
   fn load(
     &self,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    hm_record_collection: &alias::RecordME,
   );
 }
 
@@ -124,10 +122,10 @@ impl MountExt for RawValues {
   // mount current data on hashmap (record collection)
   fn mount(
     self,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-    an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+    hm_record_collection: &alias::RecordME,
+    an_registry: &alias::RegistryME,
     file_out: &mut File,
-  ) -> anyResult<()> {
+  ) -> alias::AnyResult {
     // if read id is present on hashmap (record collection)
     if hm_record_collection
       .lock()
@@ -156,7 +154,7 @@ impl MountExt for RawValues {
   // load chromosomal anchor data on mobile element chimeric pair
   fn load(
     &self,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    hm_record_collection: &alias::RecordME,
   ) {
     if let Some(current_record) = hm_record_collection
       .lock()
@@ -174,13 +172,13 @@ impl MountExt for RawValues {
 trait RegisterExt {
   fn register(
     self,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-    an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+    hm_record_collection: &alias::RecordME,
+    an_registry: &alias::RegistryME,
   );
 
   fn anchor(
     &self,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    hm_record_collection: &alias::RecordME,
   ) -> bool;
 }
 
@@ -194,8 +192,8 @@ impl RegisterExt for RawValues {
   // register read id on scaffold
   fn register(
     self,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
-    an_registry: &Arc<Mutex<HashMap<String, Vec<String>>>>,
+    hm_record_collection: &alias::RecordME,
+    an_registry: &alias::RegistryME,
   ) {
     if self.anchor(hm_record_collection) {
       if self.read_id.current == "SRR556146.17" {
@@ -236,7 +234,7 @@ impl RegisterExt for RawValues {
 
   fn anchor(
     &self,
-    hm_record_collection: &Arc<Mutex<HashMap<String, MEChimericPair>>>,
+    hm_record_collection: &alias::RecordME,
   ) -> bool {
     let mut switch_out = true;
     if let Some(current_record) = hm_record_collection

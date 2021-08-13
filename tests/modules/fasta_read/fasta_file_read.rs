@@ -1,11 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard library
-use std::collections::HashMap;
-use std::sync::{
-  Arc,
-  Mutex,
-};
+use std::sync::Arc;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use chapulin::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,8 +23,8 @@ macro_rules! fasta_read {
       let ref_seq = "tests/samples/dummy_ref.fa";
 
       // declare mutex
-      let mutex_ref_seq = Arc::new(Mutex::new(HashMap::new()));
-      let clone_mutex = Arc::clone(&mutex_ref_seq);
+      let mutex_ref_seq = alias::arc_map();
+      let clone_mutex = alias::arc_clone(&mutex_ref_seq);
 
       // read fasta
       // observe that error is unwrap

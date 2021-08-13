@@ -2,7 +2,6 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
 use clap::ArgMatches;
 use colored::*;
 use config::{
@@ -13,16 +12,12 @@ use std::collections::HashMap;
 use std::fs::create_dir_all;
 use std::path::Path;
 use std::process::exit;
-use std::sync::{
-  Arc,
-  Mutex,
-};
 use std::time::SystemTime;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// modules
-use crate::modules;
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,12 +34,17 @@ use crate::error::config_error::ChapulinConfigError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// modules
+use crate::modules;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /// Control mobile element protocol.
 ///   - Load settings.
 ///   - Read and write cache.
 ///   - [Load mobile element alignment](modules::mobile_elements::me_aligned::me_identificator).
 ///   - [Load chromosomal alignment](modules::chromosomal_loci::cl_aligned::cl_mapper).
-pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
+pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   let subcmd = "ME";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,17 +135,17 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
-  let mutex_anchor_registry = Arc::new(Mutex::new(HashMap::new()));
-  let mutex_chr_assembly = Arc::new(Mutex::new(HashMap::new()));
-  let mutex_me_library = Arc::new(Mutex::new(HashMap::new()));
+  let mutex_record_collection = alias::arc_map();
+  let mutex_anchor_registry = alias::arc_map();
+  let mutex_chr_assembly = alias::arc_map();
+  let mutex_me_library = alias::arc_map();
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // TODO: write pre processing recomendations => fastq filtering, alignment
 
   // reference genome module
-  let crg_chr_assembly = Arc::clone(&mutex_chr_assembly);
+  let crg_chr_assembly = alias::arc_clone(&mutex_chr_assembly);
 
   if bool_sett.verbose {
     println!(
@@ -168,9 +168,9 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // mobile elements module
-  let cref_library = Arc::clone(&mutex_me_library);
-  let cme_library = Arc::clone(&mutex_me_library);
-  let cme_record_collection = Arc::clone(&mutex_record_collection);
+  let cref_library = alias::arc_clone(&mutex_me_library);
+  let cme_library = alias::arc_clone(&mutex_me_library);
+  let cme_record_collection = alias::arc_clone(&mutex_record_collection);
 
   // TODO: commit these formating changes all together when update config
   if bool_sett.verbose {
@@ -217,8 +217,8 @@ pub fn me_subcmd(matches: &ArgMatches) -> anyResult<()> {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // chromosomal loci module
-  let ccl_record_collection = Arc::clone(&mutex_record_collection);
-  let ccl_anchor_registry = Arc::clone(&mutex_anchor_registry);
+  let ccl_record_collection = alias::arc_clone(&mutex_record_collection);
+  let ccl_anchor_registry = alias::arc_clone(&mutex_anchor_registry);
 
   // println!("{:?}", mutex_record_collection);
 

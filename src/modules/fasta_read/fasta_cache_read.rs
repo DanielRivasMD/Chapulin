@@ -2,13 +2,12 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
-use std::collections::HashMap;
 use std::str::from_utf8;
-use std::sync::{
-  Arc,
-  Mutex,
-};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24,8 +23,8 @@ use crate::error::common_error::ChapulinCommonError;
 
 pub fn read_cache(
   ref_cache: &str,
-  chr_assembly: Arc<Mutex<HashMap<String, f64>>>,
-) -> anyResult<()> {
+  chr_assembly: alias::LibraryME,
+) -> alias::AnyResult {
   // load file
   let mut lines = byte_file_reader(&ref_cache)?;
 

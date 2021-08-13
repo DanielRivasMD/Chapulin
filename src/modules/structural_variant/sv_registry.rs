@@ -2,18 +2,20 @@
 
 // standard libraries
 use anyhow::Context;
-use anyhow::Result as anyResult;
+use std::str::from_utf8;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// development libraries
 use genomic_structures::{
-  ChrAnchor,
   SVChimericPair,
   SVType,
 };
-use std::collections::HashMap;
-use std::str::from_utf8;
-use std::sync::{
-  Arc,
-  Mutex,
-};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -30,9 +32,9 @@ use crate::error::common_error::ChapulinCommonError;
 pub fn sv_mapper(
   sv_bam_file: &str,
   expected_tlen: i32,
-  hm_collection: Arc<Mutex<HashMap<String, SVChimericPair>>>,
-  an_registry: Arc<Mutex<HashMap<String, Vec<String>>>>,
-) -> anyResult<()> {
+  hm_collection: alias::RecordSV,
+  an_registry: alias::RegistryME,
+) -> alias::AnyResult {
   // load file
   let mut lines = byte_file_reader(&sv_bam_file)?;
 
@@ -82,12 +84,16 @@ pub fn sv_mapper(
         .unwrap()
         .insert((&read_id).to_string(), SVChimericPair::new(SVType::None));
 
-      if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
-        load!(current_record, read1, record_line);
+      if let Some(_current_record) =
+        hm_collection.lock().unwrap().get_mut(&read_id)
+      {
+        // load!(current_record, read1, record_line);
       }
-    } else if let Some(current_record) = hm_collection.lock().unwrap().get_mut(&read_id) {
-      load!(current_record, read2, record_line);
-      purge_switch = !current_record.identificator(expected_tlen);
+    } else if let Some(_current_record) =
+      hm_collection.lock().unwrap().get_mut(&read_id)
+    {
+      // load!(current_record, read2, record_line);
+      // purge_switch = !current_record.identificator(expected_tlen);
     }
     prev_read_id = read_id;
   }

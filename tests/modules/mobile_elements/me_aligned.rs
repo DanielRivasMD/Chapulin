@@ -1,16 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard library
-use std::collections::HashMap;
-use std::sync::{
-  Arc,
-  Mutex,
-};
+use std::sync::Arc;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// crate utilities
-use chapulin::modules::mobile_elements::me_aligned;
+// development libraries
 use genomic_structures::{
   BreakPoint,
   ChrAnchorEnum,
@@ -25,6 +20,16 @@ use genomic_structures::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// aliases
+use chapulin::utils::alias;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// crate utilities
+use chapulin::modules::mobile_elements::me_aligned;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // TODO: write a file to load mobile elements from
 macro_rules! me_aligned {
   ( $function: ident; $assertion: ident; $key: expr; $val: expr; $mobel_id: expr; $mobel_size: expr ) => {
@@ -34,7 +39,7 @@ macro_rules! me_aligned {
       let me_alignment = "tests/samples/me_alignment.sam";
 
       // declare mobile element library
-      let mutex_me_collection = Arc::new(Mutex::new(HashMap::new()));
+      let mutex_me_collection = alias::arc_map();
 
       // insert mobile element library
       mutex_me_collection
@@ -44,8 +49,8 @@ macro_rules! me_aligned {
       // .insert(String::from("cs100"), 1000.);
 
       // declare chimeric mobile element collection
-      let mutex_record_collection = Arc::new(Mutex::new(HashMap::new()));
-      let clone_mutex = Arc::clone(&mutex_record_collection);
+      let mutex_record_collection = alias::arc_map();
+      let clone_mutex = alias::arc_clone(&mutex_record_collection);
 
       // identify mobile elements
       // observe that error is unwrap
