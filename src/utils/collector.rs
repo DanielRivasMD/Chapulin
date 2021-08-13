@@ -21,7 +21,7 @@ pub struct BoolSettings {
   pub force:   bool,
 }
 
-pub fn bool_collector(matches: &ArgMatches) -> BoolSettings {
+pub fn collect_bool(matches: &ArgMatches) -> BoolSettings {
   BoolSettings {
     verbose: matches.is_present("verbose"),
     dry_run: matches.is_present("dry"),
@@ -42,7 +42,7 @@ pub struct ParamSettings {
   pub pair_end_reference_alignment: String,
 }
 
-pub fn str_collector(
+pub fn collect_str(
   sett_hm: HashMap<String, String>
 ) -> anyResult<ParamSettings> {
   Ok(ParamSettings {

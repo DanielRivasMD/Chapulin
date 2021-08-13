@@ -18,7 +18,7 @@ use crate::utils::alias;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate utilities
-use crate::settings::collector::bool_collector;
+use crate::utils::collector;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -56,7 +56,7 @@ pub fn gc_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // collect settings
-  let bool_sett = bool_collector(matches);
+  let bool_sett = collector::collect_bool(matches);
 
   let mut config = "chapulin_config".to_string();
   if let Some(cname) = matches.value_of("config") {

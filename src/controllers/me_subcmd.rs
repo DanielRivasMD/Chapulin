@@ -22,10 +22,7 @@ use crate::utils::alias;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate utilities
-use crate::settings::collector::{
-  bool_collector,
-  str_collector,
-};
+use crate::utils::collector;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -70,7 +67,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // collect settings
-  let bool_sett = bool_collector(matches);
+  let bool_sett = collector::collect_bool(matches);
 
   // debug
   let debug_iteration =
@@ -107,7 +104,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
     },
   )?;
 
-  let string_sett = str_collector(settings_hm)?;
+  let string_sett = collector::collect_str(settings_hm)?;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
