@@ -194,7 +194,7 @@ fn chimeric_read_build(flines: &[&str]) -> MEChimericRead {
     raw_values.scaffold.clone(),
     raw_values.orientation.clone(),
     raw_values.position,
-    raw_values.extra_get(),
+    raw_values.get_extra(),
   ));
 
   chimeric_read.quality = raw_values.quality;
