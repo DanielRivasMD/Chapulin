@@ -200,12 +200,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "data-test"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14025b6753bde2622a60721d6eee11d65772d59453094dad306782c5c19da89c"
-
-[[package]]
 name = "derive-new"
 version = "0.5.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -241,7 +235,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "colored",
- "data-test",
  "derive-new",
  "libc",
  "thiserror",
