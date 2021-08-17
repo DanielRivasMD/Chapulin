@@ -375,7 +375,7 @@ impl MountExt for RawValues {
             .unwrap()
             .get_mut(&self.read_id.current)
           {
-            load!( mobile element => current_record; self; local_switches; read1; Read2 );
+            load!( mobile element |> current_record; self; local_switches; read1; Read2 );
           }
         // if already present assign tag
         // mobile element anchor Read2
@@ -385,7 +385,7 @@ impl MountExt for RawValues {
           .unwrap()
           .get_mut(&self.read_id.current)
         {
-          load!( mobile element => current_record; self; local_switches; read2; Read1 );
+          load!( mobile element |> current_record; self; local_switches; read2; Read1 );
         }
       }
 
@@ -400,9 +400,9 @@ impl MountExt for RawValues {
           // has been filled on read 2 this assumes secondary
           // alignments are ordered
           if current_record.read2.sequence.is_empty() {
-            load!( mobile element => current_record; self; local_switches; read1; Read2 );
+            load!( mobile element |> current_record; self; local_switches; read1; Read2 );
           } else {
-            load!( mobile element => current_record; self; local_switches; read2; Read1 );
+            load!( mobile element |> current_record; self; local_switches; read2; Read1 );
           }
         }
       }
