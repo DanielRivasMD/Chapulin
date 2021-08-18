@@ -14,6 +14,7 @@ use genomic_structures::{
   MEChimericPair,
   OrientationEnum,
   RawValues,
+  TagME,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,10 +25,7 @@ use crate::utils::alias;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate utilities
-use crate::{
-  settings::constants::ME_LIMIT,
-  utils::io::file_reader::byte_file_reader,
-};
+use crate::utils::io::file_reader::byte_file_reader;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -175,16 +173,6 @@ trait MEAnchorExt {
     &mut self,
     switch: &mut LocalSwtiches,
   );
-
-  fn downstream(
-    &mut self,
-    switch: &mut LocalSwtiches,
-  );
-
-  fn upstream(
-    &mut self,
-    switch: &mut LocalSwtiches,
-  );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,48 +185,10 @@ impl MEAnchorExt for RawValues {
     &mut self,
     switch: &mut LocalSwtiches,
   ) {
-    // assign true when read is aligned on
-    // reversed strand in relation to assembly
-    // otherwise false
-    let read_orient = self.get_read_orientation();
-    if self.cigar.left_boundry <= ME_LIMIT && read_orient {
-      // println!("UPSTREAM: {} <= {}", self.cigar.left_boundry, ME_LIMIT);
-      self.upstream(switch);
-    } else if self.get_extra() - self.cigar.right_boundry as f64 <=
-      ME_LIMIT.into() &&
-      !read_orient
-    {
-      // println!(
-      //   "DOWNSTREAM: {} - {} = {} <= {}",
-      //   self.extra_get(),
-      //   self.cigar.right_boundry,
-      //   self.extra_get() - self.cigar.right_boundry as f64,
-      //   ME_LIMIT
-      // );
-      self.downstream(switch);
-    // BUG: some values appear negative.
-    // BUG: investigate the reason and consider an additional condition
-    } else {
-      // TODO: nothing
+    self.tag();
+    if self.orientation != OrientationEnum::None {
+      switch.switches();
     }
-  }
-
-  // change swithces & tag mobile element orientation as downstream
-  fn downstream(
-    &mut self,
-    switch: &mut LocalSwtiches,
-  ) {
-    switch.switches();
-    self.orientation = OrientationEnum::Downstream;
-  }
-
-  // change swithces & tag mobile element orientation as upstream
-  fn upstream(
-    &mut self,
-    switch: &mut LocalSwtiches,
-  ) {
-    switch.switches();
-    self.orientation = OrientationEnum::Upstream;
   }
 }
 
