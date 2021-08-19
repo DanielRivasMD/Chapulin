@@ -32,7 +32,10 @@ use chapulin::modules::mobile_elements::me_aligned;
 
 // TODO: write a file to load mobile elements from
 macro_rules! me_aligned {
-  ( $function: ident; $assertion: ident; $key: expr; $val: expr; $mobel_id: expr; $mobel_size: expr ) => {
+  ( $function: ident;
+    mobile |> $mobel_id: expr, $mobel_size: expr;
+    params |> $key: expr,  $val: expr;
+  ) => {
     #[test]
     fn $function() {
       // declare files
@@ -45,12 +48,12 @@ macro_rules! me_aligned {
       mutex_me_collection
         .lock()
         .unwrap()
-        .insert(String::from($mobel_id), $mobel_size);
-      // .insert(String::from("cs100"), 1000.);
+        .insert($mobel_id, $mobel_size);
 
       // declare chimeric mobile element collection
       let mutex_record_collection = alias::arc_map();
       let clone_mutex = alias::arc_clone(&mutex_record_collection);
+      let _debug_mutex = alias::arc_clone(&mutex_record_collection);
 
       // identify mobile elements
       // observe that error is unwrap
@@ -62,8 +65,10 @@ macro_rules! me_aligned {
       )
       .unwrap();
 
+      // dbg!(_debug_mutex.lock().unwrap().get($key));
+
       // assert
-      $assertion!(clone_mutex.lock().unwrap().get($key), $val);
+      assert_eq!(clone_mutex.lock().unwrap().get($key), $val);
     }
   };
 }
