@@ -183,6 +183,9 @@ fn chimeric_pair_build(
   chimeric_pair.read1 = chimeric_read_build(&flines[0], mobel_size);
   chimeric_pair.read2 = chimeric_read_build(&flines[1], mobel_size);
 
+  // FIX: HARDCODED anchor tag. write tag method on mobile element chimeric pair
+  chimeric_pair.chranch = ChrAnchorEnum::Read2;
+
   chimeric_pair
 }
 
