@@ -14,10 +14,6 @@ extern crate log;
 #[macro_use]
 extern crate lazy_static;
 
-// debug
-#[macro_use]
-extern crate icecream;
-
 // genomic structures
 #[macro_use]
 extern crate genomic_structures;

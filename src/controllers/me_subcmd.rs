@@ -202,7 +202,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
 
   // let mut ct = 1;
   // for (k, v) in mutex_record_collection.lock().unwrap().iter() {
-  //   ic!(k);
+  //   dbg!(k);
   //   println!("{:#?}", v);
   //   println!();
   //   ct += 1;
@@ -268,7 +268,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
 
   // let mut ct = 1;
   // for (k, v) in mutex_record_collection.lock().unwrap().iter() {
-  //   ic!(k);
+  //   dbg!(k);
   //   println!("{:#?}", v);
   //   println!();
   //   ct += 1;

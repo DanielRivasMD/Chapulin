@@ -132,9 +132,9 @@ pub fn pi_me_identifier(
           //  .lock().unwrap()
           //  .get_key_value(id_read) {
 
-          //     // ic!(id);
-          //     // ic!(read);
-          //     // ic!(read.chr_anchor_retriever());
+          //     // dbg!(id);
+          //     // dbg!(read);
+          //     // dbg!(read.chr_anchor_retriever());
 
           //     match read.chranch {
           //       ChrAnchorEnum::Read1 => println!("{} -> {}", id, read.read1),

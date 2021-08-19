@@ -98,7 +98,7 @@ pub fn t_subcmd(matches: &ArgMatches) -> alias::AnyResult {
     .parse::<i32>()
     .context(ChapulinCommonError::Parsing)?;
 
-  ic!(expected_tlen);
+  dbg!(expected_tlen);
 
   println!("{:?}", settings_hm);
 
