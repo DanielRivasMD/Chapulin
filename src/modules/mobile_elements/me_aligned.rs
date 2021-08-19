@@ -185,7 +185,9 @@ impl MEAnchorExt for RawValues {
     &mut self,
     switch: &mut LocalSwtiches,
   ) {
+    // tag mobile element
     self.tag();
+    // modify switches accordingly
     if self.orientation != OrientationEnum::None {
       switch.switches();
     }

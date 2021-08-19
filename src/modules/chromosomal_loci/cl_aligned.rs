@@ -90,7 +90,7 @@ pub fn cl_mapper(
     //   println!("{:?}", raw_values.quality);
     // }
 
-    // mount
+    // load & register records
     raw_values.mount(&hm_record_collection, &an_registry, &mut file_out)?;
 
     if ct > debug_iteration && debug_iteration > 0 {

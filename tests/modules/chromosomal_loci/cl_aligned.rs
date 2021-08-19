@@ -1,10 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// standard library
-use std::sync::Arc;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // aliases
 use chapulin::utils::alias;
 
@@ -21,7 +16,7 @@ macro_rules! cl_aligned {
     fn $function() {
       // declare files
       let cl_alignment = "tests/samples/cl_alignment.sam";
-      let errata = "";
+      let errata = "out/err";
 
       // declare anchor registry
       let mutex_anchor_registry = alias::arc_map();

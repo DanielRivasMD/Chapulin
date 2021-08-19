@@ -102,6 +102,39 @@ pub fn t_subcmd(matches: &ArgMatches) -> alias::AnyResult {
 
   println!("{:?}", settings_hm);
 
+  let ref_seq = "tests/samples/dummy_ref.fa";
+
+  let mutex_ref_seq = std::sync::Arc::new(std::sync::Mutex::new(
+    std::collections::HashMap::new(),
+  ));
+  let mutex_expected = std::sync::Arc::new(std::sync::Mutex::new(
+    std::collections::HashMap::new(),
+  ));
+  mutex_expected.lock().unwrap().insert("1", 4.);
+  mutex_expected.lock().unwrap().insert("4", 14.);
+
+  // assert_eq!(super::fasta_reader(ref_seq, mutex_ref_seq),mutex_expected);
+
+  let clone_mutex = std::sync::Arc::clone(&mutex_ref_seq);
+  crate::modules::fasta_read::fasta_file_read::fasta_read(
+    ref_seq,
+    mutex_ref_seq,
+  )?;
+
+  for (k, v) in clone_mutex.lock().unwrap().iter() {
+    println!("Key: {:?} => Value: {:?}", k, v);
+    println!(
+      "Expected: {:?}",
+      mutex_expected.lock().unwrap().get(k as &str)
+    );
+  }
+
+  // for key in clone_mutex.lock().unwrap().keys() {
+  //   println!("Key: {:?}", key,);
+  // }
+
+  // println!("{:?}", clone_mutex.lock().unwrap());
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // let mutex_record_collection = alias::arc_map();
