@@ -82,8 +82,6 @@ pub fn me_identificator(
     // loading new values into raw values
     raw_values.batch_purge(&mut local_switches, &hm_record_collection);
 
-    // TODO: describe break point signature
-
     // retrieve mobile element library records
     raw_values.library_get(&hm_me_collection);
 

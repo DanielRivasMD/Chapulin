@@ -59,9 +59,7 @@ macro_rules! me_aligned {
         mutex_record_collection,
         0,
       )
-      .unwrap();
-
-      // dbg!(_debug_mutex.lock().unwrap().get($key));
+      .expect("Error occured at mobile element identificator!");
 
       // assert
       assert_eq!(clone_mutex.lock().unwrap().get($key), $val);
@@ -71,15 +69,76 @@ macro_rules! me_aligned {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: update sample file. values below are not kept by algorithm
-// tests
+// SAM line reader
+fn chimeric_pair_build(
+  flines: &[&[&str]],
+  mobel_size: f64,
+) -> MEChimericPair {
+  // declare mobile element chimeric pair
+  let mut chimeric_pair = MEChimericPair::new();
 
 // // no value
 // me_aligned!(test00;
 //   mobile |> "".to_string(), 0.;
 //   params |> "RandomID", None;
 // );
+  // load chimeric read
+  chimeric_pair.read1 = chimeric_read_build(&flines[0], mobel_size);
+  chimeric_pair.read2 = chimeric_read_build(&flines[1], mobel_size);
 
+  // FIX: HARDCODED anchor tag. write tag method on mobile element chimeric pair
+  chimeric_pair.chranch = ChrAnchorEnum::Read2;
+
+  // return
+  chimeric_pair
+}
+
+fn chimeric_read_build(
+  flines: &[&str],
+  mobel_size: f64,
+) -> MEChimericRead {
+  // load raw values
+  let mut raw_values = RawValues::load(flines.to_vec()).unwrap();
+
+  // load mobile element size
+  raw_values.extra = ExtraValuesEnum::MobelSize(mobel_size);
+
+  // construct chimeric read
+  let mut chimeric_read = MEChimericRead::new();
+
+  // load mapq & sequence
+  chimeric_read.quality = raw_values.quality;
+  chimeric_read.sequence = raw_values.sequence.clone();
+
+  // load mobile element
+  chimeric_read.me_read.push(MEAnchor::load(
+    raw_values.cigar.clone(),
+    raw_values.flag,
+    raw_values.scaffold.clone(),
+    raw_values.orientation.clone(),
+    raw_values.position,
+    raw_values.get_extra(),
+  ));
+
+  // tag mobile element anchors iteratively
+  chimeric_read
+    .me_read
+    .iter_mut()
+    .for_each(|me_anchor| me_anchor.tag());
+
+  // calculate break point iteratively
+  // TODO: add as method calculate break point iteratively
+  let seq_clone = chimeric_read.sequence.clone();
+  chimeric_read
+    .me_read
+    .iter_mut()
+    .for_each(|me_anchor| me_anchor.calculate_break_point(&seq_clone));
+
+  // return
+  chimeric_read
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // mount value through function
 me_aligned!(test01;
   mobile |> "mobel11000".to_string(), 11000.;
@@ -160,60 +219,16 @@ me_aligned!(test02;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// SAM line reader
-fn chimeric_pair_build(
-  flines: &[&[&str]],
-  mobel_size: f64,
-) -> MEChimericPair {
-  // declare mobile element chimeric pair
-  let mut chimeric_pair = MEChimericPair::new();
 
-  // load chimeric read
-  chimeric_pair.read1 = chimeric_read_build(&flines[0], mobel_size);
-  chimeric_pair.read2 = chimeric_read_build(&flines[1], mobel_size);
 
-  // FIX: HARDCODED anchor tag. write tag method on mobile element chimeric pair
-  chimeric_pair.chranch = ChrAnchorEnum::Read2;
 
-  // return
-  chimeric_pair
-}
 
-fn chimeric_read_build(
-  flines: &[&str],
-  mobel_size: f64,
-) -> MEChimericRead {
-  // load raw values
-  let mut raw_values = RawValues::load(flines.to_vec()).unwrap();
 
-  // load mobile element size
-  raw_values.extra = ExtraValuesEnum::MobelSize(mobel_size);
 
-  // construct chimeric read
-  let mut chimeric_read = MEChimericRead::new();
 
-  // load mobile element
-  chimeric_read.me_read.push(MEAnchor::load(
-    raw_values.cigar.clone(),
-    raw_values.flag,
-    raw_values.scaffold.clone(),
-    raw_values.orientation.clone(),
-    raw_values.position,
-    raw_values.get_extra(),
   ));
 
-  // tag mobile element anchors iteratively
-  chimeric_read
-    .me_read
-    .iter_mut()
-    .for_each(|me_anchor| me_anchor.tag());
 
-  // load mapq & sequence
-  chimeric_read.quality = raw_values.quality;
-  chimeric_read.sequence = raw_values.sequence;
 
-  // return
-  chimeric_read
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
