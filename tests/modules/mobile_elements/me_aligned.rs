@@ -172,23 +172,29 @@ me_aligned!(test00; assert_eq; "Random_ID"; None; ""; 0.);
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // SAM line reader
-fn chimeric_pair_build(flines: &[&[&str]]) -> MEChimericPair {
+fn chimeric_pair_build(
+  flines: &[&[&str]],
+  mobel_size: f64,
+) -> MEChimericPair {
   // declare mobile element chimeric pair
   let mut chimeric_pair = MEChimericPair::new();
 
   // load chimeric read
-  chimeric_pair.read1 = chimeric_read_build(&flines[0]);
-  chimeric_pair.read2 = chimeric_read_build(&flines[1]);
+  chimeric_pair.read1 = chimeric_read_build(&flines[0], mobel_size);
+  chimeric_pair.read2 = chimeric_read_build(&flines[1], mobel_size);
 
   chimeric_pair
 }
 
-fn chimeric_read_build(flines: &[&str]) -> MEChimericRead {
+fn chimeric_read_build(
+  flines: &[&str],
+  mobel_size: f64,
+) -> MEChimericRead {
   // load raw values
   let mut raw_values = RawValues::load(flines.to_vec()).unwrap();
 
-  // hardcoded
-  raw_values.extra = ExtraValuesEnum::MobelSize(1000.);
+  // load mobile element size
+  raw_values.extra = ExtraValuesEnum::MobelSize(mobel_size);
 
   // construct chimeric read
   let mut chimeric_read = MEChimericRead::new();
