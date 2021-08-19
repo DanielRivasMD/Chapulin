@@ -15,6 +15,7 @@ use genomic_structures::{
   MEChimericRead,
   OrientationEnum,
   RawValues,
+  TagME,
   CIGAR,
 };
 
@@ -201,6 +202,12 @@ fn chimeric_read_build(flines: &[&str]) -> MEChimericRead {
     raw_values.position,
     raw_values.get_extra(),
   ));
+
+  // tag mobile element anchors iteratively
+  chimeric_read
+    .me_read
+    .iter_mut()
+    .for_each(|me_anchor| me_anchor.tag());
 
   chimeric_read.quality = raw_values.quality;
   chimeric_read.sequence = raw_values.sequence;
