@@ -77,6 +77,11 @@ pub fn me_identificator(
     // for keeping the state of read batch
     raw_values.update(record_line)?;
 
+    // purge read pairs on hashmap (record collection)
+    // evaluate batch, based on previous read, immediately after
+    // loading new values into raw values
+    raw_values.batch_purge(&mut local_switches, &hm_record_collection);
+
     // TODO: describe break point signature
 
     // retrieve mobile element library records
@@ -85,9 +90,6 @@ pub fn me_identificator(
     // tagging mobel anchor
     // switches get updated by local switches methods
     raw_values.mobel_tag(&mut local_switches);
-
-    // purge read pairs on hashmap (record collection)
-    raw_values.batch_purge(&mut local_switches, &hm_record_collection);
 
     // mount current data on hashmap (record collection)
     raw_values.mount(&local_switches, &hm_record_collection)?;
