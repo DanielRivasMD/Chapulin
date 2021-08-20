@@ -69,6 +69,11 @@ pub fn me_identificator(
       .split('\t')
       .collect();
 
+    // omit incomplete records
+    if record_line.len() < 11 {
+      continue;
+    }
+
     // debugger counter
     ct += 1;
 
