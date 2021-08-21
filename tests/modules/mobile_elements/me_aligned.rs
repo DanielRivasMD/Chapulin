@@ -127,12 +127,9 @@ fn chimeric_read_build(
     .for_each(|me_anchor| me_anchor.tag());
 
   // calculate break point iteratively
-  // TODO: add as method calculate break point iteratively
-  let seq_clone = chimeric_read.sequence.clone();
-  chimeric_read
-    .me_read
-    .iter_mut()
-    .for_each(|me_anchor| me_anchor.calculate_break_point(&seq_clone));
+  chimeric_read.me_read.iter_mut().for_each(|me_anchor| {
+    me_anchor.calculate_break_point(&raw_values.sequence)
+  });
 
   // return
   chimeric_read
