@@ -95,7 +95,7 @@ pub fn me_identificator(
     raw_values.mobel_tag(&mut local_switches);
 
     // mount current data on hashmap (record collection)
-    raw_values.mount(&local_switches, &hm_record_collection)?;
+    raw_values.mount(&hm_record_collection)?;
 
     // reset orientation
     raw_values.reset_orientation();
@@ -128,6 +128,7 @@ struct LocalSwtiches {
   // keep track whether read in pair is compatible for mobile element anchoring
   // activate when encounter mobile element compatible features
   // reset at end of each iteration
+  // TODO: if mobel tagging is done iteratively, is this switch neccesary?
   #[new(value = "false")]
   mobel: bool,
 
@@ -293,7 +294,6 @@ impl PurgeExt for RawValues {
 trait MountExt {
   fn mount(
     &self,
-    local_switches: &LocalSwtiches,
     hm_record_collection: &alias::RecordME,
   ) -> alias::AnyResult;
 }
@@ -305,7 +305,6 @@ impl MountExt for RawValues {
   // mount current data on hashmap (record collection)
   fn mount(
     &self,
-    local_switches: &LocalSwtiches,
     hm_record_collection: &alias::RecordME,
   ) -> alias::AnyResult {
     // match on flag (proviral)
@@ -332,7 +331,7 @@ impl MountExt for RawValues {
             .unwrap()
             .get_mut(&self.read_id.current)
           {
-            load!( mobile element |> current_record; self; local_switches; read1; Read2 );
+            load!( mobile element |> current_record; self; read1 );
           }
         // if already present assign tag
         // mobile element anchor Read2
@@ -342,7 +341,7 @@ impl MountExt for RawValues {
           .unwrap()
           .get_mut(&self.read_id.current)
         {
-          load!( mobile element |> current_record; self; local_switches; read2; Read1 );
+          load!( mobile element |> current_record; self; read2 );
         }
       }
 
@@ -357,9 +356,9 @@ impl MountExt for RawValues {
           // has been filled on read 2 this assumes secondary
           // alignments are ordered
           if current_record.read2.sequence.is_empty() {
-            load!( mobile element |> current_record; self; local_switches; read1; Read2 );
+            load!( mobile element |> current_record; self; read1 );
           } else {
-            load!( mobile element |> current_record; self; local_switches; read2; Read1 );
+            load!( mobile element |> current_record; self; read2 );
           }
         }
       }
