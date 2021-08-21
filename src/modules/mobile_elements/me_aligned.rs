@@ -113,6 +113,11 @@ pub fn me_identificator(
   }
 
   // evaluate at end of file
+
+  // tag
+  raw_values.tag(&hm_record_collection);
+
+  // purge
   raw_values.purge(&local_switches, &hm_record_collection);
   // println!("{:?}", hm_record_collection.lock().unwrap().keys());
 
@@ -233,6 +238,34 @@ impl LibraryExt for RawValues {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+trait TagExt {
+  fn tag(
+    &self,
+    hm_record_collection: &alias::RecordME,
+  );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+impl TagExt for RawValues {
+  fn tag(
+    &self,
+    hm_record_collection: &alias::RecordME,
+  ) {
+    // tag chromosomal anchor by iterating on all mobile element anchor
+    // recorded
+    if let Some(current_record) = hm_record_collection
+      .lock()
+      .unwrap()
+      .get_mut(&self.read_id.previous)
+    {
+      current_record.tag();
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 trait PurgeExt {
   fn batch_purge(
     &self,
@@ -262,6 +295,9 @@ impl PurgeExt for RawValues {
     if !(self.read_id.previous == self.read_id.current ||
       self.read_id.previous.is_empty())
     {
+      // tag
+      self.tag(hm_record_collection);
+
       // evaluate read batch
       // purge switch is true if
       // no reads have been succesfully anchored to mobile element
