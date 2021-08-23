@@ -81,8 +81,8 @@ fn chimeric_pair_build(
   chimeric_pair.read1 = chimeric_read_build(&flines[0], mobel_size);
   chimeric_pair.read2 = chimeric_read_build(&flines[1], mobel_size);
 
-  // FIX: HARDCODED anchor tag. write tag method on mobile element chimeric pair
-  chimeric_pair.chranch = ChrAnchorEnum::Read2;
+  // tag mobile element anchors iteratively
+  chimeric_pair.tag();
 
   // return
   chimeric_pair
@@ -114,12 +114,6 @@ fn chimeric_read_build(
     raw_values.position,
     raw_values.get_extra(),
   ));
-
-  // tag mobile element anchors iteratively
-  chimeric_read
-    .me_read
-    .iter_mut()
-    .for_each(|me_anchor| me_anchor.tag());
 
   // calculate break point iteratively
   chimeric_read.me_read.iter_mut().for_each(|me_anchor| {
