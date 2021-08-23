@@ -10,7 +10,6 @@ use genomic_structures::{
   MEChimericRead,
   OrientationEnum,
   RawValues,
-  TagME,
   CIGAR,
 };
 
@@ -27,7 +26,7 @@ use chapulin::modules::mobile_elements::me_aligned;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO: write a file to load mobile elements from
-macro_rules! me_aligned {
+macro_rules! test_me_aligned {
   ( $function: ident;
     mobile |> $mobel_id: expr, $mobel_size: expr;
     params |> $key: expr,  $val: expr;
@@ -127,57 +126,57 @@ fn chimeric_read_build(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // no read id value
-me_aligned!(test00;
+test_me_aligned!(test00;
   mobile |> "RANDOM_ME".to_string(), 1000.;
   params |> "RANDOM_ID", None;
 );
 
 // not available mobile element
-me_aligned!(test01;
+test_me_aligned!(test01;
   mobile |> "MOBEL_NA".to_string(), 1000000.;
   params |> "MOBEL_NA", None;
 );
 
 // drop upstream
-me_aligned!(test02;
+test_me_aligned!(test02;
   mobile |> "mobel11000".to_string(), 11000.;
   params |> "UPSTREAM_DROP", None;
 );
 
 // drop downstream
-me_aligned!(test03;
+test_me_aligned!(test03;
   mobile |> "mobel11000".to_string(), 11000.;
   params |> "DOWNSTREAM_DROP", None;
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// upstream
+// upstream keep
 // mount value through function
-me_aligned!(test11;
+test_me_aligned!(test11;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "UPSTREAM_KEEP",
+  params |> "UPSTREAM_KEEP1",
   Some(&chimeric_pair_build(
     &[
-      &["UPSTREAM_KEEP", "91", "mobel11000", "101", "60", "100M", "=", "0", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
-      &["UPSTREAM_KEEP", "167", "mobel11000", "101", "0", "*", "=", "0", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["UPSTREAM_KEEP1", "167", "mobel11000", "101", "0", "*", "=", "0", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["UPSTREAM_KEEP1", "91", "mobel11000", "101", "60", "100M", "=", "0", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
     ],
     11000.,
   ));
 );
 
 // mount value manually
-me_aligned!(test12;
+test_me_aligned!(test12;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "UPSTREAM_KEEP",
+  params |> "UPSTREAM_KEEP1",
   Some(&MEChimericPair{
-    read1: MEChimericRead{
+    read2: MEChimericRead{
       chr_read: vec![],
       me_read: vec![
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0,
+            coordinate: 0.,
           },
           cigar: CIGAR{
             align: vec![100],
@@ -196,7 +195,87 @@ me_aligned!(test12;
           size: 11000.
         }
       ],
+      orientation: OrientationEnum::Upstream,
+      quality: 60,
+      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+    },
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.
+          },
+          cigar: CIGAR{
+            align: vec![0],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 0,
+            left_clip: 0,
+            right_boundry: 0,
+            rigth_clip: 0,
+            signature: "*".to_string(),
+          },
+          flag: 167,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::None,
+          position: 101,
+          size: 11000.
+        }
+      ],
       orientation: OrientationEnum::None,
+      quality: 0,
+      sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+    },
+    chranch: ChrAnchorEnum::Read1,
+  });
+);
+
+// mount value through function
+test_me_aligned!(test13;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "UPSTREAM_KEEP2",
+  Some(&chimeric_pair_build(
+    &[
+      &["UPSTREAM_KEEP2", "91", "mobel11000", "101", "60", "100M", "=", "0", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+      &["UPSTREAM_KEEP2", "167", "mobel11000", "101", "0", "*", "=", "0", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+    ],
+    11000.,
+  ));
+);
+
+// mount value manually
+test_me_aligned!(test14;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "UPSTREAM_KEEP2",
+  Some(&MEChimericPair{
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![100],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 101,
+            left_clip: 0,
+            right_boundry: 200,
+            rigth_clip: 0,
+            signature: "100M".to_string(),
+          },
+          flag: 91,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Upstream,
+          position: 101,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Upstream,
       quality: 60,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
@@ -206,7 +285,7 @@ me_aligned!(test12;
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0
+            coordinate: 0.
           },
           cigar: CIGAR{
             align: vec![0],
@@ -235,32 +314,32 @@ me_aligned!(test12;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// downstream
+// downstream keep
 // mount value through function
-me_aligned!(test16;
+test_me_aligned!(test16;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "DOWNSTREAM_KEEP",
+  params |> "DOWNSTREAM_KEEP1",
   Some(&chimeric_pair_build(
     &[
-      &["DOWNSTREAM_KEEP", "75", "mobel11000", "10751", "60", "100M", "", "", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
-      &["DOWNSTREAM_KEEP", "135", "mobel11000", "10751", "0", "*", "", "", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["DOWNSTREAM_KEEP1", "135", "mobel11000", "10751", "0", "*", "", "", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["DOWNSTREAM_KEEP1", "75", "mobel11000", "10751", "60", "100M", "", "", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
     ],
     11000.,
   ));
 );
 
 // mount value manually
-me_aligned!(test17;
+test_me_aligned!(test17;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "DOWNSTREAM_KEEP",
+  params |> "DOWNSTREAM_KEEP1",
   Some(&MEChimericPair{
-    read1: MEChimericRead{
+    read2: MEChimericRead{
       chr_read: vec![],
       me_read: vec![
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0,
+            coordinate: 0.,
           },
           cigar: CIGAR{
             align: vec![100],
@@ -279,7 +358,87 @@ me_aligned!(test17;
           size: 11000.
         }
       ],
+      orientation: OrientationEnum::Downstream,
+      quality: 60,
+      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+    },
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.
+          },
+          cigar: CIGAR{
+            align: vec![0],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 0,
+            left_clip: 0,
+            right_boundry: 0,
+            rigth_clip: 0,
+            signature: "*".to_string(),
+          },
+          flag: 135,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::None,
+          position: 10751,
+          size: 11000.
+        }
+      ],
       orientation: OrientationEnum::None,
+      quality: 0,
+      sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+    },
+    chranch: ChrAnchorEnum::Read1,
+  });
+);
+
+// mount value through function
+test_me_aligned!(test18;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "DOWNSTREAM_KEEP2",
+  Some(&chimeric_pair_build(
+    &[
+      &["DOWNSTREAM_KEEP2", "75", "mobel11000", "10751", "60", "100M", "", "", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+      &["DOWNSTREAM_KEEP2", "135", "mobel11000", "10751", "0", "*", "", "", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+    ],
+    11000.,
+  ));
+);
+
+// mount value manually
+test_me_aligned!(test19;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "DOWNSTREAM_KEEP2",
+  Some(&MEChimericPair{
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![100],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 10751,
+            left_clip: 0,
+            right_boundry: 10850,
+            rigth_clip: 0,
+            signature: "100M".to_string(),
+          },
+          flag: 75,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10751,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Downstream,
       quality: 60,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
@@ -289,7 +448,7 @@ me_aligned!(test17;
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0
+            coordinate: 0.
           },
           cigar: CIGAR{
             align: vec![0],
@@ -318,24 +477,104 @@ me_aligned!(test17;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// upstream break point anchor
+// upstream keep break anchor
 // mount value through function
-me_aligned!(test21;
+test_me_aligned!(test21;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "UPSTREAM_KEEP_BREAK_ANCHOR",
+  params |> "UPSTREAM_KEEP_BREAK_ANCHOR1",
   Some(&chimeric_pair_build(
     &[
-      &["UPSTREAM_KEEP_BREAK_ANCHOR", "91", "mobel11000", "1", "60", "50S50M", "=", "0", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
-      &["UPSTREAM_KEEP_BREAK_ANCHOR", "167", "mobel11000", "1", "0", "*", "=", "0", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["UPSTREAM_KEEP_BREAK_ANCHOR1", "167", "mobel11000", "1", "0", "*", "=", "0", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["UPSTREAM_KEEP_BREAK_ANCHOR1", "91", "mobel11000", "1", "60", "50S50M", "=", "0", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
     ],
     11000.,
   ));
 );
 
 // mount value manually
-me_aligned!(test22;
+test_me_aligned!(test22;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "UPSTREAM_KEEP_BREAK_ANCHOR",
+  params |> "UPSTREAM_KEEP_BREAK_ANCHOR1",
+  Some(&MEChimericPair{
+    read2: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGAC".to_string(),
+            coordinate: 50.,
+          },
+          cigar: CIGAR{
+            align: vec![50],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: -49,
+            left_clip: 50,
+            right_boundry: 50,
+            rigth_clip: 0,
+            signature: "50S50M".to_string(),
+          },
+          flag: 91,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Upstream,
+          position: 1,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Upstream,
+      quality: 60,
+      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+    },
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.
+          },
+          cigar: CIGAR{
+            align: vec![0],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 0,
+            left_clip: 0,
+            right_boundry: 0,
+            rigth_clip: 0,
+            signature: "*".to_string(),
+          },
+          flag: 167,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::None,
+          position: 1,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::None,
+      quality: 0,
+      sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+    },
+    chranch: ChrAnchorEnum::Read1,
+  });
+);
+
+// mount value through function
+test_me_aligned!(test23;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "UPSTREAM_KEEP_BREAK_ANCHOR2",
+  Some(&chimeric_pair_build(
+    &[
+      &["UPSTREAM_KEEP_BREAK_ANCHOR2", "91", "mobel11000", "1", "60", "50S50M", "=", "0", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+      &["UPSTREAM_KEEP_BREAK_ANCHOR2", "167", "mobel11000", "1", "0", "*", "=", "0", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+    ],
+    11000.,
+  ));
+);
+
+// mount value manually
+test_me_aligned!(test24;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "UPSTREAM_KEEP_BREAK_ANCHOR2",
   Some(&MEChimericPair{
     read1: MEChimericRead{
       chr_read: vec![],
@@ -362,7 +601,7 @@ me_aligned!(test22;
           size: 11000.
         }
       ],
-      orientation: OrientationEnum::None,
+      orientation: OrientationEnum::Upstream,
       quality: 60,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
@@ -372,7 +611,7 @@ me_aligned!(test22;
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0
+            coordinate: 0.
           },
           cigar: CIGAR{
             align: vec![0],
@@ -401,32 +640,32 @@ me_aligned!(test22;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// downstream break point anchor
+// downstream keep break anchor
 // mount value through function
-me_aligned!(test26;
+test_me_aligned!(test26;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "DOWNSTREAM_KEEP_BREAK_ANCHOR",
+  params |> "DOWNSTREAM_KEEP_BREAK_ANCHOR1",
   Some(&chimeric_pair_build(
     &[
-      &["DOWNSTREAM_KEEP_BREAK_ANCHOR", "75", "mobel11000", "10951", "60", "50M50S", "=", "0", "100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGANCHORBATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
-      &["DOWNSTREAM_KEEP_BREAK_ANCHOR", "135", "mobel11000", "10951", "0", "*", "=", "0", "-100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+      &["DOWNSTREAM_KEEP_BREAK_ANCHOR1", "135", "mobel11000", "10951", "0", "*", "=", "0", "-100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+      &["DOWNSTREAM_KEEP_BREAK_ANCHOR1", "75", "mobel11000", "10951", "60", "50M50S", "=", "0", "100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGANCHORBATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
     ],
     11000.,
   ));
 );
 
 // mount value manually
-me_aligned!(test27;
+test_me_aligned!(test27;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "DOWNSTREAM_KEEP_BREAK_ANCHOR",
+  params |> "DOWNSTREAM_KEEP_BREAK_ANCHOR1",
   Some(&MEChimericPair{
-    read1: MEChimericRead{
+    read2: MEChimericRead{
       chr_read: vec![],
       me_read: vec![
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: "TTTGANCHORBATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
-            coordinate: -49.0,
+            coordinate: -49.,
           },
           cigar: CIGAR{
             align: vec![50],
@@ -445,7 +684,87 @@ me_aligned!(test27;
           size: 11000.
         }
       ],
+      orientation: OrientationEnum::Downstream,
+      quality: 60,
+      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGANCHORBATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+    },
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.
+          },
+          cigar: CIGAR{
+            align: vec![0],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 0,
+            left_clip: 0,
+            right_boundry: 0,
+            rigth_clip: 0,
+            signature: "*".to_string(),
+          },
+          flag: 135,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::None,
+          position: 10951,
+          size: 11000.
+        }
+      ],
       orientation: OrientationEnum::None,
+      quality: 0,
+      sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+    },
+    chranch: ChrAnchorEnum::Read1,
+  });
+);
+
+// mount value through function
+test_me_aligned!(test28;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "DOWNSTREAM_KEEP_BREAK_ANCHOR2",
+  Some(&chimeric_pair_build(
+    &[
+      &["DOWNSTREAM_KEEP_BREAK_ANCHOR2", "75", "mobel11000", "10951", "60", "50M50S", "=", "0", "100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGANCHORBATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["DOWNSTREAM_KEEP_BREAK_ANCHOR2", "135", "mobel11000", "10951", "0", "*", "=", "0", "-100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+    ],
+    11000.,
+  ));
+);
+
+// mount value manually
+test_me_aligned!(test29;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "DOWNSTREAM_KEEP_BREAK_ANCHOR2",
+  Some(&MEChimericPair{
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "TTTGANCHORBATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+            coordinate: -49.,
+          },
+          cigar: CIGAR{
+            align: vec![50],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 10951,
+            left_clip: 0,
+            right_boundry: 11050,
+            rigth_clip: 50,
+            signature: "50M50S".to_string(),
+          },
+          flag: 75,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10951,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Downstream,
       quality: 60,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGANCHORBATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
@@ -455,7 +774,7 @@ me_aligned!(test27;
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0
+            coordinate: 0.
           },
           cigar: CIGAR{
             align: vec![0],
@@ -484,32 +803,32 @@ me_aligned!(test27;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// upstream break point mate
+// upstream keep break mate
 // mount value through function
-me_aligned!(test31;
+test_me_aligned!(test31;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "UPSTREAM_KEEP_BREAK_MATE",
+  params |> "UPSTREAM_KEEP_BREAK_MATE1",
   Some(&chimeric_pair_build(
     &[
-      &["UPSTREAM_KEEP_BREAK_MATE", "83", "mobel11000", "151", "60", "100M", "=", "0", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
-      &["UPSTREAM_KEEP_BREAK_MATE", "163", "mobel11000", "1", "60", "50S50M", "=", "0", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACBANCHORGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["UPSTREAM_KEEP_BREAK_MATE1", "163", "mobel11000", "1", "60", "50S50M", "=", "0", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACBANCHORGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["UPSTREAM_KEEP_BREAK_MATE1", "83", "mobel11000", "151", "60", "100M", "=", "0", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
     ],
     11000.,
   ));
 );
 
 // mount value manually
-me_aligned!(test32;
+test_me_aligned!(test32;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "UPSTREAM_KEEP_BREAK_MATE",
+  params |> "UPSTREAM_KEEP_BREAK_MATE1",
   Some(&MEChimericPair{
-    read1: MEChimericRead{
+    read2: MEChimericRead{
       chr_read: vec![],
       me_read: vec![
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0,
+            coordinate: 0.,
           },
           cigar: CIGAR{
             align: vec![100],
@@ -528,22 +847,18 @@ me_aligned!(test32;
           size: 11000.
         }
       ],
-      orientation: OrientationEnum::None,
+      orientation: OrientationEnum::Upstream,
       quality: 60,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
-    read2: MEChimericRead{
+    read1: MEChimericRead{
       chr_read: vec![],
       me_read: vec![
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACBANCHORGTCC".to_string(),
-            coordinate: 50.0
+            coordinate: 50.
           },
-          // breakpoint: BreakPoint{
-          //   sequence: "".to_string(),
-          //   coordinate: 0.0
-          // },
           cigar: CIGAR{
             align: vec![50],
             deletion: vec![],
@@ -561,7 +876,87 @@ me_aligned!(test32;
           size: 11000.
         }
       ],
-      orientation: OrientationEnum::None,
+      orientation: OrientationEnum::Upstream,
+      quality: 60,
+      sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACBANCHORGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+    },
+    chranch: ChrAnchorEnum::Read1,
+  });
+);
+
+// mount value through function
+test_me_aligned!(test33;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "UPSTREAM_KEEP_BREAK_MATE2",
+  Some(&chimeric_pair_build(
+    &[
+      &["UPSTREAM_KEEP_BREAK_MATE2", "83", "mobel11000", "151", "60", "100M", "=", "0", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+      &["UPSTREAM_KEEP_BREAK_MATE2", "163", "mobel11000", "1", "60", "50S50M", "=", "0", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACBANCHORGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+    ],
+    11000.,
+  ));
+);
+
+// mount value manually
+test_me_aligned!(test34;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "UPSTREAM_KEEP_BREAK_MATE2",
+  Some(&MEChimericPair{
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![100],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 151,
+            left_clip: 0,
+            right_boundry: 250,
+            rigth_clip: 0,
+            signature: "100M".to_string(),
+          },
+          flag: 83,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Upstream,
+          position: 151,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Upstream,
+      quality: 60,
+      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+    },
+    read2: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACBANCHORGTCC".to_string(),
+            coordinate: 50.
+          },
+          cigar: CIGAR{
+            align: vec![50],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: -49,
+            left_clip: 50,
+            right_boundry: 50,
+            rigth_clip: 0,
+            signature: "50S50M".to_string(),
+          },
+          flag: 163,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Upstream,
+          position: 1,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Upstream,
       quality: 60,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACBANCHORGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
@@ -571,32 +966,32 @@ me_aligned!(test32;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// downstream break point mate
+// downstream keep break mate
 // mount value through function
-me_aligned!(test36;
+test_me_aligned!(test36;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "DOWNSTREAM_KEEP_BREAK_MATE",
+  params |> "DOWNSTREAM_KEEP_BREAK_MATE1",
   Some(&chimeric_pair_build(
     &[
-      &["DOWNSTREAM_KEEP_BREAK_MATE", "99", "mobel11000", "10851", "60", "100M", "", "", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
-      &["DOWNSTREAM_KEEP_BREAK_MATE", "147", "mobel11000", "10951", "60", "50M50S", "", "", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["DOWNSTREAM_KEEP_BREAK_MATE1", "147", "mobel11000", "10951", "60", "50M50S", "", "", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["DOWNSTREAM_KEEP_BREAK_MATE1", "99", "mobel11000", "10851", "60", "100M", "", "", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
     ],
     11000.,
   ));
 );
 
 // mount value manually
-me_aligned!(test37;
+test_me_aligned!(test37;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "DOWNSTREAM_KEEP_BREAK_MATE",
+  params |> "DOWNSTREAM_KEEP_BREAK_MATE1",
   Some(&MEChimericPair{
-    read1: MEChimericRead{
+    read2: MEChimericRead{
       chr_read: vec![],
       me_read: vec![
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0,
+            coordinate: 0.,
           },
           cigar: CIGAR{
             align: vec![100],
@@ -615,22 +1010,18 @@ me_aligned!(test37;
           size: 11000.
         }
       ],
-      orientation: OrientationEnum::None,
+      orientation: OrientationEnum::Downstream,
       quality: 60,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
-    read2: MEChimericRead{
+    read1: MEChimericRead{
       chr_read: vec![],
       me_read: vec![
         MEAnchor{
           breakpoint: BreakPoint{
-            sequence: String::new(),
-            coordinate: 0.0
+            sequence: "AGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+            coordinate: -49.,
           },
-          // breakpoint: BreakPoint{
-          //   sequence: "AGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
-          //   coordinate: 50.0,
-          // },
           cigar: CIGAR{
             align: vec![50],
             deletion: vec![],
@@ -643,12 +1034,418 @@ me_aligned!(test37;
           },
           flag: 147,
           mobel: "mobel11000".to_string(),
-          orientation: OrientationEnum::None,
+          orientation: OrientationEnum::Downstream,
           position: 10951,
           size: 11000.
         }
       ],
-      orientation: OrientationEnum::None,
+      orientation: OrientationEnum::Downstream,
+      quality: 60,
+      sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+    },
+    chranch: ChrAnchorEnum::Read1,
+  });
+);
+
+// mount value through function
+test_me_aligned!(test38;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "DOWNSTREAM_KEEP_BREAK_MATE2",
+  Some(&chimeric_pair_build(
+    &[
+      &["DOWNSTREAM_KEEP_BREAK_MATE2", "99", "mobel11000", "10851", "60", "100M", "", "", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+      &["DOWNSTREAM_KEEP_BREAK_MATE2", "147", "mobel11000", "10951", "60", "50M50S", "", "", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+    ],
+    11000.,
+  ));
+);
+
+// mount value manually
+test_me_aligned!(test39;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "DOWNSTREAM_KEEP_BREAK_MATE2",
+  Some(&MEChimericPair{
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![100],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 10851,
+            left_clip: 0,
+            right_boundry: 10950,
+            rigth_clip: 0,
+            signature: "100M".to_string(),
+          },
+          flag: 99,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10851,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Downstream,
+      quality: 60,
+      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+    },
+    read2: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "AGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+            coordinate: -49.,
+          },
+          cigar: CIGAR{
+            align: vec![50],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 10951,
+            left_clip: 0,
+            right_boundry: 11050,
+            rigth_clip: 50,
+            signature: "50M50S".to_string(),
+          },
+          flag: 147,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10951,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Downstream,
+      quality: 60,
+      sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+    },
+    chranch: ChrAnchorEnum::Read2,
+  });
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// upstream keep break mate
+// mount value through function
+test_me_aligned!(test41;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "UPSTREAM_KEEP_BREAK_DOUBLE1",
+  Some(&chimeric_pair_build(
+    &[
+      &["UPSTREAM_KEEP_BREAK_DOUBLE1", "163", "mobel11000", "1", "60", "50S50M", "=", "0", "100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["UPSTREAM_KEEP_BREAK_DOUBLE1", "83", "mobel11000", "1", "60", "30S70M", "=", "0", "-100", "GCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTNTTTGTATTTTTATTAGAGAC", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+    ],
+    11000.,
+  ));
+);
+
+// mount value manually
+test_me_aligned!(test42;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "UPSTREAM_KEEP_BREAK_DOUBLE1",
+  Some(&MEChimericPair{
+    read2: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "GCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGAC".to_string(),
+            coordinate: 30.,
+          },
+          cigar: CIGAR{
+            align: vec![70],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: -29,
+            left_clip: 30,
+            right_boundry: 70,
+            rigth_clip: 0,
+            signature: "30S70M".to_string(),
+          },
+          flag: 83,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Upstream,
+          position: 1,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Upstream,
+      quality: 60,
+      sequence: "GCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTNTTTGTATTTTTATTAGAGAC".to_string(),
+    },
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGAC".to_string(),
+            coordinate: 50.
+          },
+          cigar: CIGAR{
+            align: vec![50],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: -49,
+            left_clip: 50,
+            right_boundry: 50,
+            rigth_clip: 0,
+            signature: "50S50M".to_string(),
+          },
+          flag: 163,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Upstream,
+          position: 1,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Upstream,
+      quality: 60,
+      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+    },
+    chranch: ChrAnchorEnum::Read1,
+  });
+);
+
+// mount value through function
+test_me_aligned!(test43;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "UPSTREAM_KEEP_BREAK_DOUBLE2",
+  Some(&chimeric_pair_build(
+    &[
+      &["UPSTREAM_KEEP_BREAK_DOUBLE2", "83", "mobel11000", "1", "60", "30S70M", "=", "0", "-100", "GCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTNTTTGTATTTTTATTAGAGAC", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+      &["UPSTREAM_KEEP_BREAK_DOUBLE2", "163", "mobel11000", "1", "60", "50S50M", "=", "0", "100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+    ],
+    11000.,
+  ));
+);
+
+// mount value manually
+test_me_aligned!(test44;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "UPSTREAM_KEEP_BREAK_DOUBLE2",
+  Some(&MEChimericPair{
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "GCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGAC".to_string(),
+            coordinate: 30.,
+          },
+          cigar: CIGAR{
+            align: vec![70],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: -29,
+            left_clip: 30,
+            right_boundry: 70,
+            rigth_clip: 0,
+            signature: "30S70M".to_string(),
+          },
+          flag: 83,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Upstream,
+          position: 1,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Upstream,
+      quality: 60,
+      sequence: "GCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTNTTTGTATTTTTATTAGAGAC".to_string(),
+    },
+    read2: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGAC".to_string(),
+            coordinate: 50.
+          },
+          cigar: CIGAR{
+            align: vec![50],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: -49,
+            left_clip: 50,
+            right_boundry: 50,
+            rigth_clip: 0,
+            signature: "50S50M".to_string(),
+          },
+          flag: 163,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Upstream,
+          position: 1,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Upstream,
+      quality: 60,
+      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+    },
+    chranch: ChrAnchorEnum::Read2,
+  });
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// downstream keep break mate
+// mount value through function
+test_me_aligned!(test46;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "DOWNSTREAM_KEEP_BREAK_DOUBLE1",
+  Some(&chimeric_pair_build(
+    &[
+      &["DOWNSTREAM_KEEP_BREAK_DOUBLE1", "147", "mobel11000", "10981", "60", "20M80S", "", "", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+      &["DOWNSTREAM_KEEP_BREAK_DOUBLE1", "99", "mobel11000", "10951", "60", "50M50S", "", "", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+    ],
+    11000.,
+  ));
+);
+
+// mount value manually
+test_me_aligned!(test47;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "DOWNSTREAM_KEEP_BREAK_DOUBLE1",
+  Some(&MEChimericPair{
+    read2: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "TTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+            coordinate: -49.,
+          },
+          cigar: CIGAR{
+            align: vec![50],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 10951,
+            left_clip: 0,
+            right_boundry: 11050,
+            rigth_clip: 50,
+            signature: "50M50S".to_string(),
+          },
+          flag: 99,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10951,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Downstream,
+      quality: 60,
+      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+    },
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "AAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+            coordinate: -79.,
+          },
+          cigar: CIGAR{
+            align: vec![20],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 10981,
+            left_clip: 0,
+            right_boundry: 11080,
+            rigth_clip: 80,
+            signature: "20M80S".to_string(),
+          },
+          flag: 147,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10981,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Downstream,
+      quality: 60,
+      sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+    },
+    chranch: ChrAnchorEnum::Read1,
+  });
+);
+
+// mount value through function
+test_me_aligned!(test48;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "DOWNSTREAM_KEEP_BREAK_DOUBLE2",
+  Some(&chimeric_pair_build(
+    &[
+      &["DOWNSTREAM_KEEP_BREAK_DOUBLE2", "99", "mobel11000", "10951", "60", "50M50S", "", "", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
+      &["DOWNSTREAM_KEEP_BREAK_DOUBLE2", "147", "mobel11000", "10981", "60", "20M80S", "", "", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
+    ],
+    11000.,
+  ));
+);
+
+// mount value manually
+test_me_aligned!(test49;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "DOWNSTREAM_KEEP_BREAK_DOUBLE2",
+  Some(&MEChimericPair{
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "TTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+            coordinate: -49.,
+          },
+          cigar: CIGAR{
+            align: vec![50],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 10951,
+            left_clip: 0,
+            right_boundry: 11050,
+            rigth_clip: 50,
+            signature: "50M50S".to_string(),
+          },
+          flag: 99,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10951,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Downstream,
+      quality: 60,
+      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
+    },
+    read2: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: "AAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+            coordinate: -79.,
+          },
+          cigar: CIGAR{
+            align: vec![20],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 10981,
+            left_clip: 0,
+            right_boundry: 11080,
+            rigth_clip: 80,
+            signature: "20M80S".to_string(),
+          },
+          flag: 147,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10981,
+          size: 11000.
+        }
+      ],
+      orientation: OrientationEnum::Downstream,
       quality: 60,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
@@ -659,23 +1456,10 @@ me_aligned!(test37;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // upstream multi anchor
-// mount value through function
-me_aligned!(test51;
-  mobile |> "mobel11000".to_string(), 11000.;
-  params |> "UPSTREAM_KEEP_MULTI",
-  Some(&chimeric_pair_build(
-    &[
-      &["UPSTREAM_KEEP_MULTI", "83", "mobel11000", "1", "37", "100M", "=", "150", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
-      &["UPSTREAM_KEEP_MULTI", "163", "mobel11000", "150", "37", "100M", "=", "1", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
-    ],
-    11000.,
-  ));
-);
-
 // mount value manually
-me_aligned!(test52;
+test_me_aligned!(test52;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "UPSTREAM_KEEP_MULTI",
+  params |> "UPSTREAM_KEEP_MULTI2",
   Some(&MEChimericPair{
     read1: MEChimericRead{
       chr_read: vec![],
@@ -683,7 +1467,7 @@ me_aligned!(test52;
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0,
+            coordinate: 0.,
           },
           cigar: CIGAR{
             align: vec![100],
@@ -700,10 +1484,94 @@ me_aligned!(test52;
           orientation: OrientationEnum::Upstream,
           position: 1,
           size: 11000.
-        }
+        },
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![70],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 100,
+            left_clip: 0,
+            right_boundry: 199,
+            rigth_clip: 30,
+            signature: "70M30H".to_string(),
+          },
+          flag: 339,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Upstream,
+          position: 100,
+          size: 11000.
+        },
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![50],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 50,
+            left_clip: 0,
+            right_boundry: 149,
+            rigth_clip: 50,
+            signature: "50M50H".to_string(),
+          },
+          flag: 339,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Upstream,
+          position: 50,
+          size: 11000.
+        },
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![65],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 150,
+            left_clip: 0,
+            right_boundry: 249,
+            rigth_clip: 35,
+            signature: "65M35H".to_string(),
+          },
+          flag: 339,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Upstream,
+          position: 150,
+          size: 11000.
+        },
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![100],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 5000,
+            left_clip: 0,
+            right_boundry: 5099,
+            rigth_clip: 0,
+            signature: "100M".to_string(),
+          },
+          flag: 339,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::None,
+          position: 5000,
+          size: 11000.
+        },
       ],
-      orientation: OrientationEnum::None,
-      quality: 37,
+      orientation: OrientationEnum::Upstream,
+      quality: 60,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read2: MEChimericRead{
@@ -712,17 +1580,17 @@ me_aligned!(test52;
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0
+            coordinate: 0.
           },
           cigar: CIGAR{
-            align: vec![100],
+            align: vec![0],
             deletion: vec![],
             insertion: vec![],
-            left_boundry: 150,
+            left_boundry: 0,
             left_clip: 0,
-            right_boundry: 249,
+            right_boundry: 0,
             rigth_clip: 0,
-            signature: "100M".to_string(),
+            signature: "*".to_string(),
           },
           flag: 163,
           mobel: "mobel11000".to_string(),
@@ -732,7 +1600,7 @@ me_aligned!(test52;
         }
       ],
       orientation: OrientationEnum::None,
-      quality: 37,
+      quality: 0,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read2,
@@ -742,83 +1610,154 @@ me_aligned!(test52;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // downstream multi anchor
-// mount value through function
-me_aligned!(test56;
-  mobile |> "mobel11000".to_string(), 11000.;
-  params |> "DOWNSTREAM_KEEP_MULTI",
-  Some(&chimeric_pair_build(
-    &[
-      &["DOWNSTREAM_KEEP_MULTI", "83", "mobel11000", "1", "37", "100M", "=", "150", "-100", "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN", "AAAAAEEDAAAAA????;A?A@AAADDDDDDDIIIIIIDIIIIEEIIICIIIECIEEEDIIIIIDEIIEIIIIIIIIIIIIIIIEEBDDD:DDDB=B=1%", "NM:i:5  MD:Z:19G2A4T18C0C10 MC:Z:73S27M AS:i:33 XS:i:33"],
-      &["DOWNSTREAM_KEEP_MULTI", "163", "mobel11000", "150", "37", "100M", "=", "1", "100", "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC", "BCCFFFFDHHHHH%2AEGIIIIIIIIIIIIIIIIIIIGH<FHIIIGIIIIIIGGI=FCGIIIIIHHCHFFFDAD@A>;ACDDDDB>CFFED?CDDDDDCC", "NM:i:2  MD:Z:19G2A4 MC:Z:33S58M9S AS:i:19 XS:i:19"],
-    ],
-    11000.,
-  ));
-);
-
 // mount value manually
-me_aligned!(test57;
+test_me_aligned!(test57;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "DOWNSTREAM_KEEP_MULTI",
+  params |> "DOWNSTREAM_KEEP_MULTI1",
   Some(&MEChimericPair{
-    read1: MEChimericRead{
-      chr_read: vec![],
-      me_read: vec![
-        MEAnchor{
-          breakpoint: BreakPoint{
-            sequence: String::new(),
-            coordinate: 0.0,
-          },
-          cigar: CIGAR{
-            align: vec![100],
-            deletion: vec![],
-            insertion: vec![],
-            left_boundry: 1,
-            left_clip: 0,
-            right_boundry: 100,
-            rigth_clip: 0,
-            signature: "100M".to_string(),
-          },
-          flag: 83,
-          mobel: "mobel11000".to_string(),
-          orientation: OrientationEnum::Upstream,
-          position: 1,
-          size: 11000.
-        }
-      ],
-      orientation: OrientationEnum::None,
-      quality: 37,
-      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
-    },
     read2: MEChimericRead{
       chr_read: vec![],
       me_read: vec![
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0
+            coordinate: 0.,
           },
           cigar: CIGAR{
             align: vec![100],
             deletion: vec![],
             insertion: vec![],
-            left_boundry: 150,
+            left_boundry: 10851,
             left_clip: 0,
-            right_boundry: 249,
+            right_boundry: 10950,
             rigth_clip: 0,
             signature: "100M".to_string(),
           },
-          flag: 163,
+          flag: 75,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10851,
+          size: 11000.
+        },
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![10],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 10891,
+            left_clip: 0,
+            right_boundry: 10990,
+            rigth_clip: 90,
+            signature: "10M90H".to_string(),
+          },
+          flag: 331,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10891,
+          size: 11000.
+        },
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![40],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 10801,
+            left_clip: 0,
+            right_boundry: 10900,
+            rigth_clip: 60,
+            signature: "40M60H".to_string(),
+          },
+          flag: 331,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10801,
+          size: 11000.
+        },
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![70],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 10831,
+            left_clip: 0,
+            right_boundry: 10930,
+            rigth_clip: 30,
+            signature: "70M30H".to_string(),
+          },
+          flag: 331,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::Downstream,
+          position: 10831,
+          size: 11000.
+        },
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.,
+          },
+          cigar: CIGAR{
+            align: vec![100],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 831,
+            left_clip: 0,
+            right_boundry: 930,
+            rigth_clip: 0,
+            signature: "100M".to_string(),
+          },
+          flag: 331,
           mobel: "mobel11000".to_string(),
           orientation: OrientationEnum::None,
-          position: 150,
+          position: 831,
+          size: 11000.
+        },
+      ],
+      orientation: OrientationEnum::Downstream,
+      quality: 60,
+      sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+    },
+    read1: MEChimericRead{
+      chr_read: vec![],
+      me_read: vec![
+        MEAnchor{
+          breakpoint: BreakPoint{
+            sequence: String::new(),
+            coordinate: 0.
+          },
+          cigar: CIGAR{
+            align: vec![0],
+            deletion: vec![],
+            insertion: vec![],
+            left_boundry: 0,
+            left_clip: 0,
+            right_boundry: 0,
+            rigth_clip: 0,
+            signature: "*".to_string(),
+          },
+          flag: 135,
+          mobel: "mobel11000".to_string(),
+          orientation: OrientationEnum::None,
+          position: 10851,
           size: 11000.
         }
       ],
       orientation: OrientationEnum::None,
-      quality: 37,
-      sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
+      quality: 0,
+      sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
-    chranch: ChrAnchorEnum::Read2,
+    chranch: ChrAnchorEnum::Read1,
   });
 );
 
@@ -826,7 +1765,7 @@ me_aligned!(test57;
 
 // last record keep
 // mount value through function
-me_aligned!(test61;
+test_me_aligned!(test61;
   mobile |> "mobel11000".to_string(), 11000.;
   params |> "LAST_KEEP",
   Some(&chimeric_pair_build(
@@ -839,7 +1778,7 @@ me_aligned!(test61;
 );
 
 // mount value manually
-me_aligned!(test62;
+test_me_aligned!(test62;
   mobile |> "mobel11000".to_string(), 11000.;
   params |> "LAST_KEEP",
   Some(&MEChimericPair{
@@ -849,7 +1788,7 @@ me_aligned!(test62;
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0,
+            coordinate: 0.,
           },
           cigar: CIGAR{
             align: vec![100],
@@ -868,7 +1807,7 @@ me_aligned!(test62;
           size: 11000.
         }
       ],
-      orientation: OrientationEnum::None,
+      orientation: OrientationEnum::Upstream,
       quality: 60,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
@@ -878,7 +1817,7 @@ me_aligned!(test62;
         MEAnchor{
           breakpoint: BreakPoint{
             sequence: String::new(),
-            coordinate: 0.0
+            coordinate: 0.
           },
           cigar: CIGAR{
             align: vec![0],
