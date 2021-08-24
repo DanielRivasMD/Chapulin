@@ -8,7 +8,6 @@ use std::str::from_utf8;
 
 // development libraries
 use genomic_structures::{
-  ChrAnchorEnum,
   ExtraValuesEnum,
   MEAnchor,
   MEChimericPair,
@@ -100,9 +99,6 @@ pub fn me_identificator(
     // reset orientation
     raw_values.reset_orientation();
 
-    // reset anchor switch
-    local_switches.mobel.deactivate();
-
     // remember previous read
     raw_values.read_id.read_memory();
 
@@ -130,13 +126,6 @@ pub fn me_identificator(
 // explicit value assginment to boolean switches
 #[derive(Debug, new)]
 struct LocalSwtiches {
-  // keep track whether read in pair is compatible for mobile element anchoring
-  // activate when encounter mobile element compatible features
-  // reset at end of each iteration
-  // TODO: if mobel tagging is done iteratively, is this switch neccesary?
-  #[new(value = "false")]
-  mobel: bool,
-
   // control whether read batches will be removed
   // majority of records will be removed
   // keep active unless encounter mobile element compatible features
@@ -150,7 +139,6 @@ struct LocalSwtiches {
 // local implementations on local switches
 impl LocalSwtiches {
   fn switches(&mut self) {
-    self.mobel.activate();
     self.purge.deactivate();
   }
 }
