@@ -1,8 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: since modules are functional, consider implementing error handlers per
-// function. this assumes that error handlers can be efficiently tested
-
 // standard libraries
 use anyhow::Context;
 use std::str::from_utf8;
@@ -33,6 +30,9 @@ use crate::error::common_error::ChapulinCommonError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// TODO: read supplementary fields for additional information & load on
+// only load & register chromosomal loci. filtering is done downstream
+// the reason is to widen compatibility with single read alignment files
 /// Map chromosomal loci.
 pub fn cl_mapper(
   cl_bam_file: &str,
@@ -55,15 +55,23 @@ pub fn cl_mapper(
       .split('\t')
       .collect();
 
+    // omit incomplete records
+    if record_line.len() < 11 {
+      continue;
+    }
+
     // debugger counter
     ct += 1;
 
-    // SAM line values declared at each iteration
+    // SAM line values loaded at each iteration
+    // this implies no memory is held about other records &
+    // data is selected on current values
     let raw_values = RawValues::load(record_line)?;
 
-    // TODO: read supplementary fields for additional information & load on
-
     // load & register records
+    // select pair on read id & select read on sequence | reverse complement
+    // register on hashmap with scaffold ids as keys for parallelization
+    // do not count nor tag on the fly since no filtering is done here
     raw_values.mount(&hm_record_collection, &an_registry)?;
 
     if ct > debug_iteration && debug_iteration > 0 {
@@ -71,12 +79,12 @@ pub fn cl_mapper(
     }
   }
 
-  println!("{:#?}", &hm_record_collection.lock().unwrap().keys());
   Ok(())
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// extend functionality of raw values locally
 trait MountExt {
   fn mount(
     self,
@@ -97,6 +105,7 @@ trait MountExt {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// mount, load & register
 impl MountExt for RawValues {
   // mount current data on hashmap (record collection)
   fn mount(
@@ -104,36 +113,25 @@ impl MountExt for RawValues {
     hm_record_collection: &alias::RecordME,
     an_registry: &alias::RegistryME,
   ) -> alias::AnyResult {
-    // if read id is present on hashmap (record collection)
+    // if read pair id is present on hashmap (record collection)
     if hm_record_collection
       .lock()
       .unwrap()
       .contains_key(&self.read_id.current)
     {
       // load chromosomal anchoring data
-      // check whether sequence or reverse sequence is equal
+      // check sequence or reverse complement to select read
       // BUG: palindromic reads?
       self.load(hm_record_collection);
 
-      // register
+      // register read pair id on hashmap for parallelization
       self.register(an_registry);
-      // } else {
-      //   // TODO: all records are going here. investigate the reason
-      //   file_out
-      //     .write_all(self.read_id.current.as_bytes())
-      //     .context(ChapulinCommonError::WriteFile {
-      //       f: self.read_id.current,
-      //     })?;
     }
 
     Ok(())
   }
 
-  // TODO: why are the reads not in order. also, this function should account
-  // for that fact since it must support single-end alignments as well
-  // IDEA: consider tagging strand on the fly to avoid postload counting
-  // BUG: this switch must contain memory, otherwise it'll delete all read2
-  // load chromosomal anchor data on mobile element chimeric pair
+  // load records on hashmap (record collection)
   fn load(
     &self,
     hm_record_collection: &alias::RecordME,
@@ -143,12 +141,13 @@ impl MountExt for RawValues {
       .unwrap()
       .get_mut(&self.read_id.current)
     {
+      // select based on sequence | reverse complement
       load!( chromosomal |> current_record; *self; read1 );
       load!( chromosomal |> current_record; *self; read2 );
     }
   }
 
-  // register read id on scaffold
+  // register read pair id on scaffold
   fn register(
     self,
     an_registry: &alias::RegistryME,
@@ -171,9 +170,6 @@ impl MountExt for RawValues {
         current_chr.push(self.read_id.current)
       }
     }
-
-    // count anchor
-    // }
   }
 }
 

@@ -26,6 +26,8 @@ use chapulin::modules::mobile_elements::me_aligned;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO: write a file to load mobile elements from
+// test mobile element modules overall performance
+// by testing controller function `me_identificator`
 macro_rules! test_me_aligned {
   ( $function: ident;
     mobile |> $mobel_id: expr, $mobel_size: expr;
@@ -37,31 +39,31 @@ macro_rules! test_me_aligned {
       let me_alignment = "tests/samples/me_alignment.sam";
 
       // declare mobile element library
-      let mutex_me_collection = alias::arc_map();
+      let amx_me_collection = alias::arc_map();
 
       // insert mobile element library
-      mutex_me_collection
+      amx_me_collection
         .lock()
         .unwrap()
         .insert($mobel_id, $mobel_size);
 
       // declare chimeric mobile element collection
-      let mutex_record_collection = alias::arc_map();
-      let clone_mutex = alias::arc_clone(&mutex_record_collection);
-      let _debug_mutex = alias::arc_clone(&mutex_record_collection);
+      let amx_record_collection = alias::arc_map();
+
+      // declare chimeric mobile element clone
+      let camx_record_collection_me = alias::arc_clone(&amx_record_collection);
 
       // identify mobile elements
-      // observe that error is unwrap
       me_aligned::me_identificator(
         me_alignment,
-        mutex_me_collection,
-        mutex_record_collection,
+        amx_me_collection,
+        amx_record_collection,
         0,
       )
       .expect("Error occured at mobile element identificator!");
 
       // assert
-      assert_eq!(clone_mutex.lock().unwrap().get($key), $val);
+      assert_eq!(camx_record_collection_me.lock().unwrap().get($key), $val);
     }
   };
 }
@@ -125,6 +127,9 @@ fn chimeric_read_build(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// no value
+//////////////////////////////////////////////////
+
 // no read id value
 test_me_aligned!(test00;
   mobile |> "RANDOM_ME".to_string(), 1000.;
@@ -152,6 +157,8 @@ test_me_aligned!(test03;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // upstream keep
+//////////////////////////////////////////////////
+
 // mount value through function
 test_me_aligned!(test11;
   mobile |> "mobel11000".to_string(), 11000.;
@@ -315,6 +322,8 @@ test_me_aligned!(test14;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // downstream keep
+//////////////////////////////////////////////////
+
 // mount value through function
 test_me_aligned!(test16;
   mobile |> "mobel11000".to_string(), 11000.;
@@ -478,6 +487,8 @@ test_me_aligned!(test19;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // upstream keep break anchor
+//////////////////////////////////////////////////
+
 // mount value through function
 test_me_aligned!(test21;
   mobile |> "mobel11000".to_string(), 11000.;
@@ -641,6 +652,8 @@ test_me_aligned!(test24;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // downstream keep break anchor
+//////////////////////////////////////////////////
+
 // mount value through function
 test_me_aligned!(test26;
   mobile |> "mobel11000".to_string(), 11000.;
@@ -804,6 +817,8 @@ test_me_aligned!(test29;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // upstream keep break mate
+//////////////////////////////////////////////////
+
 // mount value through function
 test_me_aligned!(test31;
   mobile |> "mobel11000".to_string(), 11000.;
@@ -967,6 +982,8 @@ test_me_aligned!(test34;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // downstream keep break mate
+//////////////////////////////////////////////////
+
 // mount value through function
 test_me_aligned!(test36;
   mobile |> "mobel11000".to_string(), 11000.;
@@ -1130,6 +1147,8 @@ test_me_aligned!(test39;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // upstream keep break mate
+//////////////////////////////////////////////////
+
 // mount value through function
 test_me_aligned!(test41;
   mobile |> "mobel11000".to_string(), 11000.;
@@ -1293,6 +1312,8 @@ test_me_aligned!(test44;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // downstream keep break mate
+//////////////////////////////////////////////////
+
 // mount value through function
 test_me_aligned!(test46;
   mobile |> "mobel11000".to_string(), 11000.;

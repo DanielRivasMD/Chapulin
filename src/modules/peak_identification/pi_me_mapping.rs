@@ -39,9 +39,9 @@ pub fn pi_me_identifier(
   ikey: &str,
   output: &str,
   _errata: &str,
-  hm_collection: alias::RecordME,
   an_registry: alias::RegistryME,
   chr_assembly: alias::LibraryME,
+  hm_collection: alias::RecordME,
 ) -> alias::AnyResult {
   let mut chr_position_hm = HashMap::new();
   let chr_size = *chr_assembly.lock().unwrap().get(ikey).unwrap();
@@ -150,5 +150,73 @@ pub fn pi_me_identifier(
   }
   Ok(())
 }
+
+// println!("Result from MAPQ: {:?}", self.anchor(hm_record_collection));
+// if self.anchor(hm_record_collection) {
+//   // if self.read_id.current == "SRR556146.17" {
+//   //   println!("Removing");
+//   //   println!();
+//   // }
+//   hm_record_collection
+//     .lock()
+//     .unwrap()
+//     .remove(&self.read_id.current);
+// } else {
+//   // if self.read_id.current == "SRR556146.17" {
+//   //   println!("Registering");
+//   //   println!();
+//   // }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// trait RegisterExt {
+// fn anchor(
+//   &self,
+//   hm_record_collection: &alias::RecordME,
+// ) -> bool;
+// }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// // impl RegisterExt for RawValues {
+// fn anchor(
+//   &self,
+//   hm_record_collection: &alias::RecordME,
+// ) -> bool {
+//   let mut switch_out = true;
+//   if let Some(current_record) = hm_record_collection
+//     .lock()
+//     .unwrap()
+//     .get(&self.read_id.current)
+//   {
+//     // println!("{:#?}", current_record);
+//     match current_record.chranch {
+//       ChrAnchorEnum::Read1 => {
+//         println!(
+//           "Record chr is empty: {:?}",
+//           current_record.read1.chr_read.is_empty()
+//         );
+//         switch_out = mapq!(current_record, read1);
+//       }
+//       ChrAnchorEnum::Read2 => {
+//         switch_out = mapq!(current_record, read2);
+//         // println!("Inside Match");
+//         // println!("{:?}", current_record.read2.chr_read.is_empty());
+//         // println!("{:?}", current_record.read2.chr_read[0].mapq < MAPQ);
+//         // println!("{:?}", switch_out);
+//       }
+//       _ => (),
+//     };
+//   }
+
+//   // if self.read_id.current == "SRR556146.17" {
+//   //   println!("Inside Match");
+//   //   //   println!();
+//   //   //   println!("{:#?}", self);
+//   //   //   println!("Switch: {:?}", switch_out);
+//   // }
+//   switch_out
+// }
+// // }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

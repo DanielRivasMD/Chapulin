@@ -285,9 +285,9 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   modules::peak_identification::pi_me_controller(
     out_dir,
     err_dir,
-    mutex_record_collection,
     mutex_anchor_registry,
     mutex_chr_assembly,
+    mutex_record_collection,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());

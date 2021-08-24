@@ -34,6 +34,7 @@ use crate::error::common_error::ChapulinCommonError;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO: extract features from fasta other than sequence length
+/// Identify mobile elements.
 pub fn me_identificator(
   me_bam_file: &str,
   hm_me_collection: alias::LibraryME,
@@ -109,6 +110,7 @@ pub fn me_identificator(
   }
 
   // evaluate at end of file
+  //////////////////////////////////////////////////
 
   // tag
   raw_values.tag(&hm_record_collection);
@@ -195,6 +197,7 @@ impl MEAnchorExt for RawValues {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// extend functionality of raw values locally
 trait LibraryExt {
   fn library_get(
     &mut self,
@@ -204,6 +207,7 @@ trait LibraryExt {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// mobile element library
 impl LibraryExt for RawValues {
   // TODO: transform this function into extend implementation
   // collect mobile element from library & mount it on raw values extra enum
@@ -395,6 +399,3 @@ impl MountExt for RawValues {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// TODO: write down tests to assert that data &
-// switches are being updated properly

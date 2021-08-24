@@ -171,9 +171,9 @@ pub fn sv_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   modules::peak_identification::pi_sv_controller(
     output.to_string(),
     directory.to_string(),
-    mutex_record_collection,
     mutex_anchor_registry,
     mutex_chr_assembly,
+    mutex_record_collection,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());

@@ -19,9 +19,9 @@ mod pi_sv_mapping;
 pub fn pi_me_controller(
   output: String,
   errata: String,
-  hash_map_collection: alias::RecordME,
   hash_map_anchor: alias::RegistryME,
   hash_map_chr_assembly: alias::LibraryME,
+  hash_map_collection: alias::RecordME,
 ) -> alias::AnyResult {
   let chromosome_vec =
     chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
@@ -38,9 +38,9 @@ pub fn pi_me_controller(
         &okey,
         &coutput,
         &cerrata,
-        chash_map_collection,
         chash_map_anchor,
         chash_map_chr_assembly,
+        chash_map_collection,
       )
       .expect("TODO thread error");
     });
@@ -56,24 +56,24 @@ pub fn pi_me_controller(
 pub fn pi_sv_controller(
   _output: String,
   _errata: String,
-  hash_map_collection: alias::RecordSV,
   hash_map_anchor: alias::RegistryME,
   hash_map_chr_assembly: alias::LibraryME,
+  hash_map_collection: alias::RecordSV,
 ) -> alias::AnyResult {
   let chromosome_vec =
     chr_constructor(hash_map_anchor.clone(), hash_map_chr_assembly.clone());
 
   for okey in chromosome_vec {
-    let chash_map_collection = hash_map_collection.clone();
     let chash_map_anchor = hash_map_anchor.clone();
     let chash_map_chr_assembly = hash_map_chr_assembly.clone();
+    let chash_map_collection = hash_map_collection.clone();
 
     let pi_sv_handle = thread::spawn(move || {
       pi_sv_mapping::pi_sv_identifier(
         &okey,
-        chash_map_collection,
         chash_map_anchor,
         chash_map_chr_assembly,
+        chash_map_collection,
       )
       .expect("TODO thread error");
     });

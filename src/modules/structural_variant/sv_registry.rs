@@ -31,7 +31,7 @@ use crate::error::common_error::ChapulinCommonError;
 
 pub fn sv_mapper(
   sv_bam_file: &str,
-  expected_tlen: i32,
+  _expected_tlen: i32,
   hm_collection: alias::RecordSV,
   an_registry: alias::RegistryME,
 ) -> alias::AnyResult {
