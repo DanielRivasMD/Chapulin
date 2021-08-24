@@ -18,16 +18,14 @@ pub mod cl_aligned;
 pub fn cl_single_controller(
   directory: String,
   prefix: String,
-  errata: String,
-  hash_map_collection: alias::RecordME,
   hash_map_anchor: alias::RegistryME,
+  hash_map_collection: alias::RecordME,
   debug_iteration: i32,
 ) -> alias::AnyResult {
   // load reference chromosome aligned reads
   for i in 1..=2 {
     let cdirectory = directory.clone();
     let cprefix = prefix.clone();
-    let cerrata = errata.clone();
     let chash_map_collection = hash_map_collection.clone();
     let chash_map_anchor = hash_map_anchor.clone();
 
@@ -37,9 +35,8 @@ pub fn cl_single_controller(
 
       cl_aligned::cl_mapper(
         &cl_aligned_file,
-        &cerrata,
-        chash_map_collection,
         chash_map_anchor,
+        chash_map_collection,
         debug_iteration,
       )
       .expect("TODO thread error");
@@ -55,18 +52,16 @@ pub fn cl_single_controller(
 pub fn cl_paired_controller(
   directory: String,
   prefix: String,
-  errata: String,
-  hash_map_collection: alias::RecordME,
   hash_map_anchor: alias::RegistryME,
+  hash_map_collection: alias::RecordME,
   debug_iteration: i32,
 ) -> alias::AnyResult {
   let cl_aligned_file = format!("{}{}", directory, prefix);
 
   cl_aligned::cl_mapper(
     &cl_aligned_file,
-    &errata,
-    hash_map_collection,
     hash_map_anchor,
+    hash_map_collection,
     debug_iteration,
   )?;
 

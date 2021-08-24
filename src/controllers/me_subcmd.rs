@@ -233,9 +233,8 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
       modules::chromosomal_loci::cl_single_controller(
         string_sett.directory.to_string(),
         string_sett.ref_align.to_string(),
-        string_sett.errata,
-        ccl_record_collection,
         ccl_anchor_registry,
+        ccl_record_collection,
         debug_iteration,
       )?;
     }
@@ -254,9 +253,8 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
       modules::chromosomal_loci::cl_paired_controller(
         string_sett.directory.to_string(),
         string_sett.pair_end_reference_alignment.to_string(),
-        string_sett.errata,
-        ccl_record_collection,
         ccl_anchor_registry,
+        ccl_record_collection,
         debug_iteration,
       )?;
     }
