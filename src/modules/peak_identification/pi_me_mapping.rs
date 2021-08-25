@@ -220,3 +220,19 @@ pub fn pi_me_identifier(
 // // }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, new, Default)]
+struct Strands<'strand> {
+  #[new(default)]
+  FS5: Vec<&'strand str>,
+
+  #[new(default)]
+  FS3: Vec<&'strand str>,
+
+  #[new(default)]
+  RS5: Vec<&'strand str>,
+
+  #[new(default)]
+  RS3: Vec<&'strand str>,
+}
+
