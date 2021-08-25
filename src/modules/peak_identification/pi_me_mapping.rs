@@ -148,6 +148,7 @@ pub fn pi_me_identifier(
       }
     }
   }
+
   Ok(())
 }
 
@@ -236,3 +237,99 @@ struct Strands<'strand> {
   RS3: Vec<&'strand str>,
 }
 
+fn filter(
+  reads_id: &Vec<String>,
+  hm_collection: &alias::RecordME,
+  strands: &mut Strands,
+) {
+  // iterate on registry
+  // switch
+
+  reads_id.iter().map(|read_id| {
+    let mut switch_mapq = true;
+    if let Some(me_pair) = hm_collection.lock().unwrap().get(read_id) {
+      mapq(me_pair, switch_mapq);
+    }
+
+    if switch_mapq {
+      purge(&hm_collection, read_id);
+    } else {
+      // segregate reads based on orientation
+      // count reads
+
+      tag(&hm_collection, read_id, strands);
+    }
+
+    // switch_mapq = false;
+
+    //   match &me_pair.chranch {
+    //     ChrAnchorEnum::Read1 => {
+    //       read_count = strand_count(
+    //         id_read,
+    //         strand,
+    //         read_count,
+    //         &me_pair.read1.chr_read[0],
+    //         &me_pair.read2.me_read,
+    //         tmp_position_hm,
+    //       );
+    //     }
+
+    //     ChrAnchorEnum::Read2 => {
+    //       read_count = strand_count(
+    //         id_read,
+    //         strand,
+    //         read_count,
+    //         &me_pair.read2.chr_read[0],
+    //         &me_pair.read1.me_read,
+    //         tmp_position_hm,
+    //       );
+    //     }
+
+    //     ChrAnchorEnum::None => (),
+    //   }
+    // }
+    // }
+  });
+  // }
+}
+
+fn mapq(
+  me_pair: &MEChimericPair,
+  mut switch_mapq: bool,
+) {
+  match me_pair.chranch {
+    ChrAnchorEnum::Read1 => {
+      if me_pair.read1.chr_read[0].mapq < MAPQ {
+        switch_mapq = true;
+      }
+    }
+    ChrAnchorEnum::Read2 => {
+      if me_pair.read2.chr_read[0].mapq < MAPQ {
+        switch_mapq = true;
+      }
+    }
+    ChrAnchorEnum::None => (),
+  }
+}
+
+fn purge(
+  hm_collection: &alias::RecordME,
+  read_id: &str,
+) {
+  hm_collection.lock().unwrap().remove(read_id);
+}
+
+fn tag(
+  hm_collection: &alias::RecordME,
+  read_id: &str,
+  strands: &mut Strands,
+) {
+  unimplemented!();
+}
+
+fn fdr(
+  strands: &Strands,
+  hm_collection: &alias::RecordME,
+) {
+  unimplemented!();
+}
