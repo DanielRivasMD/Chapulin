@@ -14,6 +14,9 @@ use genomic_structures::{
   threshold,
   ChrAnchorEnum,
   MEChimericPair,
+  MEChimericRead,
+  OrientationEnum,
+  SAMFlag,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -244,19 +247,21 @@ pub fn pi_me_identifier(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Debug, new, Default)]
-struct Strands<'strand> {
+struct Strands {
   #[new(default)]
-  FS5: Vec<&'strand str>,
+  FS5: Vec<String>,
 
   #[new(default)]
-  FS3: Vec<&'strand str>,
+  FS3: Vec<String>,
 
   #[new(default)]
-  RS5: Vec<&'strand str>,
+  RS5: Vec<String>,
 
   #[new(default)]
-  RS3: Vec<&'strand str>,
+  RS3: Vec<String>,
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 fn filter(
   reads_id: &Vec<String>,
@@ -267,7 +272,7 @@ fn filter(
   // switch
 
   reads_id.iter().map(|read_id| {
-    let mut switch_mapq = true;
+    let switch_mapq = true;
     if let Some(me_pair) = hm_collection.lock().unwrap().get(read_id) {
       mapq(me_pair, switch_mapq);
     }
@@ -278,7 +283,7 @@ fn filter(
       // segregate reads based on orientation
       // count reads
 
-      tag(&hm_collection, read_id, strands);
+      assign(&hm_collection, read_id, strands);
     }
 
     // switch_mapq = false;
@@ -340,13 +345,74 @@ fn purge(
   hm_collection.lock().unwrap().remove(read_id);
 }
 
-fn tag(
+fn assign(
   hm_collection: &alias::RecordME,
   read_id: &str,
   strands: &mut Strands,
 ) {
-  unimplemented!();
+  if let Some(me_chimeric_pair) = hm_collection.lock().unwrap().get(read_id) {
+    match me_chimeric_pair.chranch {
+      ChrAnchorEnum::Read1 => {
+        tag(&me_chimeric_pair.read1, read_id.to_string(), strands)
+      }
+      ChrAnchorEnum::Read2 => {
+        tag(&me_chimeric_pair.read2, read_id.to_string(), strands)
+      }
+      ChrAnchorEnum::None => (),
+    }
+  }
 }
+
+fn tag(
+  me_chimeric_read: &MEChimericRead,
+  read_id: String,
+  strands: &mut Strands,
+) {
+  match (
+    me_chimeric_read.chr_read[0].interpret(5),
+    me_chimeric_read.orientation,
+  ) {
+    (false, OrientationEnum::Upstream) => strands.FS5.push(read_id),
+    (true, OrientationEnum::Downstream) => strands.FS3.push(read_id),
+    (true, OrientationEnum::Upstream) => strands.RS5.push(read_id),
+    (false, OrientationEnum::Downstream) => strands.RS3.push(read_id),
+    (_, _) => (),
+  }
+}
+
+// match str {
+//   "F5" => {
+//     if chr_pair.flag == 0 &&
+//       mobel_counter.upstream >= mobel_counter.downstream
+//     {
+//       chr_count!(read_id, read_count, chr_pair, position_hm);
+//     }
+//   }
+//   "F3" => {
+//     if chr_pair.flag == 16 &&
+//       mobel_counter.upstream <= mobel_counter.downstream
+//     {
+//       chr_count!(read_id, read_count, chr_pair, position_hm);
+//     }
+//   }
+//   "R5" => {
+//     if chr_pair.flag == 16 &&
+//       mobel_counter.upstream >= mobel_counter.downstream
+//     {
+//       chr_count!(read_id, read_count, chr_pair, position_hm);
+//     }
+//   }
+//   "R3" => {
+//     if chr_pair.flag == 0 &&
+//       mobel_counter.upstream <= mobel_counter.downstream
+//     {
+//       chr_count!(read_id, read_count, chr_pair, position_hm);
+//     }
+//   }
+//   // TODO: add non-compatible count?
+//   _ => {}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 fn fdr(
   strands: &Strands,
@@ -354,3 +420,5 @@ fn fdr(
 ) {
   unimplemented!();
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
