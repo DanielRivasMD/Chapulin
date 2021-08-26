@@ -49,6 +49,24 @@ impl ActivateExt for bool {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, new, Default)]
+pub struct Strands {
+  #[new(default)]
+  FS5: Vec<String>,
+
+  #[new(default)]
+  FS3: Vec<String>,
+
+  #[new(default)]
+  RS5: Vec<String>,
+
+  #[new(default)]
+  RS3: Vec<String>,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // TODO: write down program logic
 // 1) read mobile element alignment & identify compatible anchors / alignments
 // 2) decompose alignment annotations & calculate insertion features: break
