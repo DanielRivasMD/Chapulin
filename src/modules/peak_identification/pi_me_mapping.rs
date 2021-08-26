@@ -2,7 +2,7 @@
 
 // // standard libraries
 // use anyhow::Context;
-// use std::collections::HashMap;
+use std::collections::HashMap;
 // use std::fs::File;
 // use std::io::Write;
 
@@ -12,6 +12,7 @@
 use genomic_structures::{
   strand_count,
   threshold,
+  Anchor,
   ChrAnchorEnum,
   MEChimericPair,
   MEChimericRead,
@@ -70,7 +71,7 @@ pub fn pi_me_identifier(
   //////////////////////////////////////////////////
 
   for strand in STRAND_VEC.iter() {
-    fdr(&strands, &hm_collection);
+    // fdr(&strands, &hm_collection);
   }
 
   // write results
@@ -380,45 +381,43 @@ fn tag(
   }
 }
 
-// match str {
-//   "F5" => {
-//     if chr_pair.flag == 0 &&
-//       mobel_counter.upstream >= mobel_counter.downstream
-//     {
-//       chr_count!(read_id, read_count, chr_pair, position_hm);
-//     }
-//   }
-//   "F3" => {
-//     if chr_pair.flag == 16 &&
-//       mobel_counter.upstream <= mobel_counter.downstream
-//     {
-//       chr_count!(read_id, read_count, chr_pair, position_hm);
-//     }
-//   }
-//   "R5" => {
-//     if chr_pair.flag == 16 &&
-//       mobel_counter.upstream >= mobel_counter.downstream
-//     {
-//       chr_count!(read_id, read_count, chr_pair, position_hm);
-//     }
-//   }
-//   "R3" => {
-//     if chr_pair.flag == 0 &&
-//       mobel_counter.upstream <= mobel_counter.downstream
-//     {
-//       chr_count!(read_id, read_count, chr_pair, position_hm);
-//     }
-//   }
-//   // TODO: add non-compatible count?
-//   _ => {}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-fn fdr(
+fn fdr() {
+  unimplemented!();
+}
+
+fn count(
   strands: &Strands,
   hm_collection: &alias::RecordME,
-) {
-  unimplemented!();
+) -> HashMap<i32, i32> {
+  // for strand in STRAND_VEC.iter() {
+
+  let strand = &strands.FS5;
+  let mut chr_position_hm = HashMap::new();
+
+  strand.iter().for_each(|read_id| {
+    if let Some(current_record) = hm_collection.lock().unwrap().get(read_id) {
+      match current_record.chranch {
+        ChrAnchorEnum::Read1 => {
+          let bin_position = current_record.read1.chr_read[0].bin();
+          if !chr_position_hm.contains_key(&bin_position) {
+            chr_position_hm.insert(bin_position, 1);
+          } else {
+            if let Some(current_position) =
+              chr_position_hm.get_mut(&bin_position)
+            {
+              *current_position += 1;
+            }
+          }
+        }
+        ChrAnchorEnum::Read2 => (), // TODO: complete
+        _ => (),
+      }
+    }
+  });
+  // }
+  return chr_position_hm;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
