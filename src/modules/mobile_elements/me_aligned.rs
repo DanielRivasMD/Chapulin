@@ -33,6 +33,14 @@ use crate::error::common_error::ChapulinCommonError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// module features
+use super::{
+  ActivateExt,
+  LocalSwtiches,
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // TODO: extract features from fasta other than sequence length
 /// Identify mobile elements.
 pub fn me_identificator(
@@ -120,50 +128,6 @@ pub fn me_identificator(
   // println!("{:?}", hm_record_collection.lock().unwrap().keys());
 
   Ok(())
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// majority of reads will be purged
-// explicit value assginment to boolean switches
-#[derive(Debug, new)]
-struct LocalSwtiches {
-  // control whether read batches will be removed
-  // majority of records will be removed
-  // keep active unless encounter mobile element compatible features
-  // re activate only after read batch evaluation
-  #[new(value = "true")]
-  purge: bool,
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// local implementations on local switches
-impl LocalSwtiches {
-  fn switches(&mut self) {
-    self.purge.deactivate();
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// activation trait
-trait ActivateExt {
-  fn activate(&mut self);
-  fn deactivate(&mut self);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// extend implement on boolean
-impl ActivateExt for bool {
-  fn activate(&mut self) {
-    *self = true;
-  }
-
-  fn deactivate(&mut self) {
-    *self = false;
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
