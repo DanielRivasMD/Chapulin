@@ -10,8 +10,14 @@ use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// crate features
+use crate::Strands;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // modules
 pub mod cl_aligned;
+pub mod cl_filter;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -64,6 +70,34 @@ pub fn cl_paired_controller(
     hash_map_collection,
     debug_iteration,
   )?;
+
+  Ok(())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pub fn cl_filter(
+  ikey: &str,
+  an_registry: alias::RegistryME,
+  chr_assembly: alias::LibraryME,
+  hm_me_collection: alias::RecordME,
+) -> alias::AnyResult {
+  // declare strand reference
+  let mut strands = Strands::new();
+
+  // TODO: implement parallel iteration here
+
+  // filter hits
+  //////////////////////////////////////////////////
+  // select based on likehood of alignment -> MAPQ
+  //////////////////////////////////////////////////
+
+  if let Some(reads_id) = an_registry.lock().unwrap().get(ikey) {
+    cl_filter::filter(reads_id, &hm_me_collection, &mut strands);
+  }
+
+  // filter based on estimated & false discovery rate threshold
+  //////////////////////////////////////////////////
 
   Ok(())
 }
