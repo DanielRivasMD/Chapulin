@@ -29,27 +29,6 @@ pub mod utils;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// activation trait
-trait ActivateExt {
-  fn activate(&mut self);
-  fn deactivate(&mut self);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// extend implement on boolean
-impl ActivateExt for bool {
-  fn activate(&mut self) {
-    *self = true;
-  }
-
-  fn deactivate(&mut self) {
-    *self = false;
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // TODO: write down program logic
 // 1) read mobile element alignment & identify compatible anchors / alignments
 // 2) decompose alignment annotations & calculate insertion features: break

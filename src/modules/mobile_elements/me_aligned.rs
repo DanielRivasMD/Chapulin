@@ -8,6 +8,7 @@ use std::str::from_utf8;
 
 // development libraries
 use genomic_structures::{
+  ActivateExt,
   ExtraValuesEnum,
   MEAnchor,
   MEChimericPair,
@@ -25,11 +26,6 @@ use crate::utils::alias;
 
 // crate utilities
 use crate::utils::io::file_reader::byte_file_reader;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// crate features
-use crate::ActivateExt;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -8,6 +8,7 @@ use std::str::from_utf8;
 
 // development libraries
 use genomic_structures::{
+  ActivateExt,
   Anchor,
   ChrAnchor,
   ChrAnchorEnum,
@@ -34,11 +35,6 @@ use crate::utils::io::file_reader::byte_file_reader;
 
 // error handler
 use crate::error::common_error::ChapulinCommonError;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// crate features
-use crate::ActivateExt;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
