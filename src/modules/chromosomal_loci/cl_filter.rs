@@ -37,6 +37,7 @@ use crate::error::common_error::ChapulinCommonError;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate features
+use crate::ActivateExt;
 use crate::Strands;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,12 +107,12 @@ fn mapq(
   match me_pair.chranch {
     ChrAnchorEnum::Read1 => {
       if me_pair.read1.chr_read[0].mapq < MAPQ {
-        switch_mapq = true;
+        switch_mapq.activate();
       }
     }
     ChrAnchorEnum::Read2 => {
       if me_pair.read2.chr_read[0].mapq < MAPQ {
-        switch_mapq = true;
+        switch_mapq.activate();
       }
     }
     ChrAnchorEnum::None => (),
