@@ -42,6 +42,20 @@ use crate::Strands;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+macro_rules! strand {
+  ( $strand: expr, $orientation: tt, $me_chimeric_read: expr, $read_id: expr ) => {
+    $strand.$orientation.0 += 1;
+    let position_vc = $strand
+      .$orientation
+      .1
+      .entry($me_chimeric_read.chr_read[0].bin())
+      .or_insert(Vec::new());
+    position_vc.push($read_id);
+  };
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const MAPQ: i32 = 20;
 
 pub fn filter(
@@ -153,10 +167,18 @@ fn tag(
     me_chimeric_read.chr_read[0].interpret(5),
     me_chimeric_read.orientation,
   ) {
-    (false, OrientationEnum::Upstream) => strands.FS5.push(read_id),
-    (true, OrientationEnum::Downstream) => strands.FS3.push(read_id),
-    (true, OrientationEnum::Upstream) => strands.RS5.push(read_id),
-    (false, OrientationEnum::Downstream) => strands.RS3.push(read_id),
+    (false, OrientationEnum::Upstream) => {
+      strand!(strands, FS5, me_chimeric_read, read_id);
+    }
+    (true, OrientationEnum::Downstream) => {
+      strand!(strands, FS3, me_chimeric_read, read_id);
+    }
+    (true, OrientationEnum::Upstream) => {
+      strand!(strands, RS5, me_chimeric_read, read_id);
+    }
+    (false, OrientationEnum::Downstream) => {
+      strand!(strands, RS3, me_chimeric_read, read_id);
+    }
     (_, _) => (),
   }
 }
