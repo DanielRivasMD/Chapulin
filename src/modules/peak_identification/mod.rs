@@ -21,6 +21,7 @@ pub fn pi_me_controller(
   errata: String,
   hash_map_anchor: alias::RegistryME,
   hash_map_chr_assembly: alias::LibraryME,
+  hash_map_strand: alias::RegistryStrand,
   hash_map_collection: alias::RecordME,
 ) -> alias::AnyResult {
   let chromosome_vec =

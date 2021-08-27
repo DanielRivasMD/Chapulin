@@ -59,59 +59,64 @@ macro_rules! strand {
 const MAPQ: i32 = 20;
 
 pub fn filter(
-  reads_id: &Vec<String>,
+  ikey: &str,
+  an_registry: &alias::RegistryME,
   hm_collection: &alias::RecordME,
-  strands: &mut Strands,
+  registry_strand: &alias::RegistryStrand,
 ) {
   // iterate on registry
   // switch
 
-  reads_id.iter().map(|read_id| {
-    let switch_mapq = true;
-    if let Some(me_pair) = hm_collection.lock().unwrap().get(read_id) {
-      mapq(me_pair, switch_mapq);
-    }
+  if let Some(reads_id) = an_registry.lock().unwrap().get(ikey) {
+    reads_id.iter().map(|read_id| {
+      let switch_mapq = true;
+      if let Some(me_pair) = hm_collection.lock().unwrap().get(read_id) {
+        mapq(me_pair, switch_mapq);
+      }
 
-    if switch_mapq {
-      purge(&hm_collection, read_id);
-    } else {
-      // segregate reads based on orientation
-      // count reads
+      if switch_mapq {
+        purge(&hm_collection, read_id);
+      } else {
+        // segregate reads based on orientation
+        // count reads
 
-      assign(&hm_collection, read_id, strands);
-    }
+        if let Some(strands) = registry_strand.lock().unwrap().get_mut(ikey) {
+          assign(&hm_collection, read_id, strands);
+        }
+      }
 
-    // switch_mapq = false;
+      // switch_mapq = false;
 
-    //   match &me_pair.chranch {
-    //     ChrAnchorEnum::Read1 => {
-    //       read_count = strand_count(
-    //         id_read,
-    //         strand,
-    //         read_count,
-    //         &me_pair.read1.chr_read[0],
-    //         &me_pair.read2.me_read,
-    //         tmp_position_hm,
-    //       );
-    //     }
+      //   match &me_pair.chranch {
+      //     ChrAnchorEnum::Read1 => {
+      //       read_count = strand_count(
+      //         id_read,
+      //         strand,
+      //         read_count,
+      //         &me_pair.read1.chr_read[0],
+      //         &me_pair.read2.me_read,
+      //         tmp_position_hm,
+      //       );
+      //     }
 
-    //     ChrAnchorEnum::Read2 => {
-    //       read_count = strand_count(
-    //         id_read,
-    //         strand,
-    //         read_count,
-    //         &me_pair.read2.chr_read[0],
-    //         &me_pair.read1.me_read,
-    //         tmp_position_hm,
-    //       );
-    //     }
+      //     ChrAnchorEnum::Read2 => {
+      //       read_count = strand_count(
+      //         id_read,
+      //         strand,
+      //         read_count,
+      //         &me_pair.read2.chr_read[0],
+      //         &me_pair.read1.me_read,
+      //         tmp_position_hm,
+      //       );
+      //     }
 
-    //     ChrAnchorEnum::None => (),
-    //   }
+      //     ChrAnchorEnum::None => (),
+      //   }
+      // }
+      // }
+    });
     // }
-    // }
-  });
-  // }
+  }
 }
 
 fn mapq(
