@@ -134,6 +134,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
 
   let mutex_record_collection = alias::arc_map();
   let mutex_anchor_registry = alias::arc_map();
+  let mutex_strand = alias::arc_map();
   let mutex_chr_assembly = alias::arc_map();
   let mutex_me_library = alias::arc_map();
 
@@ -214,8 +215,12 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // chromosomal loci module
-  let ccl_record_collection = alias::arc_clone(&mutex_record_collection);
-  let ccl_anchor_registry = alias::arc_clone(&mutex_anchor_registry);
+  let ccl_record_collection_align = alias::arc_clone(&mutex_record_collection);
+  let ccl_anchor_registry_align = alias::arc_clone(&mutex_anchor_registry);
+
+  let ccl_record_collection_filter = alias::arc_clone(&mutex_record_collection);
+  let ccl_anchor_registry_filter = alias::arc_clone(&mutex_anchor_registry);
+  let ccl_strand_filter = alias::arc_clone(&mutex_strand);
 
   // println!("{:?}", mutex_record_collection);
 
@@ -233,8 +238,8 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
       modules::chromosomal_loci::cl_single_controller(
         string_sett.directory.to_string(),
         string_sett.ref_align.to_string(),
-        ccl_anchor_registry,
-        ccl_record_collection,
+        ccl_anchor_registry_align,
+        ccl_record_collection_align,
         debug_iteration,
       )?;
     }
@@ -249,12 +254,12 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
         );
       }
 
-      // println!("{:?}", &ccl_record_collection);
+      // println!("{:?}", &ccl_record_collection_align);
       modules::chromosomal_loci::cl_paired_controller(
         string_sett.directory.to_string(),
         string_sett.pair_end_reference_alignment.to_string(),
-        ccl_anchor_registry,
-        ccl_record_collection,
+        ccl_anchor_registry_align,
+        ccl_record_collection_align,
         debug_iteration,
       )?;
     }
@@ -262,12 +267,11 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
     _ => (),
   }
 
-  // modules::chromosomal_loci::cl_filter(
-  //   ikey,
-  //   an_registry,
-  //   chr_assembly,
-  //   record_collection,
-  // )?;
+  modules::chromosomal_loci::cl_filter(
+    ccl_anchor_registry_filter,
+    ccl_strand_filter,
+    ccl_record_collection_filter,
+  )?;
 
   info!("{:?}", now.elapsed().unwrap());
 
@@ -294,6 +298,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
     err_dir,
     mutex_anchor_registry,
     mutex_chr_assembly,
+    mutex_strand,
     mutex_record_collection,
   )?;
 

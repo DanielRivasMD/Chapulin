@@ -19,6 +19,8 @@ use genomic_structures::{
   SVChimericPair,
 };
 
+use crate::Strands;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // anyhow
@@ -32,6 +34,7 @@ pub type LibraryME = Arc<Mutex<HashMap<String, f64>>>;
 // pub type LibraryME = Arc<Mutex<HashMap<String, MElibrary>>>;
 pub type RecordME = Arc<Mutex<HashMap<String, MEChimericPair>>>;
 pub type RegistryME = Arc<Mutex<HashMap<String, Vec<String>>>>;
+pub type RegistryStrand = Arc<Mutex<HashMap<String, Strands>>>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
