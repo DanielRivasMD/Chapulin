@@ -18,6 +18,7 @@ use genomic_structures::{
   MEChimericRead,
   OrientationEnum,
   SAMFlag,
+  StrandDirection,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,11 +38,6 @@ use crate::settings::constants::{
 
 // error handler
 use crate::error::common_error::ChapulinCommonError;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// crate features
-use crate::Strands;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -243,12 +239,12 @@ pub fn pi_me_identifier(
 // }
 
 fn count(
-  strands: &Strands,
+  strands: &StrandDirection,
   hm_collection: &alias::RecordME,
 ) -> HashMap<i32, i32> {
   // for strand in STRAND_VEC.iter() {
 
-  let strand = &strands.FS5;
+  let strand = &strands.fs5;
   let mut chr_position_hm = HashMap::new();
 
   strand.iter().for_each(|read_id| {

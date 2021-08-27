@@ -50,34 +50,6 @@ impl ActivateExt for bool {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: re implement new
-struct BinPosition(i32, HashMap<i32, Vec<String>>);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-use std::collections::HashMap;
-
-// TODO: re implement new
-pub struct Strands {
-  FS5: BinPosition,
-  FS3: BinPosition,
-  RS5: BinPosition,
-  RS3: BinPosition,
-}
-
-impl Strands {
-  fn new() -> Self {
-    Self {
-      FS5: BinPosition(0, HashMap::new()),
-      FS3: BinPosition(0, HashMap::new()),
-      RS5: BinPosition(0, HashMap::new()),
-      RS3: BinPosition(0, HashMap::new()),
-    }
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // TODO: write down program logic
 // 1) read mobile element alignment & identify compatible anchors / alignments
 // 2) decompose alignment annotations & calculate insertion features: break

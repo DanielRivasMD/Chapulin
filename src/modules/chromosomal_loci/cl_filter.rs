@@ -17,6 +17,7 @@ use genomic_structures::{
   RawValues,
   SAMFlag,
   Sequence,
+  StrandDirection,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +39,6 @@ use crate::error::common_error::ChapulinCommonError;
 
 // crate features
 use crate::ActivateExt;
-use crate::Strands;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -148,7 +148,7 @@ fn purge(
 fn assign(
   hm_collection: &alias::RecordME,
   read_id: &str,
-  strands: &mut Strands,
+  strands: &mut StrandDirection,
 ) {
   if let Some(me_chimeric_pair) = hm_collection.lock().unwrap().get(read_id) {
     match me_chimeric_pair.chranch {
@@ -166,23 +166,23 @@ fn assign(
 fn tag(
   me_chimeric_read: &MEChimericRead,
   read_id: String,
-  strands: &mut Strands,
+  strands: &mut StrandDirection,
 ) {
   match (
     me_chimeric_read.chr_read[0].interpret(5),
     me_chimeric_read.orientation,
   ) {
     (false, OrientationEnum::Upstream) => {
-      strand!(strands, FS5, me_chimeric_read, read_id);
+      strand!(strands, fs5, me_chimeric_read, read_id);
     }
     (true, OrientationEnum::Downstream) => {
-      strand!(strands, FS3, me_chimeric_read, read_id);
+      strand!(strands, fs3, me_chimeric_read, read_id);
     }
     (true, OrientationEnum::Upstream) => {
-      strand!(strands, RS5, me_chimeric_read, read_id);
+      strand!(strands, rs5, me_chimeric_read, read_id);
     }
     (false, OrientationEnum::Downstream) => {
-      strand!(strands, RS3, me_chimeric_read, read_id);
+      strand!(strands, rs3, me_chimeric_read, read_id);
     }
     (_, _) => (),
   }

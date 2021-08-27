@@ -5,13 +5,13 @@ use std::thread;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// aliases
-use crate::utils::alias;
+// development libraries
+use genomic_structures::StrandDirection;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// crate features
-use crate::Strands;
+// aliases
+use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -89,7 +89,7 @@ pub fn cl_filter(
     registry_strand
       .lock()
       .unwrap()
-      .insert(key.to_string(), Strands::new());
+      .insert(key.to_string(), StrandDirection::new());
     // let mut strands = Strands::new();
 
     // TODO: implement parallel iteration here
