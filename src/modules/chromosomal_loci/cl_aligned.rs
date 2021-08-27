@@ -36,8 +36,8 @@ use crate::error::common_error::ChapulinCommonError;
 /// Map chromosomal loci.
 pub fn cl_mapper(
   cl_bam_file: &str,
-  an_registry: alias::RegistryME,
-  hm_record_collection: alias::RecordME,
+  chr_registry: alias::RegistryChr,
+  me_record: alias::RecordME,
   debug_iteration: i32,
 ) -> alias::AnyResult {
   // load file
@@ -72,7 +72,7 @@ pub fn cl_mapper(
     // select pair on read id & select read on sequence | reverse complement
     // register on hashmap with scaffold ids as keys for parallelization
     // do not count nor tag on the fly since no filtering is done here
-    raw_values.mount(&hm_record_collection, &an_registry)?;
+    raw_values.mount(&me_record, &chr_registry)?;
 
     if ct > debug_iteration && debug_iteration > 0 {
       break;
@@ -88,18 +88,18 @@ pub fn cl_mapper(
 trait MountExt {
   fn mount(
     self,
-    hm_record_collection: &alias::RecordME,
-    an_registry: &alias::RegistryME,
+    me_record: &alias::RecordME,
+    chr_registry: &alias::RegistryChr,
   ) -> alias::AnyResult;
 
   fn load(
     &self,
-    hm_record_collection: &alias::RecordME,
+    me_record: &alias::RecordME,
   );
 
   fn register(
     self,
-    an_registry: &alias::RegistryME,
+    chr_registry: &alias::RegistryChr,
   );
 }
 
@@ -110,11 +110,11 @@ impl MountExt for RawValues {
   // mount current data on hashmap (record collection)
   fn mount(
     self,
-    hm_record_collection: &alias::RecordME,
-    an_registry: &alias::RegistryME,
+    me_record: &alias::RecordME,
+    chr_registry: &alias::RegistryChr,
   ) -> alias::AnyResult {
     // if read pair id is present on hashmap (record collection)
-    if hm_record_collection
+    if me_record
       .lock()
       .unwrap()
       .contains_key(&self.read_id.current)
@@ -122,10 +122,10 @@ impl MountExt for RawValues {
       // load chromosomal anchoring data
       // check sequence or reverse complement to select read
       // BUG: palindromic reads?
-      self.load(hm_record_collection);
+      self.load(me_record);
 
       // register read pair id on hashmap for parallelization
-      self.register(an_registry);
+      self.register(chr_registry);
     }
 
     Ok(())
@@ -134,12 +134,10 @@ impl MountExt for RawValues {
   // load records on hashmap (record collection)
   fn load(
     &self,
-    hm_record_collection: &alias::RecordME,
+    me_record: &alias::RecordME,
   ) {
-    if let Some(current_record) = hm_record_collection
-      .lock()
-      .unwrap()
-      .get_mut(&self.read_id.current)
+    if let Some(current_record) =
+      me_record.lock().unwrap().get_mut(&self.read_id.current)
     {
       // select based on sequence | reverse complement
       load!( chromosomal |> current_record; *self; read1 );
@@ -150,19 +148,19 @@ impl MountExt for RawValues {
   // register read pair id on scaffold
   fn register(
     self,
-    an_registry: &alias::RegistryME,
+    chr_registry: &alias::RegistryChr,
   ) {
     // register chromosome anchors
-    if !an_registry.lock().unwrap().contains_key(&self.scaffold) {
+    if !chr_registry.lock().unwrap().contains_key(&self.scaffold) {
       // clone scaffold value here
-      an_registry
+      chr_registry
         .lock()
         .unwrap()
         .insert(self.scaffold.clone(), Vec::new());
     }
 
     if let Some(current_chr) =
-      an_registry.lock().unwrap().get_mut(&self.scaffold)
+      chr_registry.lock().unwrap().get_mut(&self.scaffold)
     {
       // verify whether vector contains entry
       if !current_chr.contains(&self.read_id.current) {

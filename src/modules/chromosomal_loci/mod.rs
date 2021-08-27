@@ -24,16 +24,16 @@ pub mod cl_filter;
 pub fn cl_single_controller(
   directory: String,
   prefix: String,
-  hash_map_anchor: alias::RegistryME,
-  hash_map_collection: alias::RecordME,
+  chr_registry: alias::RegistryChr,
+  me_record: alias::RecordME,
   debug_iteration: i32,
 ) -> alias::AnyResult {
   // load reference chromosome aligned reads
   for i in 1..=2 {
     let cdirectory = directory.clone();
     let cprefix = prefix.clone();
-    let chash_map_collection = hash_map_collection.clone();
-    let chash_map_anchor = hash_map_anchor.clone();
+    let cme_record = me_record.clone();
+    let cchr_registry = chr_registry.clone();
 
     let cl_handle = thread::spawn(move || {
       let sufix = ".sorted.sam".to_string();
@@ -41,8 +41,8 @@ pub fn cl_single_controller(
 
       cl_aligned::cl_mapper(
         &cl_aligned_file,
-        chash_map_anchor,
-        chash_map_collection,
+        cchr_registry,
+        cme_record,
         debug_iteration,
       )
       .expect("TODO thread error");
@@ -58,16 +58,16 @@ pub fn cl_single_controller(
 pub fn cl_paired_controller(
   directory: String,
   prefix: String,
-  hash_map_anchor: alias::RegistryME,
-  hash_map_collection: alias::RecordME,
+  chr_registry: alias::RegistryChr,
+  me_record: alias::RecordME,
   debug_iteration: i32,
 ) -> alias::AnyResult {
   let cl_aligned_file = format!("{}{}", directory, prefix);
 
   cl_aligned::cl_mapper(
     &cl_aligned_file,
-    hash_map_anchor,
-    hash_map_collection,
+    chr_registry,
+    me_record,
     debug_iteration,
   )?;
 
@@ -77,16 +77,16 @@ pub fn cl_paired_controller(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub fn cl_filter(
-  an_registry: alias::RegistryME,
-  registry_strand: alias::RegistryStrand,
-  hm_me_collection: alias::RecordME,
+  chr_registry: alias::RegistryChr,
+  dir_registry: alias::RegistryDir,
+  me_record: alias::RecordME,
 ) -> alias::AnyResult {
   // iterate
-  for key in an_registry.lock().unwrap().keys() {
+  for key in chr_registry.lock().unwrap().keys() {
     // TODO: implement parallelism
     // let cl_handle = thread::spawn(|| {
     // declare strand reference
-    registry_strand
+    dir_registry
       .lock()
       .unwrap()
       .insert(key.to_string(), StrandDirection::new());
@@ -99,7 +99,7 @@ pub fn cl_filter(
     // select based on likehood of alignment -> MAPQ
     //////////////////////////////////////////////////
 
-    cl_filter::filter(key, &an_registry, &hm_me_collection, &registry_strand);
+    cl_filter::filter(key, &chr_registry, &me_record, &dir_registry);
     // });
     // cl_handle.join().expect("MESSAGE_JOIN");
   }

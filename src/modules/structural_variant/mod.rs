@@ -14,8 +14,8 @@ pub fn sv_controller(
   directory: &str,
   expected_tlen: i32,
   pair_end_reference_alignment: &str,
-  hash_map_collection: alias::RecordSV,
-  hash_map_anchor: alias::RegistryME,
+  sv_record: alias::RecordSV,
+  chr_registry: alias::RegistryChr,
 ) -> alias::AnyResult {
   let sv_aligned_file =
     format!("{}{}", directory, pair_end_reference_alignment);
@@ -23,8 +23,8 @@ pub fn sv_controller(
   sv_registry::sv_mapper(
     &sv_aligned_file,
     expected_tlen,
-    hash_map_collection,
-    hash_map_anchor,
+    sv_record,
+    chr_registry,
   )?;
 
   Ok(())

@@ -39,31 +39,31 @@ macro_rules! test_me_aligned {
       let me_alignment = "tests/samples/me_alignment.sam";
 
       // declare mobile element library
-      let amx_me_collection = alias::arc_map();
+      let amx_me_library = alias::arc_map();
 
       // insert mobile element library
-      amx_me_collection
+      amx_me_library
         .lock()
         .unwrap()
         .insert($mobel_id, $mobel_size);
 
       // declare chimeric mobile element collection
-      let amx_record_collection = alias::arc_map();
+      let amx_me_record = alias::arc_map();
 
       // declare chimeric mobile element clone
-      let camx_record_collection_me = alias::arc_clone(&amx_record_collection);
+      let camx_me_record_me = alias::arc_clone(&amx_me_record);
 
       // identify mobile elements
       me_aligned::me_identificator(
         me_alignment,
-        amx_me_collection,
-        amx_record_collection,
+        amx_me_library,
+        amx_me_record,
         0,
       )
       .expect("Error occured at mobile element identificator!");
 
       // assert
-      assert_eq!(camx_record_collection_me.lock().unwrap().get($key), $val);
+      assert_eq!(camx_me_record_me.lock().unwrap().get($key), $val);
     }
   };
 }

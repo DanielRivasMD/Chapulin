@@ -32,8 +32,8 @@ pub type AnyBufferResult = anyhowResult<ByteLines<BufReader<File>>>;
 pub type LibraryME = Arc<Mutex<HashMap<String, f64>>>;
 // pub type LibraryME = Arc<Mutex<HashMap<String, MElibrary>>>;
 pub type RecordME = Arc<Mutex<HashMap<String, MEChimericPair>>>;
-pub type RegistryME = Arc<Mutex<HashMap<String, Vec<String>>>>;
-pub type RegistryStrand = Arc<Mutex<HashMap<String, StrandDirection>>>;
+pub type RegistryChr = Arc<Mutex<HashMap<String, Vec<String>>>>;
+pub type RegistryDir = Arc<Mutex<HashMap<String, StrandDirection>>>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

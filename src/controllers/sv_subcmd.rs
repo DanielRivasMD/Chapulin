@@ -109,14 +109,14 @@ pub fn sv_subcmd(matches: &ArgMatches) -> alias::AnyResult {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  let mutex_record_collection = alias::arc_map();
-  let mutex_anchor_registry = alias::arc_map();
-  let mutex_chr_assembly = alias::arc_map();
+  let amx_sv_record = alias::arc_map();
+  let amx_chr_registry = alias::arc_map();
+  let amx_dir_registry = alias::arc_map();
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // reference genome module
-  let crg_chr_assembly = alias::arc_clone(&mutex_chr_assembly);
+  let camx_dir_registry = alias::arc_clone(&amx_dir_registry);
 
   if verbose {
     println!(
@@ -131,7 +131,7 @@ pub fn sv_subcmd(matches: &ArgMatches) -> alias::AnyResult {
     subcmd,
     directory,
     reference_file,
-    crg_chr_assembly,
+    camx_dir_registry,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());
@@ -139,8 +139,8 @@ pub fn sv_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // structural variant module
-  let c_sv_record_collection = mutex_record_collection.clone();
-  let c_sv_anchor_registry = mutex_anchor_registry.clone();
+  let camx_sv_record = amx_sv_record.clone();
+  let camx_chr_registry = amx_chr_registry.clone();
 
   if verbose {
     println!(
@@ -155,8 +155,8 @@ pub fn sv_subcmd(matches: &ArgMatches) -> alias::AnyResult {
     directory,
     expected_tlen,
     pair_end_reference_alignment,
-    c_sv_record_collection,
-    c_sv_anchor_registry,
+    camx_sv_record,
+    camx_chr_registry,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());
@@ -171,9 +171,9 @@ pub fn sv_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   modules::peak_identification::pi_sv_controller(
     output.to_string(),
     directory.to_string(),
-    mutex_anchor_registry,
-    mutex_chr_assembly,
-    mutex_record_collection,
+    amx_chr_registry,
+    amx_dir_registry,
+    amx_sv_record,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());

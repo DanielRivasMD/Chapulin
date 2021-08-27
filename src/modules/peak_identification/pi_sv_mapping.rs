@@ -22,12 +22,12 @@ use crate::settings::constants::NO_FDR;
 
 pub fn pi_sv_identifier(
   ikey: &str,
-  an_registry: alias::RegistryME,
-  chr_assembly: alias::LibraryME,
-  _hm_collection: alias::RecordSV,
+  chr_registry: alias::RegistryChr,
+  me_library: alias::LibraryME,
+  _sv_record: alias::RecordSV,
 ) -> alias::AnyResult {
-  let chr_size = *chr_assembly.lock().unwrap().get(ikey).unwrap();
-  let ids_read = an_registry.lock().unwrap().get(ikey).unwrap().clone();
+  let chr_size = *me_library.lock().unwrap().get(ikey).unwrap();
+  let ids_read = chr_registry.lock().unwrap().get(ikey).unwrap().clone();
 
   let read_count = ids_read.len();
 

@@ -18,8 +18,8 @@ pub mod me_aligned;
 pub fn me_controller(
   directory: &str,
   me_aligned_file: &str,
-  hash_map_me_library: alias::LibraryME,
-  hash_map_collection: alias::RecordME,
+  me_library: alias::LibraryME,
+  me_record: alias::RecordME,
   debug_iteration: i32,
 ) -> alias::AnyResult {
   // load mobile element aligned reads
@@ -27,8 +27,8 @@ pub fn me_controller(
 
   me_aligned::me_identificator(
     &me_aligned_file_full,
-    hash_map_me_library,
-    hash_map_collection,
+    me_library,
+    me_record,
     debug_iteration,
   )?;
 

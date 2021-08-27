@@ -32,8 +32,8 @@ use crate::error::common_error::ChapulinCommonError;
 pub fn sv_mapper(
   sv_bam_file: &str,
   _expected_tlen: i32,
-  hm_collection: alias::RecordSV,
-  an_registry: alias::RegistryME,
+  sv_record: alias::RecordSV,
+  chr_registry: alias::RegistryChr,
 ) -> alias::AnyResult {
   // load file
   let mut lines = byte_file_reader(&sv_bam_file)?;
@@ -60,14 +60,14 @@ pub fn sv_mapper(
     if !(prev_read_id == read_id || prev_read_id.is_empty()) {
       // evaluate read batch
       if purge_switch {
-        hm_collection.lock().unwrap().remove(&prev_read_id);
+        sv_record.lock().unwrap().remove(&prev_read_id);
       } else {
         // register chromosome anchors
         // TODO: add mapq control
-        if !an_registry.lock().unwrap().contains_key(&chr) {
-          an_registry.lock().unwrap().insert(chr.clone(), Vec::new());
+        if !chr_registry.lock().unwrap().contains_key(&chr) {
+          chr_registry.lock().unwrap().insert(chr.clone(), Vec::new());
         }
-        if let Some(current_chr) = an_registry.lock().unwrap().get_mut(&chr) {
+        if let Some(current_chr) = chr_registry.lock().unwrap().get_mut(&chr) {
           if !current_chr.contains(&read_id) {
             current_chr.push(read_id.clone())
           }
@@ -78,19 +78,18 @@ pub fn sv_mapper(
       purge_switch = true;
     }
 
-    if !hm_collection.lock().unwrap().contains_key(&read_id) {
-      hm_collection
+    if !sv_record.lock().unwrap().contains_key(&read_id) {
+      sv_record
         .lock()
         .unwrap()
         .insert((&read_id).to_string(), SVChimericPair::new(SVType::None));
 
-      if let Some(_current_record) =
-        hm_collection.lock().unwrap().get_mut(&read_id)
+      if let Some(_current_record) = sv_record.lock().unwrap().get_mut(&read_id)
       {
         // load!(current_record, read1, record_line);
       }
     } else if let Some(_current_record) =
-      hm_collection.lock().unwrap().get_mut(&read_id)
+      sv_record.lock().unwrap().get_mut(&read_id)
     {
       // load!(current_record, read2, record_line);
       // purge_switch = !current_record.identificator(expected_tlen);
@@ -100,7 +99,7 @@ pub fn sv_mapper(
 
   // evaluate at end of file
   if purge_switch {
-    hm_collection.lock().unwrap().remove(&prev_read_id);
+    sv_record.lock().unwrap().remove(&prev_read_id);
   }
 
   println!("File read: {}", &sv_bam_file);

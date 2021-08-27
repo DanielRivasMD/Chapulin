@@ -43,25 +43,25 @@ macro_rules! test_cl_aligned {
       let cl_alignment = "tests/samples/cl_alignment.sam";
 
       // declare mobile element library
-      let amx_me_collection = alias::arc_map();
+      let amx_me_library = alias::arc_map();
 
       // insert mobile element library
-      amx_me_collection
+      amx_me_library
         .lock()
         .unwrap()
         .insert($mobel_id, $mobel_size);
 
       // declare record collection
-      let amx_record_collection = alias::arc_map();
+      let amx_me_record = alias::arc_map();
 
       // declare chimeric mobile element clone
-      let camx_record_collection_me = alias::arc_clone(&amx_record_collection);
+      let camx_me_record_me = alias::arc_clone(&amx_me_record);
 
       // identify mobile elements
       me_aligned::me_identificator(
         me_alignment,
-        amx_me_collection,
-        camx_record_collection_me,
+        amx_me_library,
+        camx_me_record_me,
         0,
       )
       .expect("Error occured at mobile element identificator!");
@@ -70,22 +70,22 @@ macro_rules! test_cl_aligned {
       let amx_anchor_registry = alias::arc_map();
 
       // declare chimeric chromosomal loci clone
-      let camx_record_collection_cl = alias::arc_clone(&amx_record_collection);
+      let camx_me_record_cl = alias::arc_clone(&amx_me_record);
 
       // declare assertion clone
-      let camx_record_collection_as = alias::arc_clone(&amx_record_collection);
+      let camx_me_record_as = alias::arc_clone(&amx_me_record);
 
       // map chromosomal loci
       cl_aligned::cl_mapper(
         cl_alignment,
         amx_anchor_registry,
-        camx_record_collection_cl,
+        camx_me_record_cl,
         0,
       )
       .expect("Error occured at chromosomal loci mapper!");
 
       // assert
-      assert_eq!(camx_record_collection_as.lock().unwrap().get($key), $val);
+      assert_eq!(camx_me_record_as.lock().unwrap().get($key), $val);
     }
   };
 }

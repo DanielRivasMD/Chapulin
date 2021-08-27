@@ -132,18 +132,18 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  let mutex_record_collection = alias::arc_map();
-  let mutex_anchor_registry = alias::arc_map();
-  let mutex_strand = alias::arc_map();
-  let mutex_chr_assembly = alias::arc_map();
-  let mutex_me_library = alias::arc_map();
+  let amx_me_library = alias::arc_map();
+  let amx_chr_library = alias::arc_map();
+  let amx_chr_registry = alias::arc_map();
+  let amx_dir_registry = alias::arc_map();
+  let amx_me_record = alias::arc_map();
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // TODO: write pre processing recomendations => fastq filtering, alignment
 
   // reference genome module
-  let crg_chr_assembly = alias::arc_clone(&mutex_chr_assembly);
+  let camx_chr_library_rg = alias::arc_clone(&amx_chr_library);
 
   if bool_sett.verbose {
     println!(
@@ -158,7 +158,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
     subcmd,
     &string_sett.directory,
     &string_sett.reference_file,
-    crg_chr_assembly,
+    camx_chr_library_rg,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());
@@ -166,9 +166,9 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // mobile elements module
-  let cref_library = alias::arc_clone(&mutex_me_library);
-  let cme_library = alias::arc_clone(&mutex_me_library);
-  let cme_record_collection = alias::arc_clone(&mutex_record_collection);
+  let camx_me_library_ref = alias::arc_clone(&amx_me_library);
+  let camx_me_library_me = alias::arc_clone(&amx_me_library);
+  let camx_me_record_me = alias::arc_clone(&amx_me_record);
 
   // TODO: commit these formating changes all together when update config
   if bool_sett.verbose {
@@ -186,7 +186,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
     subcmd,
     &string_sett.directory,
     &string_sett.me_library_file,
-    cref_library,
+    camx_me_library_ref,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());
@@ -194,15 +194,15 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   modules::mobile_elements::me_controller(
     &string_sett.directory,
     &string_sett.me_align,
-    cme_library,
-    cme_record_collection,
+    camx_me_library_me,
+    camx_me_record_me,
     debug_iteration,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());
 
   // let mut ct = 1;
-  // for (k, v) in mutex_record_collection.lock().unwrap().iter() {
+  // for (k, v) in amx_record_collection.lock().unwrap().iter() {
   //   dbg!(k);
   //   println!("{:#?}", v);
   //   println!();
@@ -215,14 +215,14 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // chromosomal loci module
-  let ccl_record_collection_align = alias::arc_clone(&mutex_record_collection);
-  let ccl_anchor_registry_align = alias::arc_clone(&mutex_anchor_registry);
+  let camx_chr_registry_cl_align = alias::arc_clone(&amx_chr_registry);
+  let camx_me_record_me_align = alias::arc_clone(&amx_me_record);
 
-  let ccl_record_collection_filter = alias::arc_clone(&mutex_record_collection);
-  let ccl_anchor_registry_filter = alias::arc_clone(&mutex_anchor_registry);
-  let ccl_strand_filter = alias::arc_clone(&mutex_strand);
+  let camx_chr_registry_cl_filter = alias::arc_clone(&amx_chr_registry);
+  let camx_dir_registry_cl_filter = alias::arc_clone(&amx_dir_registry);
+  let camx_me_record_me_filter = alias::arc_clone(&amx_me_record);
 
-  // println!("{:?}", mutex_record_collection);
+  // println!("{:?}", amx_me_record);
 
   match chr_align {
     "single" => {
@@ -238,8 +238,8 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
       modules::chromosomal_loci::cl_single_controller(
         string_sett.directory.to_string(),
         string_sett.ref_align.to_string(),
-        ccl_anchor_registry_align,
-        ccl_record_collection_align,
+        camx_chr_registry_cl_align,
+        camx_me_record_me_align,
         debug_iteration,
       )?;
     }
@@ -254,12 +254,12 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
         );
       }
 
-      // println!("{:?}", &ccl_record_collection_align);
+      // println!("{:?}", &camx_me_record_me_align);
       modules::chromosomal_loci::cl_paired_controller(
         string_sett.directory.to_string(),
         string_sett.pair_end_reference_alignment.to_string(),
-        ccl_anchor_registry_align,
-        ccl_record_collection_align,
+        camx_chr_registry_cl_align,
+        camx_me_record_me_align,
         debug_iteration,
       )?;
     }
@@ -268,15 +268,15 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   }
 
   modules::chromosomal_loci::cl_filter(
-    ccl_anchor_registry_filter,
-    ccl_strand_filter,
-    ccl_record_collection_filter,
+    camx_chr_registry_cl_filter,
+    camx_dir_registry_cl_filter,
+    camx_me_record_me_filter,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());
 
   // let mut ct = 1;
-  // for (k, v) in mutex_record_collection.lock().unwrap().iter() {
+  // for (k, v) in amx_record_collection.lock().unwrap().iter() {
   //   dbg!(k);
   //   println!("{:#?}", v);
   //   println!();
@@ -296,10 +296,10 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   modules::peak_identification::pi_me_controller(
     out_dir,
     err_dir,
-    mutex_anchor_registry,
-    mutex_chr_assembly,
-    mutex_strand,
-    mutex_record_collection,
+    amx_chr_registry,
+    amx_chr_library,
+    amx_dir_registry,
+    amx_me_record,
   )?;
 
   info!("{:?}", now.elapsed().unwrap());

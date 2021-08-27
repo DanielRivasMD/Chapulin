@@ -43,8 +43,8 @@ use crate::error::common_error::ChapulinCommonError;
 /// Identify mobile elements.
 pub fn me_identificator(
   me_bam_file: &str,
-  hm_me_collection: alias::LibraryME,
-  hm_record_collection: alias::RecordME,
+  me_library: alias::LibraryME,
+  me_record: alias::RecordME,
   debug_iteration: i32,
 ) -> alias::AnyResult {
   // load file
@@ -88,20 +88,20 @@ pub fn me_identificator(
     // for keeping the state of read batch
     raw_values.update(record_line)?;
 
-    // purge read pairs on hashmap (record collection)
+    // purge read pairs on hashmap ( mobile element record )
     // evaluate batch, based on previous read, immediately after
     // loading new values into raw values
-    raw_values.batch_purge(&mut local_switches, &hm_record_collection);
+    raw_values.batch_purge(&mut local_switches, &me_record);
 
     // retrieve mobile element library records
-    raw_values.library_get(&hm_me_collection);
+    raw_values.library_get(&me_library);
 
     // tagging mobel anchor
     // switches get updated by local switches methods
     raw_values.mobel_tag(&mut local_switches);
 
-    // mount current data on hashmap (record collection)
-    raw_values.mount(&hm_record_collection)?;
+    // mount current data on hashmap ( mobile element record )
+    raw_values.mount(&me_record)?;
 
     // reset orientation
     raw_values.reset_orientation();
@@ -110,7 +110,7 @@ pub fn me_identificator(
     raw_values.read_id.read_memory();
 
     if ct > debug_iteration && debug_iteration > 0 {
-      // println!("{:#?}", hm_record_collection);
+      // println!("{:#?}", me_record);
       break;
     }
   }
@@ -119,11 +119,11 @@ pub fn me_identificator(
   //////////////////////////////////////////////////
 
   // tag
-  raw_values.tag(&hm_record_collection);
+  raw_values.tag(&me_record);
 
   // purge
-  raw_values.purge(&local_switches, &hm_record_collection);
-  // println!("{:?}", hm_record_collection.lock().unwrap().keys());
+  raw_values.purge(&local_switches, &me_record);
+  // println!("{:?}", me_record.lock().unwrap().keys());
 
   Ok(())
 }
@@ -163,7 +163,7 @@ impl MEAnchorExt for RawValues {
 trait LibraryExt {
   fn library_get(
     &mut self,
-    hm_record_collection: &alias::LibraryME,
+    me_record: &alias::LibraryME,
   );
 }
 
@@ -175,12 +175,10 @@ impl LibraryExt for RawValues {
   // collect mobile element from library & mount it on raw values extra enum
   fn library_get(
     &mut self,
-    hm_me_collection: &alias::LibraryME,
+    me_library: &alias::LibraryME,
   ) {
-    if let Some(me_record) =
-      hm_me_collection.lock().unwrap().get(&self.scaffold)
-    {
-      self.extra = ExtraValuesEnum::MobelSize(*me_record);
+    if let Some(me_element) = me_library.lock().unwrap().get(&self.scaffold) {
+      self.extra = ExtraValuesEnum::MobelSize(*me_element);
     } else {
       // error!(
       //   "Mobile element: {:?} is in alignment but not in database",
@@ -195,7 +193,7 @@ impl LibraryExt for RawValues {
 trait TagExt {
   fn tag(
     &self,
-    hm_record_collection: &alias::RecordME,
+    me_record: &alias::RecordME,
   );
 }
 
@@ -204,14 +202,12 @@ trait TagExt {
 impl TagExt for RawValues {
   fn tag(
     &self,
-    hm_record_collection: &alias::RecordME,
+    me_record: &alias::RecordME,
   ) {
     // tag chromosomal anchor by iterating on all mobile element anchor
     // recorded
-    if let Some(current_record) = hm_record_collection
-      .lock()
-      .unwrap()
-      .get_mut(&self.read_id.previous)
+    if let Some(current_record) =
+      me_record.lock().unwrap().get_mut(&self.read_id.previous)
     {
       current_record.tag();
     }
@@ -224,24 +220,24 @@ trait PurgeExt {
   fn batch_purge(
     &self,
     local_switches: &mut LocalSwtiches,
-    hm_record_collection: &alias::RecordME,
+    me_record: &alias::RecordME,
   );
 
   fn purge(
     &self,
     local_switches: &LocalSwtiches,
-    hm_record_collection: &alias::RecordME,
+    me_record: &alias::RecordME,
   );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 impl PurgeExt for RawValues {
-  // purge read pairs on hashmap (record collection)
+  // purge read pairs on hashmap ( mobile element record )
   fn batch_purge(
     &self,
     local_switches: &mut LocalSwtiches,
-    hm_record_collection: &alias::RecordME,
+    me_record: &alias::RecordME,
   ) {
     // enter block if
     // read id as changed (through read memory) indicating different batch or
@@ -250,13 +246,13 @@ impl PurgeExt for RawValues {
       self.read_id.previous.is_empty())
     {
       // tag
-      self.tag(hm_record_collection);
+      self.tag(me_record);
 
       // evaluate read batch
       // purge switch is true if
       // no reads have been succesfully anchored to mobile element
       // therefore previous read batch will be removed
-      self.purge(local_switches, hm_record_collection);
+      self.purge(local_switches, me_record);
 
       // reset purge switch
       // purge switch re activates after read batch evaluation
@@ -268,13 +264,10 @@ impl PurgeExt for RawValues {
   fn purge(
     &self,
     local_switches: &LocalSwtiches,
-    hm_record_collection: &alias::RecordME,
+    me_record: &alias::RecordME,
   ) {
     if local_switches.purge {
-      hm_record_collection
-        .lock()
-        .unwrap()
-        .remove(&self.read_id.previous);
+      me_record.lock().unwrap().remove(&self.read_id.previous);
     }
   }
 }
@@ -284,7 +277,7 @@ impl PurgeExt for RawValues {
 trait MountExt {
   fn mount(
     &self,
-    hm_record_collection: &alias::RecordME,
+    me_record: &alias::RecordME,
   ) -> alias::AnyResult;
 }
 
@@ -292,23 +285,23 @@ trait MountExt {
 
 impl MountExt for RawValues {
   // TODO: perhaps add switches to control where records are assigned?
-  // mount current data on hashmap (record collection)
+  // mount current data on hashmap ( mobile element record )
   fn mount(
     &self,
-    hm_record_collection: &alias::RecordME,
+    me_record: &alias::RecordME,
   ) -> alias::AnyResult {
     // match on flag (proviral)
     // this check is much faster than using binary interpretor
     match self.flag {
       // primary alignment
       proviral_flag if proviral_flag <= 255 => {
-        // create new entry if not present on hashmap (record collection)
-        if !hm_record_collection
+        // create new entry if not present on hashmap ( mobile element record )
+        if !me_record
           .lock()
           .unwrap()
           .contains_key(&self.read_id.current)
         {
-          hm_record_collection
+          me_record
             .lock()
             .unwrap()
             .insert(self.read_id.current.clone(), MEChimericPair::new());
@@ -316,20 +309,16 @@ impl MountExt for RawValues {
           // if newly inserted assign tag
           // mobile element anchor Read1
           // chromosomal anchor Read2
-          if let Some(current_record) = hm_record_collection
-            .lock()
-            .unwrap()
-            .get_mut(&self.read_id.current)
+          if let Some(current_record) =
+            me_record.lock().unwrap().get_mut(&self.read_id.current)
           {
             load!( mobile element |> current_record; self; read1 );
           }
         // if already present assign tag
         // mobile element anchor Read2
         // chromosomal anchor Read1
-        } else if let Some(current_record) = hm_record_collection
-          .lock()
-          .unwrap()
-          .get_mut(&self.read_id.current)
+        } else if let Some(current_record) =
+          me_record.lock().unwrap().get_mut(&self.read_id.current)
         {
           load!( mobile element |> current_record; self; read2 );
         }
@@ -337,10 +326,8 @@ impl MountExt for RawValues {
 
       // secondary alignment
       proviral_flag if proviral_flag >= 256 => {
-        if let Some(current_record) = hm_record_collection
-          .lock()
-          .unwrap()
-          .get_mut(&self.read_id.current)
+        if let Some(current_record) =
+          me_record.lock().unwrap().get_mut(&self.read_id.current)
         {
           // if sequence field is empty insert indicates no primary alignment
           // has been filled on read 2 this assumes secondary
