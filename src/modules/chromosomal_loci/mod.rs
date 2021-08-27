@@ -77,23 +77,29 @@ pub fn cl_paired_controller(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub fn cl_filter(
-  ikey: &str,
   an_registry: alias::RegistryME,
   chr_assembly: alias::LibraryME,
   hm_me_collection: alias::RecordME,
 ) -> alias::AnyResult {
-  // declare strand reference
-  let mut strands = Strands::new();
+  // iterate
+  for key in an_registry.lock().unwrap().keys() {
+    // TODO: implement parallelism
+    // let cl_handle = thread::spawn(|| {
+    // declare strand reference
+    let mut strands = Strands::new();
 
-  // TODO: implement parallel iteration here
+    // TODO: implement parallel iteration here
 
-  // filter hits
-  //////////////////////////////////////////////////
-  // select based on likehood of alignment -> MAPQ
-  //////////////////////////////////////////////////
+    // filter hits
+    //////////////////////////////////////////////////
+    // select based on likehood of alignment -> MAPQ
+    //////////////////////////////////////////////////
 
-  if let Some(reads_id) = an_registry.lock().unwrap().get(ikey) {
-    cl_filter::filter(reads_id, &hm_me_collection, &mut strands);
+    if let Some(reads_id) = an_registry.lock().unwrap().get(key) {
+      cl_filter::filter(reads_id, &hm_me_collection, &mut strands);
+    }
+    // });
+    // cl_handle.join().expect("MESSAGE_JOIN");
   }
 
   // filter based on estimated & false discovery rate threshold
