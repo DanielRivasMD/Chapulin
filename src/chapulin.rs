@@ -50,19 +50,30 @@ impl ActivateExt for bool {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, new, Default)]
+// TODO: re implement new
+struct BinPosition(i32, HashMap<i32, Vec<String>>);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+use std::collections::HashMap;
+
+// TODO: re implement new
 pub struct Strands {
-  #[new(default)]
-  FS5: Vec<String>,
+  FS5: BinPosition,
+  FS3: BinPosition,
+  RS5: BinPosition,
+  RS3: BinPosition,
+}
 
-  #[new(default)]
-  FS3: Vec<String>,
-
-  #[new(default)]
-  RS5: Vec<String>,
-
-  #[new(default)]
-  RS3: Vec<String>,
+impl Strands {
+  fn new() -> Self {
+    Self {
+      FS5: BinPosition(0, HashMap::new()),
+      FS3: BinPosition(0, HashMap::new()),
+      RS5: BinPosition(0, HashMap::new()),
+      RS3: BinPosition(0, HashMap::new()),
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
