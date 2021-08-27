@@ -262,6 +262,13 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
     _ => (),
   }
 
+  // modules::chromosomal_loci::cl_filter(
+  //   ikey,
+  //   an_registry,
+  //   chr_assembly,
+  //   record_collection,
+  // )?;
+
   info!("{:?}", now.elapsed().unwrap());
 
   // let mut ct = 1;
