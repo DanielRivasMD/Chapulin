@@ -10,7 +10,6 @@ use std::collections::HashMap;
 
 // development libraries
 use genomic_structures::{
-  strand_count,
   threshold,
   Anchor,
   ChrAnchorEnum,

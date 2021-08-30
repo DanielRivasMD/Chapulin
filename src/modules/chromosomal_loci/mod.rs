@@ -99,7 +99,7 @@ pub fn cl_filter(
     // select based on likehood of alignment -> MAPQ
     //////////////////////////////////////////////////
 
-    cl_filter::filter(key, &chr_registry, &me_record, &dir_registry);
+    cl_filter::filter(key, &chr_registry, &dir_registry, &me_record);
     // });
     // cl_handle.join().expect("MESSAGE_JOIN");
   }

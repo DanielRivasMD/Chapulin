@@ -166,6 +166,9 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // mobile elements module
+  //////////////////////////////////////////////////
+
+  // declare & clone arc mutex
   let camx_me_library_ref = alias::arc_clone(&amx_me_library);
   let camx_me_library_me = alias::arc_clone(&amx_me_library);
   let camx_me_record_me = alias::arc_clone(&amx_me_record);
@@ -215,12 +218,11 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // chromosomal loci module
+  //////////////////////////////////////////////////
+
+  // declare & clone arc mutex
   let camx_chr_registry_cl_align = alias::arc_clone(&amx_chr_registry);
   let camx_me_record_me_align = alias::arc_clone(&amx_me_record);
-
-  let camx_chr_registry_cl_filter = alias::arc_clone(&amx_chr_registry);
-  let camx_dir_registry_cl_filter = alias::arc_clone(&amx_dir_registry);
-  let camx_me_record_me_filter = alias::arc_clone(&amx_me_record);
 
   // println!("{:?}", amx_me_record);
 
@@ -266,6 +268,11 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
 
     _ => (),
   }
+
+  // declare & clone arc mutex
+  let camx_chr_registry_cl_filter = alias::arc_clone(&amx_chr_registry);
+  let camx_dir_registry_cl_filter = alias::arc_clone(&amx_dir_registry);
+  let camx_me_record_me_filter = alias::arc_clone(&amx_me_record);
 
   modules::chromosomal_loci::cl_filter(
     camx_chr_registry_cl_filter,

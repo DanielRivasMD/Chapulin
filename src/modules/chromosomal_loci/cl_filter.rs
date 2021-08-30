@@ -57,8 +57,8 @@ const MAPQ: i32 = 20;
 pub fn filter(
   ikey: &str,
   chr_registry: &alias::RegistryChr,
-  me_record: &alias::RecordME,
   dir_registry: &alias::RegistryDir,
+  me_record: &alias::RecordME,
 ) {
   // iterate on registry
   // switch
