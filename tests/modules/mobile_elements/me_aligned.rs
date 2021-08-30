@@ -103,7 +103,6 @@ fn chimeric_read_build(
   let mut chimeric_read = MEChimericRead::new();
 
   // load mapq & sequence
-  chimeric_read.quality = raw_values.quality;
   chimeric_read.sequence = raw_values.sequence.clone();
 
   // load mobile element
@@ -203,7 +202,7 @@ test_me_aligned!(test12;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read1: MEChimericRead{
@@ -283,7 +282,7 @@ test_me_aligned!(test14;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read2: MEChimericRead{
@@ -368,7 +367,7 @@ test_me_aligned!(test17;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read1: MEChimericRead{
@@ -448,7 +447,7 @@ test_me_aligned!(test19;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read2: MEChimericRead{
@@ -533,7 +532,7 @@ test_me_aligned!(test22;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read1: MEChimericRead{
@@ -613,7 +612,7 @@ test_me_aligned!(test24;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read2: MEChimericRead{
@@ -698,7 +697,7 @@ test_me_aligned!(test27;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGANCHORBATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read1: MEChimericRead{
@@ -778,7 +777,7 @@ test_me_aligned!(test29;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGANCHORBATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read2: MEChimericRead{
@@ -863,7 +862,7 @@ test_me_aligned!(test32;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read1: MEChimericRead{
@@ -892,7 +891,7 @@ test_me_aligned!(test32;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACBANCHORGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read1,
@@ -943,7 +942,7 @@ test_me_aligned!(test34;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read2: MEChimericRead{
@@ -972,7 +971,7 @@ test_me_aligned!(test34;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACBANCHORGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read2,
@@ -1028,7 +1027,7 @@ test_me_aligned!(test37;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read1: MEChimericRead{
@@ -1057,7 +1056,7 @@ test_me_aligned!(test37;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read1,
@@ -1108,7 +1107,7 @@ test_me_aligned!(test39;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read2: MEChimericRead{
@@ -1137,7 +1136,7 @@ test_me_aligned!(test39;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read2,
@@ -1193,7 +1192,7 @@ test_me_aligned!(test42;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "GCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTNTTTGTATTTTTATTAGAGAC".to_string(),
     },
     read1: MEChimericRead{
@@ -1222,7 +1221,7 @@ test_me_aligned!(test42;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     chranch: ChrAnchorEnum::Read1,
@@ -1273,7 +1272,7 @@ test_me_aligned!(test44;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "GCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTNTTTGTATTTTTATTAGAGAC".to_string(),
     },
     read2: MEChimericRead{
@@ -1302,7 +1301,7 @@ test_me_aligned!(test44;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTBANCHORAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     chranch: ChrAnchorEnum::Read2,
@@ -1358,7 +1357,7 @@ test_me_aligned!(test47;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read1: MEChimericRead{
@@ -1387,7 +1386,7 @@ test_me_aligned!(test47;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read1,
@@ -1438,7 +1437,7 @@ test_me_aligned!(test49;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read2: MEChimericRead{
@@ -1467,7 +1466,7 @@ test_me_aligned!(test49;
         }
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTANCHORBCAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read2,
@@ -1592,7 +1591,7 @@ test_me_aligned!(test52;
         },
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read2: MEChimericRead{
@@ -1746,7 +1745,7 @@ test_me_aligned!(test57;
         },
       ],
       orientation: OrientationEnum::Downstream,
-      quality: 60,
+      quality: 0,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     read1: MEChimericRead{
@@ -1829,7 +1828,7 @@ test_me_aligned!(test62;
         }
       ],
       orientation: OrientationEnum::Upstream,
-      quality: 60,
+      quality: 0,
       sequence: "AGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGACAGGGTTTCACCATGTTGGTTAGGCTGGTCTCAAACTCCTN".to_string(),
     },
     read2: MEChimericRead{

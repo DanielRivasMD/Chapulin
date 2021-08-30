@@ -182,7 +182,7 @@ test_cl_aligned!(test12;
           },
           chr: "chrT".to_string(),
           flag: 147,
-          mapq: 60,
+          mapq: 20,
           position: 52549,
           tlen: 100,
         }
@@ -211,7 +211,7 @@ test_cl_aligned!(test12;
         }
       ],
       orientation: OrientationEnum::None,
-      quality: 0,
+      quality: 20,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read1,
@@ -316,7 +316,7 @@ test_cl_aligned!(test14;
         }
       ],
       orientation: OrientationEnum::None,
-      quality: 0,
+      quality: 10,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read2,
@@ -397,7 +397,7 @@ test_cl_aligned!(test17;
           },
           chr: "chrT".to_string(),
           flag: 99,
-          mapq: 50,
+          mapq: 15,
           position: 64851,
           tlen: 100,
         }
@@ -426,7 +426,7 @@ test_cl_aligned!(test17;
         }
       ],
       orientation: OrientationEnum::None,
-      quality: 0,
+      quality: 15,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read1,
@@ -502,7 +502,7 @@ test_cl_aligned!(test19;
           },
           chr: "chrT".to_string(),
           flag: 99,
-          mapq: 60,
+          mapq: 50,
           position: 11751,
           tlen: 100,
         }
@@ -531,7 +531,7 @@ test_cl_aligned!(test19;
         }
       ],
       orientation: OrientationEnum::None,
-      quality: 0,
+      quality: 50,
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read2,
