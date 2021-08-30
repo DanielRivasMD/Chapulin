@@ -15,16 +15,12 @@ use genomic_structures::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// aliases
-use chapulin::utils::alias;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // crate utilities
-use chapulin::modules::{
-  chromosomal_loci::cl_aligned,
-  chromosomal_loci::cl_filter,
-  mobile_elements::me_aligned,
+use crate::modules::{
+  filter_cl,
+  insert_me_library,
+  load_cl_sam,
+  load_me_sam,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,71 +35,19 @@ macro_rules! test_cl_filter {
   ) => {
     #[test]
     fn $function() {
-      // declare files
-      let me_alignment = "tests/samples/me_alignment.sam";
-      let cl_alignment = "tests/samples/cl_alignment.sam";
+      // insert mobile elment values onto arc clone
+      let amx_me_library = insert_me_library($mobel_id, $mobel_size);
 
-      // declare mobile element library
-      let amx_me_library = alias::arc_map();
+      // load mobile element sam & return arc clone
+      let camx_me_record =
+        load_me_sam("tests/samples/me_alignment.sam", amx_me_library);
 
-      // insert mobile element library
-      amx_me_library
-        .lock()
-        .unwrap()
-        .insert($mobel_id, $mobel_size);
+      // load chromosomal loci sam & return arc clone
+      let (camx_me_record_cl, camx_chr_registry) =
+        load_cl_sam("tests/samples/cl_alignment.sam", camx_me_record);
 
-      // declare record collection
-      let amx_me_record = alias::arc_map();
-
-      // declare chimeric mobile element clone
-      let camx_me_record_me = alias::arc_clone(&amx_me_record);
-
-      // identify mobile elements
-      me_aligned::me_identificator(
-        me_alignment,
-        amx_me_library,
-        camx_me_record_me,
-        0,
-      )
-      .expect("Error occured at mobile element identificator!");
-
-      // declare anchor registry
-      let amx_anchor_registry = alias::arc_map();
-
-      // declare anchor registry aligned clone
-      let camx_anchor_registry_aligned = alias::arc_clone(&amx_anchor_registry);
-
-      // declare chimeric chromosomal loci clone
-      let camx_me_record_cl_aligned = alias::arc_clone(&amx_me_record);
-
-      // map chromosomal loci
-      cl_aligned::cl_mapper(
-        cl_alignment,
-        camx_anchor_registry_aligned,
-        camx_me_record_cl_aligned,
-        0,
-      )
-      .expect("Error occured at chromosomal loci mapper!");
-
-      // declare anchor registry clone
-      let camx_anchor_registry_filter = alias::arc_clone(&amx_anchor_registry);
-
-      // declare direction registry clone
-      let amx_dir_registry = alias::arc_map();
-
-      // declare chimeric chromosomal loci filter clone
-      let camx_me_record_cl_filter = alias::arc_clone(&amx_me_record);
-
-      // filter chromosomal loci
-      cl_filter::filter(
-        "chrT",
-        &camx_anchor_registry_filter,
-        &amx_dir_registry,
-        &camx_me_record_cl_filter,
-      );
-
-      // declare assertion clone
-      let camx_me_record_as = alias::arc_clone(&amx_me_record);
+      // filter chromosomal loci & return arc clone
+      let camx_me_record_as = filter_cl(camx_chr_registry, camx_me_record_cl);
 
       // assert
       assert_eq!(camx_me_record_as.lock().unwrap().get($key), $val);

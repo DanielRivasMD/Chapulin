@@ -17,6 +17,7 @@ use chapulin::utils::alias;
 use chapulin::modules::{
   chromosomal_loci::{
     cl_aligned,
+    cl_filter,
   },
   mobile_elements::me_aligned,
 };
@@ -78,6 +79,35 @@ pub fn load_cl_sam(
     .expect("Error occured at chromosomal loci mapper!");
 
   return (camx_me_record_as, camx_chr_registry);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pub fn filter_cl(
+  amx_chr_registry: alias::RegistryChr,
+  amx_me_record: alias::RecordME,
+) -> alias::RecordME {
+  // declare anchor registry clone
+  let camx_chr_registry = alias::arc_clone(&amx_chr_registry);
+
+  // declare direction registry clone
+  let amx_dir_registry = alias::arc_map();
+
+  // declare chimeric chromosomal loci filter clone
+  let camx_me_record_cl = alias::arc_clone(&amx_me_record);
+
+  // declare assertion clone
+  let camx_me_record_as = alias::arc_clone(&amx_me_record);
+
+  // filter chromosomal loci
+  cl_filter::filter(
+    "chrT",
+    &camx_chr_registry,
+    &amx_dir_registry,
+    &camx_me_record_cl,
+  );
+
+  return camx_me_record_as;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
