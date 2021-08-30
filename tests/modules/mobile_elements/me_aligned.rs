@@ -15,17 +15,14 @@ use genomic_structures::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// aliases
-use chapulin::utils::alias;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // crate utilities
-use chapulin::modules::mobile_elements::me_aligned;
+use crate::modules::{
+  insert_me_library,
+  load_me_sam,
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: write a file to load mobile elements from
 // test mobile element modules overall performance
 // by testing controller function `me_identificator`
 macro_rules! test_me_aligned {
@@ -35,35 +32,15 @@ macro_rules! test_me_aligned {
   ) => {
     #[test]
     fn $function() {
-      // declare files
-      let me_alignment = "tests/samples/me_alignment.sam";
+      // insert mobile elment values
+      let amx_me_library = insert_me_library($mobel_id, $mobel_size);
 
-      // declare mobile element library
-      let amx_me_library = alias::arc_map();
-
-      // insert mobile element library
-      amx_me_library
-        .lock()
-        .unwrap()
-        .insert($mobel_id, $mobel_size);
-
-      // declare chimeric mobile element collection
-      let amx_me_record = alias::arc_map();
-
-      // declare chimeric mobile element clone
-      let camx_me_record_me = alias::arc_clone(&amx_me_record);
-
-      // identify mobile elements
-      me_aligned::me_identificator(
-        me_alignment,
-        amx_me_library,
-        amx_me_record,
-        0,
-      )
-      .expect("Error occured at mobile element identificator!");
+      // load mobile element sam & return arc clone
+      let camx_me_record_as =
+        load_me_sam("tests/samples/me_alignment.sam", amx_me_library);
 
       // assert
-      assert_eq!(camx_me_record_me.lock().unwrap().get($key), $val);
+      assert_eq!(camx_me_record_as.lock().unwrap().get($key), $val);
     }
   };
 }
