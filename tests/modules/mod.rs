@@ -15,6 +15,9 @@ use chapulin::utils::alias;
 
 // crate utilities
 use chapulin::modules::{
+  chromosomal_loci::{
+    cl_aligned,
+  },
   mobile_elements::me_aligned,
 };
 
@@ -50,6 +53,31 @@ pub fn load_me_sam(
     .expect("Error occured at mobile element identificator!");
 
   return camx_me_record;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pub fn load_cl_sam(
+  cl_alignment: &str,
+  amx_me_record: alias::RecordME,
+) -> (alias::RecordME, alias::RegistryChr) {
+  // declare anchor registry
+  let amx_chr_registry = alias::arc_map();
+
+  // declare anchor registry aligned clone
+  let camx_chr_registry = alias::arc_clone(&amx_chr_registry);
+
+  // declare chimeric chromosomal loci clone
+  let camx_me_record_cl = alias::arc_clone(&amx_me_record);
+
+  // declare assertion clone
+  let camx_me_record_as = alias::arc_clone(&amx_me_record);
+
+  // map chromosomal loci
+  cl_aligned::cl_mapper(cl_alignment, amx_chr_registry, camx_me_record_cl, 0)
+    .expect("Error occured at chromosomal loci mapper!");
+
+  return (camx_me_record_as, camx_chr_registry);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

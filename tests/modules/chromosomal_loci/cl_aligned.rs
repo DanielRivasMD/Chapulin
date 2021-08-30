@@ -15,15 +15,11 @@ use genomic_structures::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// aliases
-use chapulin::utils::alias;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // crate utilities
-use chapulin::modules::{
-  chromosomal_loci::cl_aligned,
-  mobile_elements::me_aligned,
+use crate::modules::{
+  insert_me_library,
+  load_cl_sam,
+  load_me_sam,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,51 +34,16 @@ macro_rules! test_cl_aligned {
   ) => {
     #[test]
     fn $function() {
-      // declare files
-      let me_alignment = "tests/samples/me_alignment.sam";
-      let cl_alignment = "tests/samples/cl_alignment.sam";
+      // insert mobile elment values onto arc clone
+      let amx_me_library = insert_me_library($mobel_id, $mobel_size);
 
-      // declare mobile element library
-      let amx_me_library = alias::arc_map();
+      // load mobile element sam & return arc clone
+      let camx_me_record =
+        load_me_sam("tests/samples/me_alignment.sam", amx_me_library);
 
-      // insert mobile element library
-      amx_me_library
-        .lock()
-        .unwrap()
-        .insert($mobel_id, $mobel_size);
-
-      // declare record collection
-      let amx_me_record = alias::arc_map();
-
-      // declare chimeric mobile element clone
-      let camx_me_record_me = alias::arc_clone(&amx_me_record);
-
-      // identify mobile elements
-      me_aligned::me_identificator(
-        me_alignment,
-        amx_me_library,
-        camx_me_record_me,
-        0,
-      )
-      .expect("Error occured at mobile element identificator!");
-
-      // declare anchor registry
-      let amx_anchor_registry = alias::arc_map();
-
-      // declare chimeric chromosomal loci clone
-      let camx_me_record_cl = alias::arc_clone(&amx_me_record);
-
-      // declare assertion clone
-      let camx_me_record_as = alias::arc_clone(&amx_me_record);
-
-      // map chromosomal loci
-      cl_aligned::cl_mapper(
-        cl_alignment,
-        amx_anchor_registry,
-        camx_me_record_cl,
-        0,
-      )
-      .expect("Error occured at chromosomal loci mapper!");
+      // load chromosomal loci sam & return arc clone
+      let (camx_me_record_as, _) =
+        load_cl_sam("tests/samples/cl_alignment.sam", camx_me_record);
 
       // assert
       assert_eq!(camx_me_record_as.lock().unwrap().get($key), $val);
