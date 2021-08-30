@@ -64,10 +64,10 @@ pub fn filter(
   // switch
 
   if let Some(reads_id) = chr_registry.lock().unwrap().get(ikey) {
-    reads_id.iter().map(|read_id| {
-      let switch_mapq = false;
+    reads_id.iter().for_each(|read_id| {
+      let mut switch_mapq = false;
       if let Some(me_pair) = me_record.lock().unwrap().get(read_id) {
-        mapq(me_pair, switch_mapq);
+        mapq(me_pair, &mut switch_mapq);
       }
 
       if switch_mapq {
@@ -88,16 +88,16 @@ pub fn filter(
 
 fn mapq(
   me_pair: &MEChimericPair,
-  mut switch_mapq: bool,
+  switch_mapq: &mut bool,
 ) {
   match me_pair.chranch {
     ChrAnchorEnum::Read1 => {
-      if me_pair.read1.chr_read[0].mapq < MAPQ {
+      if me_pair.read1.quality < MAPQ {
         switch_mapq.activate();
       }
     }
     ChrAnchorEnum::Read2 => {
-      if me_pair.read2.chr_read[0].mapq < MAPQ {
+      if me_pair.read2.quality < MAPQ {
         switch_mapq.activate();
       }
     }
