@@ -84,6 +84,7 @@ pub fn load_cl_sam(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub fn filter_cl(
+  scaffold: &str,
   amx_chr_registry: alias::RegistryChr,
   amx_me_record: alias::RecordME,
 ) -> alias::RecordME {
@@ -101,7 +102,7 @@ pub fn filter_cl(
 
   // filter chromosomal loci
   cl_filter::filter(
-    "chrT",
+    scaffold,
     &camx_chr_registry,
     &amx_dir_registry,
     &camx_me_record_cl,

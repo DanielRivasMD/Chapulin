@@ -25,13 +25,14 @@ use crate::modules::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// TODO: test direction registry
 // test chromosomal loci modules performance by testing `cl_mapper`
 // observe that anchor registry is not tested but assumed to load
 // since function returns no errors
 macro_rules! test_cl_filter {
   ( $function: ident;
     mobile |> $mobel_id: expr, $mobel_size: expr;
-    params |> $key: expr, $val: expr;
+    params |> $key: expr, $chr: expr, $val: expr;
   ) => {
     #[test]
     fn $function() {
@@ -47,7 +48,8 @@ macro_rules! test_cl_filter {
         load_cl_sam("tests/samples/cl_alignment.sam", camx_me_record);
 
       // filter chromosomal loci & return arc clone
-      let camx_me_record_as = filter_cl(camx_chr_registry, camx_me_record_cl);
+      let camx_me_record_as =
+        filter_cl($chr, camx_chr_registry, camx_me_record_cl);
 
       // assert
       assert_eq!(camx_me_record_as.lock().unwrap().get($key), $val);
@@ -60,17 +62,17 @@ macro_rules! test_cl_filter {
 // no value
 test_cl_filter!(test00;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "RANDOM_ID", None;
+  params |> "RANDOM_ID", "", None;
 );
 
 test_cl_filter!(test02;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "UPSTREAM_DROP", None;
+  params |> "UPSTREAM_DROP", "chrT", None;
 );
 
 test_cl_filter!(test03;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "DOWNSTREAM_DROP", None;
+  params |> "DOWNSTREAM_DROP", "chrT", None;
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,7 +83,7 @@ test_cl_filter!(test03;
 // mount value manually
 test_cl_filter!(test12;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "UPSTREAM_KEEP1",
+  params |> "UPSTREAM_KEEP1", "chrT",
   Some(&MEChimericPair{
     read2: MEChimericRead{
       chr_read: vec![
@@ -187,7 +189,7 @@ test_cl_filter!(test12;
 // MAPQ = 10
 test_cl_filter!(test14;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "UPSTREAM_KEEP2",
+  params |> "UPSTREAM_KEEP2", "chrN",
   None;
 );
 
@@ -200,14 +202,14 @@ test_cl_filter!(test14;
 // MAPQ = 15
 test_cl_filter!(test17;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "DOWNSTREAM_KEEP1",
+  params |> "DOWNSTREAM_KEEP1", "chrT",
   None;
 );
 
 // mount value manually
 test_cl_filter!(test19;
   mobile |> "mobel11000".to_string(), 11000.;
-  params |> "DOWNSTREAM_KEEP2",
+  params |> "DOWNSTREAM_KEEP2", "chrN",
   Some(&MEChimericPair{
     read1: MEChimericRead{
       chr_read: vec![
@@ -223,7 +225,7 @@ test_cl_filter!(test19;
             rigth_clip: 0,
             signature: "100M".to_string(),
           },
-          chr: "chrT".to_string(),
+          chr: "chrN".to_string(),
           flag: 147,
           mapq: 60,
           position: 10751,
@@ -271,7 +273,7 @@ test_cl_filter!(test19;
             rigth_clip: 0,
             signature: "100M".to_string(),
           },
-          chr: "chrT".to_string(),
+          chr: "chrN".to_string(),
           flag: 99,
           mapq: 50,
           position: 11751,

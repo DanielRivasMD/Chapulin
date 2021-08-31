@@ -198,7 +198,7 @@ test_cl_aligned!(test14;
             rigth_clip: 0,
             signature: "100M".to_string(),
           },
-          chr: "chrT".to_string(),
+          chr: "chrN".to_string(),
           flag: 99,
           mapq: 60,
           position: 46715,
@@ -246,7 +246,7 @@ test_cl_aligned!(test14;
             rigth_clip: 0,
             signature: "100M".to_string(),
           },
-          chr: "chrT".to_string(),
+          chr: "chrN".to_string(),
           flag: 147,
           mapq: 10,
           position: 46915,
@@ -413,7 +413,7 @@ test_cl_aligned!(test19;
             rigth_clip: 0,
             signature: "100M".to_string(),
           },
-          chr: "chrT".to_string(),
+          chr: "chrN".to_string(),
           flag: 147,
           mapq: 60,
           position: 10751,
@@ -461,7 +461,7 @@ test_cl_aligned!(test19;
             rigth_clip: 0,
             signature: "100M".to_string(),
           },
-          chr: "chrT".to_string(),
+          chr: "chrN".to_string(),
           flag: 99,
           mapq: 50,
           position: 11751,
@@ -497,6 +497,51 @@ test_cl_aligned!(test19;
     },
     chranch: ChrAnchorEnum::Read2,
   });
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+macro_rules! test_cl_register {
+  ( $function: ident;
+    mobile |> $mobel_id: expr, $mobel_size: expr;
+    params |> $key: expr, $val: expr;
+  ) => {
+    #[test]
+    fn $function() {
+      // insert mobile elment values onto arc clone
+      let amx_me_library = insert_me_library($mobel_id, $mobel_size);
+
+      // load mobile element sam & return arc clone
+      let camx_me_record =
+        load_me_sam("tests/samples/me_alignment.sam", amx_me_library);
+
+      // load chromosomal loci sam & return arc clone
+      let (_, camx_chr_registry_as) =
+        load_cl_sam("tests/samples/cl_alignment.sam", camx_me_record);
+
+      // assert
+      assert_eq!(camx_chr_registry_as.lock().unwrap().get($key), $val);
+    }
+  };
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+test_cl_register!(reg00;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "chrU", None;
+);
+
+test_cl_register!(reg01;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "chrT",
+  Some(&vec!["UPSTREAM_KEEP1".to_string(), "DOWNSTREAM_KEEP1".to_string()]);
+);
+
+test_cl_register!(reg02;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "chrN",
+  Some(&vec!["UPSTREAM_KEEP2".to_string(), "DOWNSTREAM_KEEP2".to_string()]);
 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
