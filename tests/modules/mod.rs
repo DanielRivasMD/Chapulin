@@ -28,7 +28,10 @@ pub fn insert_me_library(
   mobel_id: String,
   mobel_size: f64,
 ) -> alias::LibraryME {
-  // declare mobile element library
+  // arc
+  //////////////////////////////////////////////////
+
+  // mobile element library
   let amx_me_library = alias::arc_map();
 
   // insert mobile element library
@@ -43,10 +46,16 @@ pub fn load_me_sam(
   me_alignment: &str,
   amx_me_library: alias::LibraryME,
 ) -> alias::RecordME {
-  // declare chimeric mobile element collection
+  // arc
+  //////////////////////////////////////////////////
+
+  // record
   let amx_me_record = alias::arc_map();
 
-  // declare chimeric mobile element clone
+  // clones
+  //////////////////////////////////////////////////
+
+  // record clone
   let camx_me_record = alias::arc_clone(&amx_me_record);
 
   // identify mobile elements
@@ -62,16 +71,22 @@ pub fn load_cl_sam(
   cl_alignment: &str,
   amx_me_record: alias::RecordME,
 ) -> (alias::RecordME, alias::RegistryChr) {
-  // declare anchor registry
+  // arc
+  //////////////////////////////////////////////////
+
+  // anchor registry
   let amx_chr_registry = alias::arc_map();
 
-  // declare anchor registry aligned clone
+  // clones
+  //////////////////////////////////////////////////
+
+  // anchor registry clone
   let camx_chr_registry = alias::arc_clone(&amx_chr_registry);
 
-  // declare chimeric chromosomal loci clone
+  // record clone
   let camx_me_record_cl = alias::arc_clone(&amx_me_record);
 
-  // declare assertion clone
+  // record assertion clone
   let camx_me_record_as = alias::arc_clone(&amx_me_record);
 
   // map chromosomal loci
@@ -87,17 +102,26 @@ pub fn filter_cl(
   scaffold: &str,
   amx_chr_registry: alias::RegistryChr,
   amx_me_record: alias::RecordME,
-) -> alias::RecordME {
-  // declare anchor registry clone
-  let camx_chr_registry = alias::arc_clone(&amx_chr_registry);
+) -> (alias::RecordME, alias::RegistryDir) {
+  // arc
+  //////////////////////////////////////////////////
 
-  // declare direction registry clone
+  // direction registry clone
   let amx_dir_registry = alias::arc_map();
 
-  // declare chimeric chromosomal loci filter clone
+  // clones
+  //////////////////////////////////////////////////
+
+  // registry clone
+  let camx_chr_registry = alias::arc_clone(&amx_chr_registry);
+
+  // direction assertion clone
+  let camx_dir_registry_as = alias::arc_clone(&amx_dir_registry);
+
+  // record clone
   let camx_me_record_cl = alias::arc_clone(&amx_me_record);
 
-  // declare assertion clone
+  // record assertion clone
   let camx_me_record_as = alias::arc_clone(&amx_me_record);
 
   // filter chromosomal loci
@@ -108,7 +132,7 @@ pub fn filter_cl(
     &camx_me_record_cl,
   );
 
-  return camx_me_record_as;
+  return (camx_me_record_as, camx_dir_registry_as);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

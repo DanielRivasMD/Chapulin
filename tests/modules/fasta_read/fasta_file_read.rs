@@ -10,6 +10,7 @@ use chapulin::modules::fasta_read::fasta_file_read;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// TODO: integrate with test function
 macro_rules! fasta_read {
   ( $function: ident; $assertion: ident; $key: expr; $val: expr ) => {
     #[test]
