@@ -73,9 +73,12 @@ pub fn filter(
       if switch_mapq {
         purge(&me_record, read_id);
       } else {
-        // segregate reads based on orientation
-        // count reads
+        // insert scaffold
+        if !dir_registry.lock().unwrap().contains_key(ikey) {
+          insert(&dir_registry, ikey);
+        }
 
+        // segregate reads based on orientation
         if let Some(direction) = dir_registry.lock().unwrap().get_mut(ikey) {
           assign(&me_record, read_id, direction);
         }
@@ -110,6 +113,16 @@ fn purge(
   read_id: &str,
 ) {
   me_record.lock().unwrap().remove(read_id);
+}
+
+fn insert(
+  dir_registry: &alias::RegistryDir,
+  ikey: &str,
+) {
+  dir_registry
+    .lock()
+    .unwrap()
+    .insert(ikey.to_string(), StrandDirection::new());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
