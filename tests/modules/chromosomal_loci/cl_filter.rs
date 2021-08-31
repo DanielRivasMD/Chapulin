@@ -1,8 +1,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// standard libraries
+use std::collections::HashMap;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // development libraries
 use genomic_structures::{
   AnchorEnum,
+  BinPosition,
   BreakPoint,
   ChrAnchor,
   ChrAnchorEnum,
@@ -10,6 +16,7 @@ use genomic_structures::{
   MEChimericPair,
   MEChimericRead,
   OrientationEnum,
+  StrandDirection,
   CIGAR,
 };
 
@@ -25,7 +32,6 @@ use crate::modules::{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: test direction registry
 // test chromosomal loci modules performance by testing `cl_mapper`
 // observe that anchor registry is not tested but assumed to load
 // since function returns no errors
@@ -48,7 +54,7 @@ macro_rules! test_cl_filter {
         load_cl_sam("tests/samples/cl_alignment.sam", camx_me_record);
 
       // filter chromosomal loci & return arc clone
-      let camx_me_record_as =
+      let (camx_me_record_as, _) =
         filter_cl($chr, camx_chr_registry, camx_me_record_cl);
 
       // assert
@@ -308,6 +314,76 @@ test_cl_filter!(test19;
       sequence: "TCCAGGGTTCAAGNGATTCTCCTGCCTCAGCCTCCAGAGTAGCTGAGACTACAGGTGTCCGCCACCAGGCCCAGCTAATTTTTGTATTTTTATTAGAGAC".to_string(),
     },
     chranch: ChrAnchorEnum::Read2,
+  });
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+macro_rules! test_cl_direction {
+  ( $function: ident;
+    mobile |> $mobel_id: expr, $mobel_size: expr;
+    params |> $key: expr, $val: expr;
+  ) => {
+    #[test]
+    fn $function() {
+      // insert mobile elment values onto arc clone
+      let amx_me_library = insert_me_library($mobel_id, $mobel_size);
+
+      // load mobile element sam & return arc clone
+      let camx_me_record =
+        load_me_sam("tests/samples/me_alignment.sam", amx_me_library);
+
+      // load chromosomal loci sam & return arc clone
+      let (camx_me_record_cl, camx_chr_registry) =
+        load_cl_sam("tests/samples/cl_alignment.sam", camx_me_record);
+
+      // filter chromosomal loci & return arc clone
+      let (_, camx_dir_registry_as) =
+        filter_cl($key, camx_chr_registry, camx_me_record_cl);
+
+      // assert
+      assert_eq!(camx_dir_registry_as.lock().unwrap().get($key), $val);
+    }
+  };
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+fn build_hash(
+  k: i32,
+  v: Vec<String>,
+) -> HashMap<i32, Vec<String>> {
+  let mut hm = HashMap::new();
+  hm.insert(k, v);
+  hm
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+test_cl_direction!(dir00;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "chrU", None;
+);
+
+test_cl_direction!(dir01;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "chrT",
+  Some(&StrandDirection{
+    fs5: BinPosition::new(),
+    fs3: BinPosition::new(),
+    rs5: BinPosition(1, build_hash(52500, vec!["UPSTREAM_KEEP1".to_string()])),
+    rs3: BinPosition::new(),
+  });
+);
+
+test_cl_direction!(dir02;
+  mobile |> "mobel11000".to_string(), 11000.;
+  params |> "chrN",
+  Some(&StrandDirection{
+    fs5: BinPosition::new(),
+    fs3: BinPosition::new(),
+    rs5: BinPosition::new(),
+    rs3: BinPosition(1, build_hash(11700, vec!["DOWNSTREAM_KEEP2".to_string()])),
   });
 );
 
