@@ -135,10 +135,20 @@ fn assign(
   if let Some(me_chimeric_pair) = me_record.lock().unwrap().get(read_id) {
     match me_chimeric_pair.chranch {
       ChrAnchorEnum::Read1 => {
-        tag(&me_chimeric_pair.read1, read_id.to_string(), direction)
+        tag(
+          &me_chimeric_pair.read1,
+          &me_chimeric_pair.read2,
+          read_id.to_string(),
+          direction,
+        )
       }
       ChrAnchorEnum::Read2 => {
-        tag(&me_chimeric_pair.read2, read_id.to_string(), direction)
+        tag(
+          &me_chimeric_pair.read2,
+          &me_chimeric_pair.read1,
+          read_id.to_string(),
+          direction,
+        )
       }
       ChrAnchorEnum::None => (),
     }
@@ -146,25 +156,26 @@ fn assign(
 }
 
 fn tag(
-  me_chimeric_read: &MEChimericRead,
+  chimeric_chr_read: &MEChimericRead,
+  chimeric_me_read: &MEChimericRead,
   read_id: String,
   direction: &mut StrandDirection,
 ) {
   match (
-    me_chimeric_read.chr_read[0].interpret(5),
-    me_chimeric_read.orientation,
+    chimeric_chr_read.chr_read[0].interpret(5),
+    chimeric_me_read.orientation,
   ) {
     (false, OrientationEnum::Upstream) => {
-      strand_direction!(direction, fs5, me_chimeric_read, read_id);
+      strand_direction!(direction, fs5, chimeric_chr_read, read_id);
     }
     (true, OrientationEnum::Downstream) => {
-      strand_direction!(direction, fs3, me_chimeric_read, read_id);
+      strand_direction!(direction, fs3, chimeric_chr_read, read_id);
     }
     (true, OrientationEnum::Upstream) => {
-      strand_direction!(direction, rs5, me_chimeric_read, read_id);
+      strand_direction!(direction, rs5, chimeric_chr_read, read_id);
     }
     (false, OrientationEnum::Downstream) => {
-      strand_direction!(direction, rs3, me_chimeric_read, read_id);
+      strand_direction!(direction, rs3, chimeric_chr_read, read_id);
     }
     (_, _) => (),
   }
