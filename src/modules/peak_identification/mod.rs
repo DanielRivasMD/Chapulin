@@ -16,6 +16,24 @@ mod pi_sv_mapping;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+macro_rules! pi_me_identifier {
+  ( $direction: expr, $strand: tt, $chr_size: expr, $me_record: expr ) => {
+    pi_me_mapping::pi_me_identifier(
+      &$direction.$strand,
+      $chr_size,
+      $me_record,
+    )?;
+  };
+  ( $direction: expr, $chr_size: expr, $me_record: expr) => {
+    pi_me_identifier!($direction, fs5, $chr_size, $me_record);
+    pi_me_identifier!($direction, fs3, $chr_size, $me_record);
+    pi_me_identifier!($direction, rs5, $chr_size, $me_record);
+    pi_me_identifier!($direction, rs3, $chr_size, $me_record);
+  };
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 pub fn pi_me_controller(
   chr_library: alias::LibraryChr,
   dir_registry: alias::RegistryDir,
