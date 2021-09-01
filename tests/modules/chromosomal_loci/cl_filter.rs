@@ -371,7 +371,7 @@ test_cl_direction!(dir01;
   Some(&StrandDirection{
     fs5: BinPosition::new(),
     fs3: BinPosition::new(),
-    rs5: BinPosition(1, build_hash(52500, vec!["UPSTREAM_KEEP1".to_string()])),
+    rs5: BinPosition{ count: 1, position: build_hash(52500, vec!["UPSTREAM_KEEP1".to_string()])},
     rs3: BinPosition::new(),
   });
 );
@@ -383,7 +383,7 @@ test_cl_direction!(dir02;
     fs5: BinPosition::new(),
     fs3: BinPosition::new(),
     rs5: BinPosition::new(),
-    rs3: BinPosition(1, build_hash(11700, vec!["DOWNSTREAM_KEEP2".to_string()])),
+    rs3: BinPosition{ count: 1, position: build_hash(11700, vec!["DOWNSTREAM_KEEP2".to_string()])},
   });
 );
 
