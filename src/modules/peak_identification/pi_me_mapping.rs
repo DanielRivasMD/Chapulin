@@ -2,7 +2,7 @@
 
 // // standard libraries
 // use anyhow::Context;
-use std::collections::HashMap;
+// use std::collections::HashMap;
 // use std::fs::File;
 // use std::io::Write;
 
@@ -11,14 +11,8 @@ use std::collections::HashMap;
 // development libraries
 use genomic_structures::{
   threshold,
-  Anchor,
   BinPosition,
-  ChrAnchorEnum,
   MEChimericPair,
-  MEChimericRead,
-  OrientationEnum,
-  SAMFlag,
-  StrandDirection,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,8 +52,6 @@ pub fn pi_me_identifier(
   let psize = 25;
 
   // estimate threshold
-  //////////////////////////////////////////////////
-
   let cut = threshold(
     bin_position.count.into(),
     chr_size,
@@ -71,13 +63,15 @@ pub fn pi_me_identifier(
   // write results
   //////////////////////////////////////////////////
 
-  select(cut, bin_position, me_record);
-
+  // create file
   // let fl_write = format!("{}{}.csv", output, ikey);
   // let mut fl =
   //   File::create(&fl_write).context(ChapulinCommonError::CreateFile {
   //     f: fl_write,
   //   })?;
+
+  // select records
+  select(cut, bin_position, me_record);
 
   //   // TODO: tag orientation to reduce elements to iterate on
   //   // TODO: check for non-oriented mobels

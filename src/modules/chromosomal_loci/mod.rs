@@ -5,11 +5,6 @@ use std::thread;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// development libraries
-use genomic_structures::StrandDirection;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // aliases
 use crate::utils::alias;
 
@@ -85,12 +80,6 @@ pub fn cl_filter(
   for key in chr_registry.lock().unwrap().keys() {
     // TODO: implement parallelism
     // let cl_handle = thread::spawn(|| {
-    // declare strand reference
-    dir_registry
-      .lock()
-      .unwrap()
-      .insert(key.to_string(), StrandDirection::new());
-    // let mut strands = Strands::new();
 
     // TODO: implement parallel iteration here
 
