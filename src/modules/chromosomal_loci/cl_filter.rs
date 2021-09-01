@@ -40,10 +40,10 @@ use crate::error::common_error::ChapulinCommonError;
 
 macro_rules! strand_direction {
   ( $strand: expr, $orientation: tt, $me_chimeric_read: expr, $read_id: expr ) => {
-    $strand.$orientation.0 += 1;
+    $strand.$orientation.count += 1;
     let position_vc = $strand
       .$orientation
-      .1
+      .position
       .entry($me_chimeric_read.chr_read[0].bin())
       .or_insert(Vec::new());
     position_vc.push($read_id);
