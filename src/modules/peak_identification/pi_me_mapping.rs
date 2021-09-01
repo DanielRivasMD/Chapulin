@@ -71,6 +71,8 @@ pub fn pi_me_identifier(
   // write results
   //////////////////////////////////////////////////
 
+  select(cut, bin_position, me_record);
+
   // let fl_write = format!("{}{}.csv", output, ikey);
   // let mut fl =
   //   File::create(&fl_write).context(ChapulinCommonError::CreateFile {
@@ -89,6 +91,16 @@ pub fn pi_me_identifier(
   //     // TODO: format output => possibly 1) raw 2) postgreSQL
 
   Ok(())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+fn select(
+  cut: usize,
+  bin_position: &BinPosition,
+  me_record: &alias::RecordME,
+) {
+  unimplemented!();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
