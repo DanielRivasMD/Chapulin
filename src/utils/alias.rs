@@ -29,6 +29,7 @@ pub type AnyBufferResult = anyhowResult<ByteLines<BufReader<File>>>;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Mobile element
+pub type LibraryChr = Arc<Mutex<HashMap<String, f64>>>;
 pub type LibraryME = Arc<Mutex<HashMap<String, f64>>>;
 // pub type LibraryME = Arc<Mutex<HashMap<String, MElibrary>>>;
 pub type RecordME = Arc<Mutex<HashMap<String, MEChimericPair>>>;
