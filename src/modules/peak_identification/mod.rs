@@ -17,24 +17,26 @@ mod pi_sv_mapping;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 macro_rules! pi_me_identifier {
-  ( $direction: expr, $strand: tt, $chr_size: expr, $me_record: expr ) => {
+  ( $output: expr, $direction: expr, $strand: tt, $chr_size: expr, $me_record: expr ) => {
     pi_me_mapping::pi_me_identifier(
+      $output,
       &$direction.$strand,
       $chr_size,
       $me_record,
     )?;
   };
-  ( $direction: expr, $chr_size: expr, $me_record: expr) => {
-    pi_me_identifier!($direction, fs5, $chr_size, $me_record);
-    pi_me_identifier!($direction, fs3, $chr_size, $me_record);
-    pi_me_identifier!($direction, rs5, $chr_size, $me_record);
-    pi_me_identifier!($direction, rs3, $chr_size, $me_record);
+  ( $output: expr, $direction: expr, $chr_size: expr, $me_record: expr ) => {
+    pi_me_identifier!($output, $direction, fs5, $chr_size, $me_record);
+    pi_me_identifier!($output, $direction, fs3, $chr_size, $me_record);
+    pi_me_identifier!($output, $direction, rs5, $chr_size, $me_record);
+    pi_me_identifier!($output, $direction, rs3, $chr_size, $me_record);
   };
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub fn pi_me_controller(
+  out_dir: &str,
   chr_library: alias::LibraryChr,
   dir_registry: alias::RegistryDir,
   me_record: alias::RecordME,
@@ -64,7 +66,8 @@ pub fn pi_me_controller(
   // iterate
   for (chr, direction) in dir_registry.lock().unwrap().iter() {
     if let Some(chr_size) = chr_library.lock().unwrap().get(chr) {
-      pi_me_identifier!(&direction, *chr_size, &me_record);
+      let output = format!("{}{}.csv", out_dir, chr);
+      pi_me_identifier!(&output, &direction, *chr_size, &me_record);
     }
   }
   // TODO: gather all positions & output a comprenhensive list

@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // // standard libraries
-// use anyhow::Context;
+use anyhow::Context;
 // use std::collections::HashMap;
-// use std::fs::File;
-// use std::io::Write;
+use std::fs::File;
+use std::io::Write;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -69,9 +69,13 @@ pub fn pi_me_identifier(
   //   File::create(&fl_write).context(ChapulinCommonError::CreateFile {
   //     f: fl_write,
   //   })?;
+  let mut fl =
+    File::create(&output).context(ChapulinCommonError::CreateFile {
+      f: output.to_string(),
+    })?;
 
   // select records
-  select(cut, bin_position, me_record);
+  select(&mut fl, cut, bin_position, me_record)?;
 
   //   // TODO: tag orientation to reduce elements to iterate on
   //   // TODO: check for non-oriented mobels
@@ -90,11 +94,39 @@ pub fn pi_me_identifier(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 fn select(
+  fl: &mut File,
   cut: usize,
   bin_position: &BinPosition,
   me_record: &alias::RecordME,
-) {
-  unimplemented!();
+) -> alias::AnyResult {
+  for (_position, reads) in bin_position.position.iter() {
+    if reads.len() > cut {
+      for read_id in reads.iter() {
+        if let Some(record) = me_record.lock().unwrap().get(read_id) {
+          write(fl, record, read_id)?;
+        }
+      }
+    }
+  }
+
+  Ok(())
+}
+
+fn write(
+  fl: &mut File,
+  record: &MEChimericPair,
+  read_id: &str,
+) -> alias::AnyResult {
+  // format line
+  let to_write = format!("{}\t{}\n", read_id, record.read1.me_read[0].position);
+  // write
+  fl.write_all(to_write.as_bytes()).context(
+    ChapulinCommonError::WriteFile {
+      f: to_write
+    },
+  )?;
+
+  Ok(())
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

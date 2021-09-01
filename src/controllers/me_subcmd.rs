@@ -301,6 +301,7 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   }
 
   modules::peak_identification::pi_me_controller(
+    &out_dir,
     amx_chr_library,
     amx_dir_registry,
     amx_me_record,
