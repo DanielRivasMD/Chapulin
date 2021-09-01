@@ -12,6 +12,7 @@ use std::collections::HashMap;
 use genomic_structures::{
   threshold,
   Anchor,
+  BinPosition,
   ChrAnchorEnum,
   MEChimericPair,
   MEChimericRead,
@@ -28,10 +29,7 @@ use crate::utils::alias;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate utilities
-use crate::settings::constants::{
-  NO_FDR,
-  STRAND_VEC,
-};
+use crate::settings::constants::NO_FDR;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,12 +45,28 @@ pub fn pi_me_identifier(
   chr_registry: alias::RegistryChr,
   me_library: alias::LibraryME,
   me_record: alias::RecordME,
+  bin_position: &BinPosition,
+  // dir_strand: StrandDirection,
+  // dir_registry: alias::RegistryDir,
+  chr_size: f64,
+  // chr_library: alias::LibraryChr,
+  me_record: &alias::RecordME,
 ) -> alias::AnyResult {
   // let mut chr_position_hm = HashMap::new();
   // let chr_size = *me_library.lock().unwrap().get(ikey).unwrap();
 
+  let psize = 25;
+
   // estimate threshold
   //////////////////////////////////////////////////
+
+  let cut = threshold(
+    bin_position.count.into(),
+    chr_size,
+    NO_FDR as f64,
+    &bin_position.position,
+    psize,
+  );
 
   // write results
   //////////////////////////////////////////////////
