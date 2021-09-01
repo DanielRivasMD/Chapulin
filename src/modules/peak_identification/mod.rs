@@ -17,10 +17,7 @@ mod pi_sv_mapping;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub fn pi_me_controller(
-  output: String,
-  errata: String,
-  chr_registry: alias::RegistryChr,
-  me_library: alias::LibraryME,
+  chr_library: alias::LibraryChr,
   dir_registry: alias::RegistryDir,
   me_record: alias::RecordME,
 ) -> alias::AnyResult {
@@ -46,6 +43,11 @@ pub fn pi_me_controller(
       .expect("TODO thread error");
     });
     pi_me_handle.join().expect("MESSAGE_JOIN");
+  // iterate
+  for (chr, direction) in dir_registry.lock().unwrap().iter() {
+    if let Some(chr_size) = chr_library.lock().unwrap().get(chr) {
+      pi_me_identifier!(&direction, *chr_size, &me_record);
+    }
   }
   // TODO: gather all positions & output a comprenhensive list
 
