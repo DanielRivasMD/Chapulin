@@ -57,10 +57,10 @@ fn main() -> alias::AnyResult {
   //   SubCmds("SV".to_string(), "SV".to_string()),
   // ];
 
-  // AC controller
-  if let Some(matches) = matches.subcommand_matches("AC") {
-    controllers::ac_subcmd::ac_subcmd(matches)?;
-  }
+  // // AC controller
+  // if let Some(matches) = matches.subcommand_matches("AC") {
+  //   controllers::ac_subcmd::ac_subcmd(matches)?;
+  // }
 
   // CC controller
   if let Some(matches) = matches.subcommand_matches("CR") {
