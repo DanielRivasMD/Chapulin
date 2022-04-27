@@ -29,6 +29,25 @@ pub mod utils;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+pub struct ParamSettings {
+  pub directory: String,
+  pub output: String,
+  pub errata: String,
+  pub reference_file: String,
+  pub me_library_file: String,
+  pub me_align: String,
+  pub ref_align: String,
+  pub pair_end_reference_alignment: String,
+}
+
+pub struct BoolSettings {
+  pub verbose: bool,
+  pub dry_run: bool,
+  pub force:   bool,
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // TODO: write down program logic
 // 1) read mobile element alignment & identify compatible anchors / alignments
 // 2) decompose alignment annotations & calculate insertion features: break
