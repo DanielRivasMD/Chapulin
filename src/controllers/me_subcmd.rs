@@ -8,11 +8,13 @@ use config::{
   Config,
   File,
 };
-use std::collections::HashMap;
-use std::fs::create_dir_all;
-use std::path::Path;
-use std::process::exit;
-use std::time::SystemTime;
+use std::{
+  collections::HashMap,
+  fs::create_dir_all,
+  path::Path,
+  process::exit,
+  time::SystemTime,
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,8 +41,10 @@ use crate::modules;
 /// Control mobile element protocol.
 ///   - Load settings.
 ///   - Read and write cache.
-///   - [Load mobile element alignment](modules::mobile_elements::me_aligned::me_identificator).
-///   - [Load chromosomal alignment](modules::chromosomal_loci::cl_aligned::cl_mapper).
+///   - [Load mobile element
+///     alignment](modules::mobile_elements::me_aligned::me_identificator).
+///   - [Load chromosomal
+///     alignment](modules::chromosomal_loci::cl_aligned::cl_mapper).
 pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   let subcmd = "ME";
 
@@ -301,8 +305,8 @@ pub fn me_subcmd(matches: &ArgMatches) -> alias::AnyResult {
   }
 
   modules::peak_identification::pi_me_controller(
-    &out_dir,
     amx_chr_library,
+    amx_chr_registry,
     amx_dir_registry,
     amx_me_record,
   )?;
