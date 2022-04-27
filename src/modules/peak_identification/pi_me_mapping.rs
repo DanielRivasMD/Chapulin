@@ -33,12 +33,7 @@ use crate::error::common_error::ChapulinCommonError;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub fn pi_me_identifier(
-  ikey: &str,
   output: &str,
-  _errata: &str,
-  chr_registry: alias::RegistryChr,
-  me_library: alias::LibraryME,
-  me_record: alias::RecordME,
   bin_position: &BinPosition,
   // dir_strand: StrandDirection,
   // dir_registry: alias::RegistryDir,
@@ -46,9 +41,6 @@ pub fn pi_me_identifier(
   // chr_library: alias::LibraryChr,
   me_record: &alias::RecordME,
 ) -> alias::AnyResult {
-  // let mut chr_position_hm = HashMap::new();
-  // let chr_size = *me_library.lock().unwrap().get(ikey).unwrap();
-
   let psize = 25;
 
   // estimate threshold
@@ -64,11 +56,6 @@ pub fn pi_me_identifier(
   //////////////////////////////////////////////////
 
   // create file
-  // let fl_write = format!("{}{}.csv", output, ikey);
-  // let mut fl =
-  //   File::create(&fl_write).context(ChapulinCommonError::CreateFile {
-  //     f: fl_write,
-  //   })?;
   let mut fl =
     File::create(&output).context(ChapulinCommonError::CreateFile {
       f: output.to_string(),
@@ -118,7 +105,7 @@ fn write(
   read_id: &str,
 ) -> alias::AnyResult {
   // format line
-  let to_write = format!("{}\t{}\n", read_id, record.read1.me_read[0].position);
+  let to_write = format!("{}\n{}", read_id, record);
   // write
   fl.write_all(to_write.as_bytes()).context(
     ChapulinCommonError::WriteFile {
@@ -128,5 +115,24 @@ fn write(
 
   Ok(())
 }
+
+// Sequence identifier.
+// Retrotransposon start coordinate within sequence.
+// Retrotransposon end coordinate within sequence.
+// Left LTR start coordinate.
+// Left LTR end coordinate.
+// Right LTR start coordinate.
+// Right LTR end coordinate.
+// % Identity between left and right LTRs (0-100).
+// Left Target Site Duplication start coordinate.
+// Left Target Site Duplication end coordinate.
+// Right Target Site Duplication start coordinate.
+// Right Target Site Duplication end coordinate.
+// Polypurine Tract start coordinate.
+// Polupurine Tract end coordinate.
+// Strand on chromosome (+ or -).
+// Percentage of purines in Polypurine Tract (0-100).
+// TG motif start coordinate.
+// CA motif end coordinate.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
