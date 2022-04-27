@@ -10,16 +10,16 @@ use std::fmt;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// crate utilities
+use crate::BoolSettings;
+use crate::ParamSettings;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // error handler
 use crate::error::config_error::ChapulinConfigError;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-pub struct BoolSettings {
-  pub verbose: bool,
-  pub dry_run: bool,
-  pub force:   bool,
-}
 
 pub fn collect_bool(matches: &ArgMatches) -> BoolSettings {
   BoolSettings {
@@ -30,17 +30,6 @@ pub fn collect_bool(matches: &ArgMatches) -> BoolSettings {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-pub struct ParamSettings {
-  pub directory: String,
-  pub output: String,
-  pub errata: String,
-  pub reference_file: String,
-  pub me_library_file: String,
-  pub me_align: String,
-  pub ref_align: String,
-  pub pair_end_reference_alignment: String,
-}
 
 pub fn collect_str(
   sett_hm: HashMap<String, String>
