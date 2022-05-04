@@ -10,7 +10,7 @@ use std::io::Write;
 
 // development libraries
 use genomic_structures::{
-  threshold,
+  // threshold,
   BinPosition,
   MEChimericPair,
 };
@@ -43,14 +43,16 @@ pub fn pi_me_identifier(
 ) -> alias::AnyResult {
   let psize = 25;
 
-  // estimate threshold
-  let cut = threshold(
-    bin_position.count.into(),
-    chr_size,
-    NO_FDR as f64,
-    &bin_position.position,
-    psize,
-  );
+  // // estimate threshold
+  // let cut = threshold(
+  //   bin_position.count.into(),
+  //   chr_size,
+  //   NO_FDR as f64,
+  //   &bin_position.position,
+  //   psize,
+  // );
+
+  let cut = 7;
 
   // write results
   //////////////////////////////////////////////////
