@@ -32,7 +32,7 @@ debug = true
 [dependencies]
 anyhow = "1.0.31"
 bytelines = "2.2"
-clap = "3.0.14"
+clap = { version = "4.1.4", features = ["derive"] }
 clap_generate = "3.0.1"
 colored = "2"
 config = "0.13.3"
