@@ -1,10 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // standard libraries
-use clap::{
-  App,
-  AppSettings,
-  Arg,
+use std::path::PathBuf;
+use clap::{Parser, Subcommand};
+use std::collections::HashMap;
+use config::{
+  Config,
+  File,
+  FileFormat,
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,6 +28,11 @@ pub fn cli_chapulin() -> App<'static> {
       \nGenerate Configuration (GC): generates a configuration template. Observe that not all values from config file are used at all times. Aliases: 'gc', 'GenerateConfiguration'.
       \nAutoCompletion (AC): generates autocompletions to stdout for your shell. Pipe into a file and install to get help when using Chapulin. See `chapulin AC --manual` for details. Aliases: 'ac', AutoCompletion'.
     ")
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+pub struct Cli {
+  /// Optional name to operate on
+  name: Option<String>,
 
     .subcommand(App::new("ME")
       // .version(crate_version!())
@@ -78,6 +86,9 @@ pub fn cli_chapulin() -> App<'static> {
         .default_value("0")
       )
     )
+  /// Sets a custom config file
+  #[arg(short, long, value_name = "FILE")]
+  config: Option<PathBuf>,
 
     .subcommand(App::new("SV")
       // .version(crate_version!())
@@ -112,6 +123,9 @@ pub fn cli_chapulin() -> App<'static> {
         .help("Display settings without running command")
       )
     )
+  /// Turn debugging information on
+  #[arg(short, long, action = clap::ArgAction::Count)]
+  debug: u8,
 
     .subcommand(App::new("CR")
       // .version(crate_version!())
@@ -146,6 +160,9 @@ pub fn cli_chapulin() -> App<'static> {
         .help("Display settings without running command")
       )
     )
+  /// Prints verbosely
+  #[arg(short, long)]
+  verbose: bool,
 
     .subcommand(App::new("GC")
       // .version(crate_version!())
@@ -186,6 +203,9 @@ pub fn cli_chapulin() -> App<'static> {
         .help("Display settings without running command")
       )
     )
+  #[command(subcommand)]
+  pub command: Option<Commands>,
+}
 
     .subcommand(App::new("AC")
       // .version(crate_version!())
@@ -216,6 +236,14 @@ pub fn cli_chapulin() -> App<'static> {
         .help("Display instructions on how to install autocompletions")
       )
     )
+#[derive(Subcommand)]
+pub enum Commands {
+  /// does testing things
+  ME {
+
+    /// Selects chromosomal alignment
+    #[arg(short, long, default_value = "paired")]
+    chralign: String,
 
     .subcommand(App::new("T")
       // .version(crate_version!())
@@ -244,6 +272,10 @@ pub fn cli_chapulin() -> App<'static> {
         .takes_value(true)
       )
     )
+    /// Print values for debugging
+    #[arg(short, long)]
+    debug: bool,
+  },
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
