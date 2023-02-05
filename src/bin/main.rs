@@ -6,13 +6,18 @@ use chapulin::*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// standard libraries
+use clap::{Parser, Subcommand};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // aliases
 use crate::utils::alias;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // crate utilities
-use crate::utils::cli::help::cli_chapulin;
+use crate::utils::cli::help::{Cli, Commands};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +45,20 @@ use crate::utils::cli::help::cli_chapulin;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 fn main() -> alias::AnyResult {
-  let matches = cli_chapulin().get_matches();
+
+  let params = Cli::parse();
+
+  match &params.command.unwrap() {
+
+    Commands::ME { chralign, debug } => {
+      println!("ME");
+
+      // controllers::me_subcmd::me_subcmd(params)?;
+    }
+
+  }
+
+  // let matches = cli_chapulin().get_matches();
 
   // TODO: add single-end reference read support by interpreting CIGAR
   //  TODO: replace if statements for match / switch
