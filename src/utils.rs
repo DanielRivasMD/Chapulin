@@ -6,9 +6,6 @@ pub mod alias;
 // cli
 pub mod cli;
 
-// collector
-pub mod collector;
-
 // IO
 pub mod io;
 
