@@ -4,3 +4,4 @@ target/
 # deprecated
 src/deprecated/
 tests/deprecated/
+Cargo.lock
